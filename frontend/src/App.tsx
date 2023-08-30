@@ -9,7 +9,7 @@ import AttendanceSystem from "./pages/AttendanceSystem";
 import Sidebar from "./components/Sidebar";
 import StudentDatabase from "./pages/StudentDatabase";
 import ClassSession from "./pages/ClassSession";
-import ClassRecord from "./pages/ClassRecord";
+import ClassRecords from "./pages/ClassRecord";
 
 function App(): JSX.Element {
   const [sidebar, setSidebar] = useState(true);
@@ -57,7 +57,7 @@ function AdminRoutes({ sidebar, setSidebar }: AdminRoutesProps): JSX.Element {
       case "/admin/attendance_system/class_session":
         return <ClassSession />;
       case "/admin/attendance_system/class_history":
-        return <ClassRecord />;
+        return <ClassRecords />;
       default:
         return <div>Invalid page</div>;
     }

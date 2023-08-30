@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { Student } from "../types/types";
 import { getAllStudents, registerStudent } from "../api/studentDbApi";
+import { handleUploadExcel } from "../utils/handleUploadExcel";
 import SearchBox from "../components/SearchBox";
 import { Button } from "@mui/material";
-import { handleUploadExcel } from "../utils/handleUploadExcel";
-import { Student } from "../types/types";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>();

@@ -13,11 +13,12 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
+    "rootDir": "../",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "../backend/src/model/model.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

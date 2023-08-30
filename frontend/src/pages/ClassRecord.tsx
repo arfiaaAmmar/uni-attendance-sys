@@ -1,105 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { ClassRecord as ClassRecordType } from "../types/types";
-import { StyleSheet, PDFViewer, Document, Text, Page, View, PDFDownloadLink } from '@react-pdf/renderer';
+import { useEffect, useState } from "react";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { getAllClassRecords } from "../api/classRecordApi";
 import { Link } from "react-router-dom";
 import SearchBox from "../components/SearchBox";
+import { GeneratePDFContent } from "../utils/pdfHandlers";
+import { IClassRecord } from "backend/src/model/model";
 
-export const ClassRecord = () => {
-  const [records, setRecords] = useState<ClassRecordType[]>([]);
+export const ClassRecords = () => {
+  const [records, setRecords] = useState<IClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [pdfLoading, setPdfLoading] = useState(false);
   const [filteredRecord, setFilteredRecord] = useState<
-    ClassRecordType[] | undefined
+    IClassRecord[] | undefined
   >();
-  const [selectedRecord, setSelectedRecord] = useState<ClassRecordType | undefined>();
+  const [selectedRecord, setSelectedRecord] = useState<
+    IClassRecord | undefined
+  >();
   const [actionModal, setActionModal] = useState({
     editRecordModal: false,
     viewRecordModal: false,
     printRecord: false,
   });
+
   const [manualAttendance, setManualAttendance] = useState({
     studentName: "",
     studentId: "",
     attendanceTime: "",
   });
 
-  const styles = StyleSheet.create({
-    container: {
-      flexDirection: "column",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "white",
-    },
-    heading: {
-      fontSize: 18,
-      fontWeight: "bold",
-      marginBottom: 10,
-    },
-    tableHeader: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-around",
-      backgroundColor: "#f0f0f0",
-      padding: 5,
-      marginTop: 10,
-    },
-    columnHeader: {
-      fontWeight: "bold",
-      flex: 1,
-      textAlign: "center",
-    },
-    tableRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-around",
-      backgroundColor: "#f5f5f5",
-      padding: 5,
-    },
-    cell: {
-      flex: 1,
-      textAlign: "center",
-    },
-  });
-
-  const ClassRecordPDF = ({ selectedRecord}:{selectedRecord: ClassRecordType | undefined}) => (
-    <PDFViewer>
-      <Document>
-        <Page>
-          <View style={styles.container}>
-            <Text style={styles.heading}>Class Record</Text>
-            <View style={styles.tableHeader}>
-              <Text style={[styles.cell, styles.columnHeader]}>No.</Text>
-              <Text style={[styles.cell, styles.columnHeader]}>Full Name</Text>
-              <Text style={[styles.cell, styles.columnHeader]}>Student ID</Text>
-              <Text style={[styles.cell, styles.columnHeader]}>Status</Text>
-            </View>
-            <View
-              style={{
-                height: "30vh",
-                backgroundColor: "#f0f0f0",
-              }}
-            >
-              {selectedRecord?.attendance?.map((attendance, index) => (
-                <View key={attendance.studentId} style={styles.tableRow}>
-                  <Text style={styles.cell}>{index + 1}</Text>
-                  <Text style={styles.cell}>{attendance.studentName}</Text>
-                  <Text style={styles.cell}>{attendance.studentId}</Text>
-                  <Text style={styles.cell}>{attendance.attendanceTime}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </Page>
-      </Document>
-    </PDFViewer>
-  );
-
   const handleDownloadPDF = async (_id: string) => {
     const selectedRecord = records.find((record) => record.classId === _id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
+      setActionModal({
+      editRecordModal: false,
+      viewRecordModal: true,
+      printRecord: false,
+    });
     }
   };
 
@@ -123,7 +61,7 @@ export const ClassRecord = () => {
           "startTime",
           "endTime",
         ].some((prop) => {
-          const propertyValue = record[prop as keyof ClassRecordType];
+          const propertyValue = record[prop as keyof IClassRecord];
 
           if (propertyValue === null || propertyValue === undefined) {
             return false; // Skip filtering for null or undefined values
@@ -170,7 +108,9 @@ export const ClassRecord = () => {
             <p className="w-3/12">{record?.lecturer}</p>
             <div className="w-2/12">
               <PDFDownloadLink
-                document={<ClassRecordPDF selectedRecord={selectedRecord}/>}
+                document={
+                  <GeneratePDFContent selectedRecord={selectedRecord} />
+                }
                 fileName="my_pdf.pdf"
                 className="bg-blue-300  px-3 py-1"
                 // onClick={() => handleDownloadPDF(record?.classId)}
@@ -179,41 +119,41 @@ export const ClassRecord = () => {
               </PDFDownloadLink>
               <button className="bg-green-300 px-3 py-1">Edit</button>
               <button className="bg-yellow-100 px-3 py-1">Print</button>
-              <button className="bg-orange-300 px-3 py-1">View</button>
+              <button
+                className="bg-orange-300 px-3 py-1"
+                onClick={() => handleDownloadPDF(record.classId)}
+              >
+                View
+              </button>
             </div>
           </div>
         ))}
       </div>
 
       {actionModal.viewRecordModal && (
-        <div>
-          <ClassRecordPDF selectedRecord={selectedRecord} />
-          <button
-            onClick={() =>
-              setActionModal({ ...actionModal, viewRecordModal: false })
-            }
-          >
-            Close
-          </button>
-          <PDFDownloadLink document={<ClassRecordPDF selectedRecord={selectedRecord}/>} fileName="my_pdf.pdf">
-            {({ blob, url, loading, error }) => {
-              // Set pdfLoading based on the loading state
-              if (loading) {
-                setPdfLoading(true);
-              } else {
-                setPdfLoading(false);
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-md p-8 w-full h-full">
+            <PDFViewer width="100%" height="100%">
+              <GeneratePDFContent selectedRecord={selectedRecord} />
+            </PDFViewer>
+            <button
+            className="bg-red-400 mx-2 my-1 rounded-md"
+              onClick={() =>
+                setActionModal({ ...actionModal, viewRecordModal: false })
               }
-
-              // Display appropriate text based on pdfLoading and url
-              if (pdfLoading) {
-                return "Loading...";
-              } else if (url) {
-                return "Download PDF";
-              } else {
-                return "Error";
+            >
+              Close
+            </button>
+            <PDFDownloadLink
+            className="bg-green-400 mx-2 my-1 rounded-md"
+              document={<GeneratePDFContent selectedRecord={selectedRecord} />}
+              fileName="class_record.pdf"
+            >
+              {({ loading }) =>
+                loading ? "Loading document..." : "Download now!"
               }
-            }}
-          </PDFDownloadLink>
+            </PDFDownloadLink>
+          </div>
         </div>
       )}
       {actionModal.editRecordModal && (
@@ -232,4 +172,4 @@ export const ClassRecord = () => {
   );
 };
 
-export default ClassRecord;
+export default ClassRecords;
