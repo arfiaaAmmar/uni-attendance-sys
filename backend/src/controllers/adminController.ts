@@ -1,11 +1,12 @@
 // adminController.ts
 import { Request, Response } from "express";
-import { IAdmin, AdminModel } from "../model/model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
 import { Document } from "mongoose";
+import { AdminModel } from "../model/model";
+import { IAdmin } from "shared-library/types";
 
 export const registerAdmin = async (req: Request, res: Response) => {
   try {
@@ -20,7 +21,7 @@ export const registerAdmin = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "User already exists" });
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password!, 10);
 
     // Create new user
     await AdminModel.create({
@@ -47,7 +48,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
     if (!user) return res.status(401).json({ message: "User not found" });
 
     // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user?.password!);
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid email or password" });
 

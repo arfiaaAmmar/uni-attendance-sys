@@ -1,9 +1,9 @@
+import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ClassRecord, StudentAttendance } from "../types/types";
+import { Link } from "react-router-dom";
 import { getAllClassRecords, postClassRecord } from "../api/classRecordApi";
 import SearchBox from "../components/SearchBox";
-import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { ClassRecord, StudentAttendance } from "../types/types";
 
 
 const ClassSession = () => {

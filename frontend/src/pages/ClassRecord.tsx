@@ -1,25 +1,24 @@
-import { useEffect, useState } from "react";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import { getAllClassRecords } from "../api/classRecordApi";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { IClassRecord } from "shared-library/types";
+import { getAllClassRecords } from "../api/classRecordApi";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/pdfHandlers";
-import { IClassRecord } from "backend/src/model/model";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<IClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [filteredRecord, setFilteredRecord] = useState<
-    IClassRecord[] | undefined
-  >();
-  const [selectedRecord, setSelectedRecord] = useState<
-    IClassRecord | undefined
-  >();
+  const [filteredRecord, setFilteredRecord] = useState<IClassRecord[] | undefined>();
+  const [selectedRecord, setSelectedRecord] = useState<IClassRecord | undefined>();
+  const [updatedRecord, setUpdatedRecord] = useState<IClassRecord | undefined>();
   const [actionModal, setActionModal] = useState({
     editRecordModal: false,
     viewRecordModal: false,
     printRecord: false,
+    manualAttendance: false,
   });
 
   const [manualAttendance, setManualAttendance] = useState({
@@ -34,10 +33,51 @@ export const ClassRecords = () => {
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
       setActionModal({
-      editRecordModal: false,
-      viewRecordModal: true,
-      printRecord: false,
-    });
+        editRecordModal: false,
+        viewRecordModal: true,
+        printRecord: false,
+        manualAttendance: false,
+      });
+    }
+  };
+
+  const handleEditModel = async (_id: string) => {
+    setActionModal({ ...actionModal, editRecordModal: true });
+    const selectedRecord = records.find(
+      (record) => record.classId === record.classId
+    );
+
+    if (selectedRecord) {
+      setSelectedRecord(selectedRecord);
+      setActionModal({
+        editRecordModal: true,
+        viewRecordModal: false,
+        printRecord: false,
+        manualAttendance: false,
+      });
+    }
+  }
+
+  const handleUpdateRecord = async (classId: string | undefined) => {
+    try {
+      setUpdatedRecord(updatedRecord);
+    } catch (error) {
+      console.error("Error fetching user list:", error);
+    }
+  };
+
+  const handleUploadButton = () => {
+    if (fileInputRef.current) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const selectedFile = fileInputRef.current.files[0];
+
+      if (selectedFile) {
+        console.log("Selected file", selectedFile);
+        // handleUploadExcelForAttendance(selectedFile)
+      } else {
+        console.log("No file selected,");
+      }
     }
   };
 
@@ -107,23 +147,17 @@ export const ClassRecords = () => {
             <p className="w-4/12">{record?.course}</p>
             <p className="w-3/12">{record?.lecturer}</p>
             <div className="w-2/12">
-              <PDFDownloadLink
-                document={
-                  <GeneratePDFContent selectedRecord={selectedRecord} />
-                }
-                fileName="my_pdf.pdf"
-                className="bg-blue-300  px-3 py-1"
-                // onClick={() => handleDownloadPDF(record?.classId)}
-              >
-                {({ loading }) => (loading ? "Loading..." : "Download PDF")}
-              </PDFDownloadLink>
-              <button className="bg-green-300 px-3 py-1">Edit</button>
-              <button className="bg-yellow-100 px-3 py-1">Print</button>
               <button
                 className="bg-orange-300 px-3 py-1"
                 onClick={() => handleDownloadPDF(record.classId)}
               >
-                View
+                View | Download
+              </button>
+              <button
+                className="bg-green-300 px-3 py-1"
+                onClick={() => handleEditModel(record.classId)}
+              >
+                Edit
               </button>
             </div>
           </div>
@@ -137,7 +171,7 @@ export const ClassRecords = () => {
               <GeneratePDFContent selectedRecord={selectedRecord} />
             </PDFViewer>
             <button
-            className="bg-red-400 mx-2 my-1 rounded-md"
+              className="bg-red-400 mx-2 my-1 rounded-md"
               onClick={() =>
                 setActionModal({ ...actionModal, viewRecordModal: false })
               }
@@ -145,7 +179,7 @@ export const ClassRecords = () => {
               Close
             </button>
             <PDFDownloadLink
-            className="bg-green-400 mx-2 my-1 rounded-md"
+              className="bg-green-400 mx-2 my-1 rounded-md"
               document={<GeneratePDFContent selectedRecord={selectedRecord} />}
               fileName="class_record.pdf"
             >
@@ -157,15 +191,93 @@ export const ClassRecords = () => {
         </div>
       )}
       {actionModal.editRecordModal && (
-        <div>
-          <h1>Edit Record</h1>
-          <button
-            onClick={() =>
-              setActionModal({ ...actionModal, editRecordModal: false })
-            }
-          >
-            Close
-          </button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
+            <h1 className="text-2xl font-bold my-2">Edit Record</h1>
+            <SearchBox query={searchQuery} onChange={setSearchQuery} />
+            <div className="flex justify-between">
+              <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
+                <div className="flex">
+                  <p className="font-semibold w-1/3">Class </p>
+                  <p className="w-2/3">: {selectedRecord?.classroom}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-semibold w-1/3">Course </p>
+                  <p className="w-2/3">: {selectedRecord?.course}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-semibold w-1/3">Date </p>
+                  <p className="w-2/3">: {selectedRecord?.date}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-semibold w-1/3">Start Time</p>
+                  <p className="w-2/3">: {selectedRecord?.startTime}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-semibold w-1/3">End Time</p>
+                  <p className="w-2/3 ">: {selectedRecord?.endTime}</p>
+                </div>
+              </div>
+              <div className="flex justify-between mt-auto mb-0">
+                <div>
+                  <button
+                    className="bg-purple-400 rounded-md py-2 px-2 mr-2"
+                    onClick={() =>
+                      setActionModal({ ...actionModal, manualAttendance: true })
+                    }
+                  >
+                    Manual Attendance
+                  </button>
+                  <PDFDownloadLink
+                    className="bg-yellow-600 rounded-md py-2 px-2"
+                    document={
+                      <GeneratePDFContent selectedRecord={selectedRecord} />
+                    }
+                    fileName="class_record.pdf"
+                  >
+                    {({ loading }) =>
+                      loading ? "Loading document..." : "Download PDF"
+                    }
+                  </PDFDownloadLink>
+                </div>
+              </div>
+            </div>
+            <div className="bg-neutral-400 flex px-4 py-2 justify-evenly h-14 mt-4">
+              <p className="font-semibold w-1/12 ">No.</p>
+              <p className="font-semibold w-5/12">Full Name</p>
+              <p className="font-semibold w-3/12">Student ID</p>
+              <p className="font-semibold w-1/12">Status</p>
+            </div>
+            <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
+              {selectedRecord?.attendance?.map((student, index) => (
+                <div
+                  key={student.studentId}
+                  className="flex px-4 py-1 justify-evenly"
+                >
+                  <p className="w-1/12">{index + 1}</p>
+                  <p className="w-5/12">{student.studentName}</p>
+                  <p className="w-3/12">{student.studentId}</p>
+                  <p className="w-1/12"> Next time </p>
+                </div>
+              ))}
+            </div>
+            <div className="absolute bottom-2 right-2 flex gap-2">
+              <button
+                className="bg-red-400 px-2 py-1 rounded-md "
+                onClick={() =>
+                  setActionModal({ ...actionModal, editRecordModal: false })
+                }
+              >
+                Close
+              </button>
+              <button
+                className="bg-green-400 px-2 py-1 rounded-md"
+                onClick={() => handleUpdateRecord(selectedRecord?.classId)}
+              >
+                Update Record
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -10,15 +10,13 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "rootDir": "../",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx", "../backend/src/model/model.ts"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "../shared-library/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

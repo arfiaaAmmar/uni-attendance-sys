@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { Student } from "../types/types";
-import { getAllStudents, registerStudent } from "../api/studentDbApi";
-import { handleUploadExcel } from "../utils/handleUploadExcel";
-import SearchBox from "../components/SearchBox";
 import { Button } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { getAllStudents, registerStudent } from "../api/studentDbApi";
+import SearchBox from "../components/SearchBox";
+import { Student } from "../types/types";
+import { handleUploadExcelForStudentRegistration } from "../utils/handleUploadExcel";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>();
@@ -101,7 +101,7 @@ const StudentDatabase = () => {
 
       if(selectedFile){
         console.log('Selected file', selectedFile);
-        handleUploadExcel(selectedFile)
+        handleUploadExcelForStudentRegistration(selectedFile)
       } else {
         console.log('No file selected,');
       }

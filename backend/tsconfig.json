@@ -3,13 +3,13 @@
   "compilerOptions": {
     "target": "es2021",
     "module": "CommonJS",
-    "composite": true,
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "noEmit": false,
     "skipLibCheck": true,
   },
+  "include": ["../shared-library/types.ts", "../backend/src/"],
   "exclude": [
     "node_modules"
   ]

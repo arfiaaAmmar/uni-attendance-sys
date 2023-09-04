@@ -1,6 +1,7 @@
 // studentController.ts
 import { Request, Response } from "express";
-import { IStudent, StudentModel } from "../model/model";
+import { StudentModel } from "../model/model";
+import { IStudent } from "shared-library/types";
 
 export const registerStudent = async (req: Request, res: Response) => {
   try {

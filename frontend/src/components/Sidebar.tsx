@@ -1,10 +1,9 @@
-import { ClickAwayListener, IconButton } from "@mui/material";
-import { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import { AppRoutesType } from "./routes";
+import { ClickAwayListener, IconButton } from "@mui/material";
+import React, { useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import React from "react";
+import { AppRoutesType } from "./routes";
 
 interface SidebarProps {
   items: AppRoutesType[];
@@ -15,7 +14,6 @@ interface SidebarProps {
 export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
   const currentPage = useLocation();
   const { setIsLoggedIn } = useContext(AuthContext);
-  
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -49,9 +47,10 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
               WELCOME BACK {localStorage.getItem("userName")}
             </p>
             <div className="p-4 py-6 gap-4 items-center">
-              {items.map((page) => (
+              {items.map((page, index) => (
                 <>
                   <Link
+                    key={index + 1}
                     to={page.path}
                     className={`block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
                       currentPage.pathname === page.path
@@ -63,9 +62,9 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
                       <span className="text-lg">{page.displayText}</span>
                     </div>
                   </Link>
-                  {page.children?.map((child) => (
+                  {page.children?.map((child, index) => (
                     <Link
-                      key={child.path}
+                      key={index + 1}
                       to={child.path}
                       className={`indent-10 text-white my-2 text-lg block ${
                         currentPage.pathname == child.path

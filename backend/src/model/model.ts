@@ -1,56 +1,22 @@
 import { Schema, Document, model } from "mongoose";
-
-type CollegeCourses =
-  | "Food & Beverage"
-  | "Information Technology"
-  | "Security"
-  | "Secretary";
-type Classrooms = "Classroom 1" | "Classroom 2" | "Classroom 3";
+import { IAdmin, IClassRecord, IStudent } from '../../../shared-library/types';
 
 // Define the User interface
-export interface IAdmin extends Document {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-}
-
-export interface IStudent extends Document {
-  studentId: string;
-  name: string;
-  phone: string;
-  email: string;
-  course: string;
-}
-
-export interface IClassRecord extends Document {
-  classId: string;
-  lecturer: string;
-  classroom: Classrooms | string;
-  course: CollegeCourses | string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  attendance: {
-    studentName: string;
-    studentId: string;
-    attendanceTime: string;
-  }[];
-}
+type IAdminModel = IAdmin & Document;
+type IStudentModel = IStudent & Document;
+type IClassRecordModel = IClassRecord & Document;
 
 // Define the User schema
-const adminSchema = new Schema<IAdmin>({
+const adminSchema = new Schema<IAdminModel>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   phone: { type: String, required: true },
 });
 
-// Create and export the User model
-export const AdminModel = model<IAdmin>("Admin", adminSchema);
+export const AdminModel = model<IAdminModel>("Admin", adminSchema);
 
-//Create a student database schema
-const studentSchema = new Schema<IStudent>({
+const studentSchema = new Schema<IStudentModel>({
   studentId: { type: String, required: true },
   name: { type: String, required: true },
   phone: { type: String, required: true },
@@ -58,10 +24,9 @@ const studentSchema = new Schema<IStudent>({
   course: { type: String, required: true },
 });
 
-export const StudentModel = model<IStudent>("Student", studentSchema);
+export const StudentModel = model<IStudentModel>("Student", studentSchema);
 
-//Create a class record/history schema
-const classRecord = new Schema<IClassRecord>({
+const classRecord = new Schema<IClassRecordModel>({
   classId: { type: String, required: true},
   lecturer: { type: String, required: true },
   course: { type: String, required: true },
@@ -78,7 +43,7 @@ const classRecord = new Schema<IClassRecord>({
   ],
 });
 
-export const ClassRecordModel = model<IClassRecord>(
+export const ClassRecordModel = model<IClassRecordModel>(
   "Class Record",
   classRecord
 );
