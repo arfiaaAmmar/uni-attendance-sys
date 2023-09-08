@@ -7,11 +7,15 @@ import { handleUploadExcelForStudentRegistration } from "../utils/handleUploadEx
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>();
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filteredStudentList, setFilteredStudentList] = useState<Student[] | undefined>();
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredStudentList, setFilteredStudentList] = useState<
+    Student[] | undefined
+  >();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [feedback, setFeedback] = useState({
+    success: "",
+    error: "",
+  });
   const [formData, setFormData] = useState<Omit<Student, "studentId">>({
     name: "",
     email: "",
@@ -31,14 +35,16 @@ const StudentDatabase = () => {
       }
     };
 
-    fetchAllStudents()
+    fetchAllStudents();
   }, []);
 
   useEffect(() => {
     if (studentList) {
       const filteredList = studentList.filter((student) =>
-        ['name', 'studentId', 'course'].some(
-          (prop) => student[prop as keyof Student]?.toLowerCase().includes(searchQuery.toLowerCase())
+        ["name", "studentId", "course"].some((prop) =>
+          student[prop as keyof Student]
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase())
         )
       );
       setFilteredStudentList(filteredList);
@@ -53,7 +59,7 @@ const StudentDatabase = () => {
       formData.phone === "" ||
       formData.course === ""
     ) {
-      setError("Please fill in all user data");
+      setFeedback({...feedback,error: "Please fill in all user data"})
       return;
     }
     try {
@@ -64,7 +70,7 @@ const StudentDatabase = () => {
         phone: formData.phone,
         course: formData.course,
       });
-      setSuccess("Successfully added user!");
+      setFeedback({ ...feedback, success: "Successfully added user!" });
       // Clear form inputs
       setFormData({
         email: "",
@@ -73,16 +79,16 @@ const StudentDatabase = () => {
         course: "",
       });
       setTimeout(() => {
-        setSuccess("");
+        setFeedback({ ...feedback, success: "" });
       }, 3000);
       // Fetch updated user list
       const updatedStudentList = await getAllStudents();
       setStudentList(updatedStudentList);
 
       console.log("New user registered successfully");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      setError(error.message)
+      setFeedback({ ...feedback, error: error.message });
     }
   };
 
@@ -94,19 +100,19 @@ const StudentDatabase = () => {
   };
 
   const handleUploadButton = () => {
-    if (fileInputRef.current){
+    if (fileInputRef.current) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const selectedFile = fileInputRef.current.files[0]
+      const selectedFile = fileInputRef.current.files[0];
 
-      if(selectedFile){
-        console.log('Selected file', selectedFile);
-        handleUploadExcelForStudentRegistration(selectedFile)
+      if (selectedFile) {
+        console.log("Selected file", selectedFile);
+        handleUploadExcelForStudentRegistration(selectedFile);
       } else {
-        console.log('No file selected,');
+        console.log("No file selected,");
       }
     }
-  }
+  };
 
   return (
     <div className="p-8 h-full">
@@ -121,11 +127,11 @@ const StudentDatabase = () => {
           ref={fileInputRef}
         />
         <button
-            className="bg-green-600 px-2 py-1 font-semibold ml-2"
-            onClick={handleUploadButton}
-          >
-            Upload Excel
-          </button>
+          className="bg-green-600 px-2 py-1 font-semibold ml-2"
+          onClick={handleUploadButton}
+        >
+          Upload Excel
+        </button>
         <button
           className="bg-green-600 px-2 py-1 font-semibold"
           onClick={() => setRegisterStudentModal(true)}
@@ -157,10 +163,10 @@ const StudentDatabase = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Register Student</p>
-            {error ? (
-              <p className="text-red-500 font-bold">{error}</p>
-            ) : success ? (
-              <p className="text-green-600 font-bold">{success}</p>
+            {feedback.error ? (
+              <p className="text-red-500 font-bold">{feedback.error}</p>
+            ) : feedback.success ? (
+              <p className="text-green-600 font-bold">{feedback.success}</p>
             ) : null}
 
             <form onSubmit={handleSubmit}>

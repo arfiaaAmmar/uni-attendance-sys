@@ -30,7 +30,7 @@ export type IStudentAttendance = {
 };
 
 export type IClassRecord = {
-  classId: string;
+  classId?: string;
   lecturer: string | null;
   classroom: IClassrooms | string;
   course: ICollegeCourses | string;

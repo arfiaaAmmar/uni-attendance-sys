@@ -1,5 +1,5 @@
 import { Schema, Document, model } from "mongoose";
-import { IAdmin, IClassRecord, IStudent } from '../../../shared-library/types';
+import { IAdmin, IClassRecord, IStudent } from "../../../shared-library/types";
 
 // Define the User interface
 type IAdminModel = IAdmin & Document;
@@ -27,7 +27,6 @@ const studentSchema = new Schema<IStudentModel>({
 export const StudentModel = model<IStudentModel>("Student", studentSchema);
 
 const classRecord = new Schema<IClassRecordModel>({
-  classId: { type: String, required: true},
   lecturer: { type: String, required: true },
   course: { type: String, required: true },
   classroom: { type: String, required: true },
@@ -47,7 +46,3 @@ export const ClassRecordModel = model<IClassRecordModel>(
   "Class Record",
   classRecord
 );
-
-
-//If class time is not finish = Class in session 
-//All class time is not finished go to Class Session
