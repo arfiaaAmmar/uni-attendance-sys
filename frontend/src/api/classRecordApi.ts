@@ -3,7 +3,7 @@ import { StudentAttendance, ClassRecord } from "../types/types";
 
 const API_BASE_URL = "http://localhost:8888";
 
-export const postClassRecord = async (classData: ClassRecord) => {
+export const postClassRecord = async <T>(classData: T) => {
   try {
     const response = await fetch(`${API_BASE_URL}/post-class_record`, {
       method: "POST",
@@ -111,9 +111,10 @@ export const getAllClassRecords = async () => {
   }
 };
 
-export const handleDelete = async (
+
+export const handleDelete = async <T>(
   id: string,
-  type: "admin" | "student" | "class-record"
+  type: "admin" | "student" | "class-record" 
 ) => {
   try {
     const response = await fetch(`${API_BASE_URL}/delete-${type}/${id}`, {

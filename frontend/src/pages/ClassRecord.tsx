@@ -2,7 +2,7 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { IClassRecord } from "shared-library/types";
-import { getAllClassRecords } from "../api/classRecordApi";
+import { getAllClassRecords, postClassRecord } from "../api/classRecordApi";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/pdfHandlers";
 
@@ -27,7 +27,7 @@ export const ClassRecords = () => {
     attendanceTime: "",
   });
 
-  const handleDownloadPDF = async (_id: string) => {
+  const handleDownloadPDF = async (_id?: string) => {
     const selectedRecord = records.find((record) => record.classId === _id);
 
     if (selectedRecord) {
@@ -41,7 +41,7 @@ export const ClassRecords = () => {
     }
   };
 
-  const handleEditModel = async (_id: string) => {
+  const handleEditModel = async (_id?: string) => {
     setActionModal({ ...actionModal, editRecordModal: true });
     const selectedRecord = records.find(
       (record) => record.classId === record.classId

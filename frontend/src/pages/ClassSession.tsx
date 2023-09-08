@@ -1,20 +1,28 @@
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClassRecords, postClassRecord } from "../api/classRecordApi";
+import {
+  getAllClassRecords,
+  postClassRecord,
+  updateClassRecord,
+} from "../api/classRecordApi";
 import SearchBox from "../components/SearchBox";
-import { ClassRecord, StudentAttendance } from "../types/types";
+import { IClassRecord, IStudentAttendance } from "shared-library/types";
 
+type Feedback = {
+  success: string;
+  error: string | unknown;
+};
 
 const ClassSession = () => {
-  const [studentList, setStudentList] = useState<StudentAttendance[]>();
+  const [studentList, setStudentList] = useState<IStudentAttendance[]>();
   const [filteredStudentList, setFilteredStudentList] =
-    useState<StudentAttendance[]>();
-  const [classSessionModal, setClassSessionModal] = useState(false);
-  const [error, setError] = useState<string | unknown>("");
-  const [success, setSuccess] = useState("");
-  // const [errorSuccess, setErrorSuccess] = useState({
-
+    useState<IStudentAttendance[]>();
+  const [modal, setModal] = useState({});
+  const [feedback, setFeedback] = useState<Feedback>({
+    success: "",
+    error: "",
+  });
   const formatDateTime = () => {
     const now = new Date();
     const formattedDate = now.toLocaleDateString("en-GB");
@@ -25,8 +33,7 @@ const ClassSession = () => {
   // })
   const [searchQuery, setSearchQuery] = useState("");
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
-  const [classRecordForm, setClassRecordForm] = useState<ClassRecord>({
-    classId: "",
+  const [classRecordForm, setClassRecordForm] = useState<IClassRecord>({
     lecturer: sessionStorage.getItem("userName"),
     classroom: "",
     course: "",
@@ -35,6 +42,21 @@ const ClassSession = () => {
     endTime: "Not set",
     attendance: studentList,
   });
+
+  const [initialForm, setInitialForm] = useState<IClassRecord>({
+    lecturer: sessionStorage.getItem("userName"),
+    classroom: "Classroom 1",
+    course: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+  });
+
+  const handleInitialFormSubmit = async () => {
+    sessionStorage.setItem("classSession", initialForm.toString())
+    await postClassRecord(initialForm);
+  };
+
   useEffect(() => {
     async () => {
       try {
@@ -46,11 +68,11 @@ const ClassSession = () => {
     };
   }, []);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (studentList) {
       const filteredList = studentList.filter((student) =>
         ["studentName", "studentId", "attendanceTime"].some((prop) =>
-          student[prop as keyof StudentAttendance]
+          student[prop as keyof IStudentAttendance]
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase())
         )
@@ -67,7 +89,7 @@ const ClassSession = () => {
       classRecordForm.startTime === "" ||
       classRecordForm.endTime === ""
     ) {
-      setError("Please fill in all class info");
+      setFeedback({ ...feedback, error: "Please fill in all class info" });
       return;
     }
     try {
@@ -82,10 +104,10 @@ const ClassSession = () => {
         attendance: studentList,
         date: classRecordForm.date,
       });
-      setSuccess("Successfully started class!");
+      setFeedback({ ...feedback, success: "Successfully started class!" });
 
       setTimeout(() => {
-        setSuccess("");
+        setFeedback({ ...feedback, success: "" });
       }, 3000);
       // Fetch updated student attendance list and update in current class record
       // const updatedAttendance = await getCurrentClassRecord();
@@ -94,7 +116,7 @@ const ClassSession = () => {
       console.log("New user registered successfully");
     } catch (error: unknown) {
       console.error("Error registering new user:", error);
-      setError(error);
+      setFeedback({ ...feedback, error: error });
     }
   };
 
@@ -111,8 +133,9 @@ const ClassSession = () => {
     //display in modal to confirm
     //set add attendance
     // Clear form inputs
+    updateClassRecord;
+
     setClassRecordForm({
-      classId: "",
       lecturer: sessionStorage.getItem("userName"),
       classroom: "Not set",
       course: "Not set",
@@ -155,7 +178,10 @@ const ClassSession = () => {
             <p className="font-semibold w-1/3">End Time</p>
             <p className="w-2/3 ">: {classRecordForm.endTime}</p>
           </div>
-          <button className="bg-red-500 px-2 py-1 rounded-md text-white font-bold mr-0 ml-auto mt-4">
+          <button
+            onClick={() => handleEndClass()}
+            className="bg-red-500 px-2 py-1 rounded-md text-white font-bold mr-0 ml-auto mt-4"
+          >
             End Class
           </button>
         </div>
@@ -208,10 +234,10 @@ const ClassSession = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Start Class</p>
-            {typeof error === "string" ? (
-              <p className="text-red-500 font-bold">{error}</p>
-            ) : success ? (
-              <p className="text-green-600 font-bold">{success}</p>
+            {typeof feedback.error === "string" ? (
+              <p className="text-red-500 font-bold">{feedback.error}</p>
+            ) : feedback.success ? (
+              <p className="text-green-600 font-bold">{feedback.success}</p>
             ) : null}
 
             <form onSubmit={handleSubmitClassSession}>
@@ -269,11 +295,11 @@ const ClassSession = () => {
         </div>
       )}
       {/* -------------------------MODALS-------------------------------------------- */}
-      {/* <ManualAttendance
-        classId={classId}
-        manualAttendanceModal={manualAttendanceModal}
-        setManualAttendanceModal={setManualAttendanceModal}
-      /> */}
+      {initialForm && (
+        <div>
+          <h1>Class Session Form</h1>
+        </div>
+      )}
     </div>
   );
 };
