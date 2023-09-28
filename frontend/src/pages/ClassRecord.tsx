@@ -1,10 +1,11 @@
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { IClassRecord } from "shared-library/types";
+import { Feedback, IClassRecord } from "shared-library/types";
 import { getAllClassRecords, postClassRecord } from "../api/classRecordApi";
 import SearchBox from "../components/SearchBox";
-import { GeneratePDFContent } from "../utils/pdfHandlers";
+import { GeneratePDFContent } from "../utils/handle-pdf";
+import { Avatar, Button } from "@mui/material";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<IClassRecord[]>([]);
@@ -21,7 +22,12 @@ export const ClassRecords = () => {
     manualAttendance: false,
   });
 
-  const [manualAttendance, setManualAttendance] = useState({
+    const [feedback, setFeedback] = useState<Feedback>({
+      success: "",
+      error: "",
+    });
+
+  const [manualAttendanceInput, setManualAttendanceInput] = useState({
     studentName: "",
     studentId: "",
     attendanceTime: "",
@@ -66,20 +72,7 @@ export const ClassRecords = () => {
     }
   };
 
-  const handleUploadButton = () => {
-    if (fileInputRef.current) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const selectedFile = fileInputRef.current.files[0];
-
-      if (selectedFile) {
-        console.log("Selected file", selectedFile);
-        // handleUploadExcelForAttendance(selectedFile)
-      } else {
-        console.log("No file selected,");
-      }
-    }
-  };
+  const handleSubmitManualAttendance = async () => {}
 
   useEffect(() => {
     const fetchAllClassRecords = async () => {
@@ -187,6 +180,54 @@ export const ClassRecords = () => {
                 loading ? "Loading document..." : "Download now!"
               }
             </PDFDownloadLink>
+          </div>
+        </div>
+      )}
+
+      //manualAttendance
+      {actionModal.manualAttendance && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-8 flex gap-8">
+            <div className="">
+              <p className="text-lg mb-4">Start Class</p>
+              {typeof feedback.error === "string" ? (
+                <p className="text-red-500 font-bold">{feedback.error}</p>
+              ) : feedback.success ? (
+                <p className="text-green-600 font-bold">{feedback.success}</p>
+              ) : null}
+              <form>
+                <p>Seach Student Name</p>
+                <SearchBox className="my-2" placeholder="Seach name / matrik" />
+                <div className="flex justify-between mt-4">
+                  <Button
+                    onClick={() => handleSubmitManualAttendance}
+                    variant="contained"
+                    className="bg-green-600 text-white font-bold"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      setActionModal({ ...actionModal, manualAttendance: false })
+                    }
+                    variant="outlined"
+                    className="text-gray-600"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </form>
+            </div>
+            <div>
+              <Avatar style={{ width: '100px', height: '100px'}} className="mx-auto mb-4" />
+              <p className="text-sm text-gr">Student Name</p>
+              <p className="text-xl">Ammar Hazim</p>
+              <p className="text-sm">Student Id </p>
+              <p className="text-xl">193850183579183</p>
+              <p className="text-sm">Course</p>
+              <p className="text-xl">IT</p>
+            </div>
           </div>
         </div>
       )}

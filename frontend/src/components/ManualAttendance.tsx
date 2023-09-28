@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import { getAllStudents } from "../api/studentDbApi";
-import { StudentAttendance, Student } from "../types/types";
 import { postAttendance, updateClassRecord } from "../api/classRecordApi";
+import { IStudent } from "shared-library/types";
 
 type ManualAttendanceProps = {
   classId: string;
@@ -15,7 +15,7 @@ const ManualAttendance = ({
   manualAttendanceModal,
   setManualAttendanceModal,
 }: ManualAttendanceProps) => {
-  const [suggestions, setSuggestions] = useState<Student[]>([]);
+  const [suggestions, setSuggestions] = useState<IStudent[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [manualAttendanceForm, setManualAttendanceForm] = useState({
     studentId: "",
@@ -51,7 +51,7 @@ const ManualAttendance = ({
     setShowSuggestions(!!value);
   };
 
-  const handleSuggestionClick = (suggestion: Student) => {
+  const handleSuggestionClick = (suggestion: IStudent) => {
     setManualAttendanceForm({
       studentId: suggestion.studentId,
       studentName: suggestion.name,

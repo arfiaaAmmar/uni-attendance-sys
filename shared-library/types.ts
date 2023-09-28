@@ -5,6 +5,11 @@ export type ICollegeCourses =
   | "Secretary";
 export type IClassrooms = "Classroom 1" | "Classroom 2" | "Classroom 3";
 
+export type Feedback = {
+  success: string;
+  error: string | unknown;
+};
+
 //Student DB
 export type IAdmin = {
   _id?: string;
@@ -31,7 +36,7 @@ export type IStudentAttendance = {
 
 export type IClassRecord = {
   classId?: string;
-  lecturer: string | null;
+  lecturer: string;
   classroom: IClassrooms | string;
   course: ICollegeCourses | string;
   date: string;

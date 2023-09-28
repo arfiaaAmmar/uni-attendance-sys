@@ -1,9 +1,8 @@
-import { Admin } from "../types/types";
-import { API_BASE_URL } from "./api";
+import { IAdmin } from "shared-library/types";
+import { API_BASE_URL } from ".";
 
-export const registerAdmin = async (userForm: Admin) => {
+export const registerAdmin = async (userForm: IAdmin) => {
   try {
-
     const response = await fetch(`${API_BASE_URL}/register-admin`, {
       method: "POST",
       headers: {
@@ -40,7 +39,7 @@ export const loginAdmin = async (email: string, password: string) => {
       throw new Error(errorData.message);
     }
 
-    localStorage.setItem("token", data.token);
+    sessionStorage.setItem("token", data.token);
 
     return data;
   } catch (error) {
@@ -49,7 +48,7 @@ export const loginAdmin = async (email: string, password: string) => {
 };
 
 export const getAdminData = async () => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   try {
     const response = await fetch(`${API_BASE_URL}/get-admin-data`, {

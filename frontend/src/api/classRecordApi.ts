@@ -1,5 +1,4 @@
-import { IClassRecord } from "shared-library/types";
-import { StudentAttendance, ClassRecord } from "../types/types";
+import { IClassRecord, IStudentAttendance } from "shared-library/types";
 
 const API_BASE_URL = "http://localhost:8888";
 
@@ -24,7 +23,7 @@ export const postClassRecord = async <T>(classData: T) => {
   }
 };
 
-export const postAttendance = async (classId: string, attendanceData: StudentAttendance) => {
+export const postAttendance = async (classId: string, attendanceData: IStudentAttendance) => {
 
   try {
     const response = await fetch(`${API_BASE_URL}/post-attendance/${classId}`, {

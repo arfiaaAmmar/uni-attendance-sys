@@ -1,22 +1,22 @@
 import { Button } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { getAllStudents, registerStudent } from "../api/studentDbApi";
 import SearchBox from "../components/SearchBox";
-import { Student } from "../types/types";
-import { handleUploadExcelForStudentRegistration } from "../utils/handleUploadExcel";
+import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
+import { getAllStudents, registerStudent } from "../api";
+import { IStudent } from "shared-library/types";
 
 const StudentDatabase = () => {
-  const [studentList, setStudentList] = useState<Student[]>();
+  const [studentList, setStudentList] = useState<IStudent[]>();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredStudentList, setFilteredStudentList] = useState<
-    Student[] | undefined
+    IStudent[] | undefined
   >();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [feedback, setFeedback] = useState({
     success: "",
     error: "",
   });
-  const [formData, setFormData] = useState<Omit<Student, "studentId">>({
+  const [formData, setFormData] = useState<Omit<IStudent, "studentId">>({
     name: "",
     email: "",
     phone: "",
@@ -42,7 +42,7 @@ const StudentDatabase = () => {
     if (studentList) {
       const filteredList = studentList.filter((student) =>
         ["name", "studentId", "course"].some((prop) =>
-          student[prop as keyof Student]
+          student[prop as keyof IStudent]
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase())
         )

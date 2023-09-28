@@ -2,23 +2,24 @@ import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  getAllClassRecords,
+  getClassRecord,
   postClassRecord,
-  updateClassRecord,
+  updateClassRecord
 } from "../api/classRecordApi";
-import SearchBox from "../components/SearchBox";
-import { IClassRecord, IStudentAttendance } from "shared-library/types";
-
-type Feedback = {
-  success: string;
-  error: string | unknown;
-};
+import SearchBox from '../components/SearchBox';
+import {
+  Feedback,
+  IClassRecord, IStudentAttendance
+} from "shared-library/types";
 
 const ClassSession = () => {
   const [studentList, setStudentList] = useState<IStudentAttendance[]>();
   const [filteredStudentList, setFilteredStudentList] =
     useState<IStudentAttendance[]>();
-  const [modal, setModal] = useState({});
+  const [modal, setModal] = useState({
+    initialCreateClass: false,
+    manualAttendance: false
+  });
   const [feedback, setFeedback] = useState<Feedback>({
     success: "",
     error: "",
@@ -32,9 +33,8 @@ const ClassSession = () => {
 
   // })
   const [searchQuery, setSearchQuery] = useState("");
-  const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
   const [classRecordForm, setClassRecordForm] = useState<IClassRecord>({
-    lecturer: sessionStorage.getItem("userName"),
+    lecturer: sessionStorage.getItem("userName")!,
     classroom: "",
     course: "",
     date: new Date().toLocaleDateString("en-GB"),
@@ -43,25 +43,41 @@ const ClassSession = () => {
     attendance: studentList,
   });
 
-  const [initialForm, setInitialForm] = useState<IClassRecord>({
-    lecturer: sessionStorage.getItem("userName"),
-    classroom: "Classroom 1",
-    course: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-  });
-
-  const handleInitialFormSubmit = async () => {
-    sessionStorage.setItem("classSession", initialForm.toString())
-    await postClassRecord(initialForm);
+  const handleInitialFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (
+      classRecordForm.course === "" ||
+      classRecordForm.lecturer === "" ||
+      classRecordForm.classroom === "" ||
+      classRecordForm.startTime === "" ||
+      classRecordForm.endTime === "" ||
+      classRecordForm.date === new Date().getDate().toLocaleString("en-US")
+    ) {
+      setFeedback({ ...feedback, error: "Please fill in all user data" });
+      return;
+    }
+    try {
+      sessionStorage.setItem("classSession", classRecordForm.toString());
+      await postClassRecord(classRecordForm);
+    } catch (error: any) {
+      setFeedback({ ...feedback, error: error.message });
+    }
   };
 
   useEffect(() => {
     async () => {
+      const existingSession = JSON.parse(
+        sessionStorage.getItem("classSession")!
+      ) as IClassRecord;
       try {
-        const data = await getAllClassRecords();
-        setStudentList(data);
+        if (!existingSession) {
+          setModal({...modal, initialCreateClass: true})
+        }
+        if (existingSession) {
+          setModal({...modal, initialCreateClass: false})
+          const data = await getClassRecord(existingSession.classId);
+          setStudentList(data);
+        }
       } catch (error) {
         console.error("Error fetching user list:", error);
       }
@@ -136,7 +152,7 @@ const ClassSession = () => {
     updateClassRecord;
 
     setClassRecordForm({
-      lecturer: sessionStorage.getItem("userName"),
+      lecturer: sessionStorage.getItem("userName")!,
       classroom: "Not set",
       course: "Not set",
       date: new Date().toLocaleDateString("en-GB"),
@@ -189,7 +205,7 @@ const ClassSession = () => {
           <div>
             <button
               className="bg-purple-400 rounded-md py-2 px-2 mr-2"
-              onClick={() => setManualAttendanceModal(true)}
+              onClick={() => setModal({...modal, manualAttendance: true})}
             >
               Manual Attendance
             </button>
@@ -230,7 +246,7 @@ const ClassSession = () => {
           </div>
         ))}
       </div>
-      {manualAttendanceModal && (
+      {modal.manualAttendance && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Start Class</p>
@@ -241,21 +257,48 @@ const ClassSession = () => {
             ) : null}
 
             <form onSubmit={handleSubmitClassSession}>
-              <select
-                name="classroom"
-                id="classroom"
+              <p>Seach Student Name</p>
+              <SearchBox placeholder="Seach name / matrik"/>
+              <div className="flex justify-between mt-4">
+                <Button
+                  onClick={handleSubmitClassSession}
+                  variant="contained"
+                  className="bg-green-600 text-white font-bold"
+                  type="submit"
+                >
+                  Submit
+                </Button>
+                <Button
+                  onClick={() => setModal({...modal, manualAttendance: false})}
+                  variant="outlined"
+                  className="text-gray-600"
+                >
+                  Close
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {modal.initialCreateClass && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-md p-8">
+            <p className="text-lg mb-4">Create New Class Session</p>
+            {feedback.error ? (
+              <p className="text-red-500 font-bold">
+                {feedback.error.toString()}
+              </p>
+            ) : feedback.success ? (
+              <p className="text-green-600 font-bold">{feedback.success}</p>
+            ) : null}
+
+            <form onSubmit={handleInitialFormSubmit}>
+              <input
+                type="text"
+                placeholder="Lecturer Name"
+                value={sessionStorage.getItem("userName")!}
                 className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-                value={classRecordForm.classroom}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Select classroom
-                </option>
-                <option value="Classroom 1">Classroom 1</option>
-                <option value="Classroom 2">Classroom 2</option>
-                <option value="Classroom 3">Classroom 3</option>
-                <option value="Classroom 4">Classroom 4</option>
-              </select>
+              />
               <select
                 name="course"
                 id="course"
@@ -271,11 +314,46 @@ const ClassSession = () => {
                 <option value="Secretary">Secretary</option>
                 <option value="FnB">Food & Beverage</option>
               </select>
-              <input type="time" name="startTime" id="startTime" />
-              <input type="time" name="endTime" id="endTime" />
+              <select
+                name="classroom"
+                id="classroom"
+                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+                value={classRecordForm.course}
+                onChange={handleChange}
+              >
+                <option value="" disabled>
+                  Select classroom
+                </option>
+                <option value="Classroom 1">Classroom 1</option>
+                <option value="Classroom 2">Classroom 2</option>
+                <option value="Classroom 3">Classroom 3</option>
+                <option value="Classroom 4">Classroom 4</option>
+              </select>
+              <input
+                type="text"
+                name="lecturer"
+                placeholder="Lecturer"
+                value={classRecordForm.lecturer}
+                onChange={handleChange}
+                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+              />
+              <input
+                type="time"
+                name="Start Time"
+                value={classRecordForm.startTime}
+                onChange={handleChange}
+                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+              />
+              <input
+                type="time"
+                name="End Time"
+                value={classRecordForm.startTime}
+                onChange={handleChange}
+                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+              />
               <div className="flex justify-between mt-4">
                 <Button
-                  onClick={handleSubmitClassSession}
+                  onClick={handleInitialFormSubmit}
                   variant="contained"
                   className="bg-green-600 text-white font-bold"
                   type="submit"
@@ -283,7 +361,7 @@ const ClassSession = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setManualAttendanceModal(false)}
+                  onClick={() => setModal({...modal, initialCreateClass: false})}
                   variant="outlined"
                   className="text-gray-600"
                 >
@@ -292,12 +370,6 @@ const ClassSession = () => {
               </div>
             </form>
           </div>
-        </div>
-      )}
-      {/* -------------------------MODALS-------------------------------------------- */}
-      {initialForm && (
-        <div>
-          <h1>Class Session Form</h1>
         </div>
       )}
     </div>

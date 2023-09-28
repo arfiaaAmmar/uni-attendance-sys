@@ -32,6 +32,7 @@ const Login = () => {
       const data = (await getAdminData()) as IAdmin;
       sessionStorage.setItem("userEmail", data.email);
       sessionStorage.setItem("userName", data.name);
+      sessionStorage.setItem("userId", data._id!)
       setUser(data);
       navigate("/admin/student_database");
     } catch (error: any) {

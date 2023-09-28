@@ -2,9 +2,28 @@ import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { MONGODB_URI, app, port } from "./config/config";
-import { getStudent, getAllStudents, registerStudent, removeStudent } from "./controllers/studentDbController";
-import { deleteAttendanceRecord, deleteClassRecord, getAllClassRecords, getClassRecord, postAttendance, postClassRecord, updateClassRecord } from "./controllers/classRecordController";
-import { deleteAdmin, getAdminData, loginAdmin, registerAdmin, updateAdminData } from "./controllers/adminController";
+import {
+  deleteAdmin,
+  getAdminData,
+  loginAdmin,
+  registerAdmin,
+  updateAdminData,
+} from "./controllers/adminController";
+import {
+  getAllStudents,
+  getStudent,
+  registerStudent,
+  removeStudent,
+} from "./controllers/studentDbController";
+import {
+  deleteAttendanceRecord,
+  deleteClassRecord,
+  getAllClassRecords,
+  getClassRecord,
+  postAttendance,
+  postClassRecord,
+  updateClassRecord,
+} from "./controllers/classRecordController";
 
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");
@@ -32,16 +51,16 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/register-admin", registerAdmin);
 app.post("/admin-login", loginAdmin);
 app.get("/get-admin-data", getAdminData);
-app.put("/update-admin-data", updateAdminData)
-app.delete("/delete-admin/:adminId", deleteAdmin)
+app.put("/update-admin-data", updateAdminData);
+app.delete("/delete-admin/:adminId", deleteAdmin);
 //Student DB
 app.post("/register-student", registerStudent);
-app.get("/get-student", getStudent)
+app.get("/get-student", getStudent);
 app.get("/get-all-students", getAllStudents);
 app.delete("/delete-student/:studentId", removeStudent);
-//Class Record
+//Class Record - Also can 
 app.post("/post-class-record", postClassRecord);
-app.post("/post-attendance/:classId", postAttendance)
+app.post("/post-attendance/:classId", postAttendance);
 app.get("/get-class-record/:classId", getClassRecord);
 app.get("/get-all-class-records", getAllClassRecords);
 app.put("/update-class-record/:classId", updateClassRecord);
@@ -52,5 +71,3 @@ app.delete("/delete-attendance/:classId", deleteAttendanceRecord);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-//

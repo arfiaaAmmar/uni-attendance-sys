@@ -1,7 +1,7 @@
-import { Student } from "../types/types";
-import { API_BASE_URL } from "./api";
+import { IStudent } from "shared-library/types";
+import { API_BASE_URL } from ".";
 
-export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
+export const registerStudent = async (studentForm: Omit<IStudent, "studentId">) => {
   try {
     const response = await fetch(`${API_BASE_URL}/register-student`, {
       method: "POST",

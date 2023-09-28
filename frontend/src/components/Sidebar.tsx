@@ -17,10 +17,10 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userRole");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userEmail");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("userRole");
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -44,7 +44,7 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
               </IconButton>
             </div>
             <p className="px-6 py-2 text-2xl font-bold text-white">
-              WELCOME BACK {localStorage.getItem("userName")}
+              WELCOME BACK {sessionStorage.getItem("userName")}
             </p>
             <div className="p-4 py-6 gap-4 items-center">
               {items.map((page, index) => (

@@ -5,7 +5,6 @@ import { getAllClassRecords } from "../api/classRecordApi";
 
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<IClassRecord[]>();
-  const [classSession, setClassSession] = useState<IClassRecord[]>();
   const [recent, setRecent] = useState<IClassRecord[]>();
 
   const handleDownloadPDF = async (_id?: string) => {
@@ -25,14 +24,14 @@ const AttendanceSystem = () => {
             return endTime < currentTime;
           });
 
+          // TODO: Should be placed in the backend as endpoint i.e getLiveClassSession
+          // Create API to fetch liveClassSession
           const currentLiveClasses = data.filter((record: IClassRecord) => {
             const endTime = new Date(`${record.date} ${record.endTime}`);
             return endTime >= currentTime;
           });
 
-          // Set the state variables
           setRecent(endedClasses);
-          setClassSession(currentLiveClasses);
         }
       } catch (error) {
         console.error("Error fetching class records:", error);
