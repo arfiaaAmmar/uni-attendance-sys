@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IClassRecord } from "shared-library/types";
 import { getAllClassRecords } from "../api/classRecordApi";
@@ -6,6 +6,7 @@ import { getAllClassRecords } from "../api/classRecordApi";
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<IClassRecord[]>();
   const [recent, setRecent] = useState<IClassRecord[]>();
+  const [liveClasses, setLiveClasses] = useState<IClassRecord[]>()
 
   const handleDownloadPDF = async (_id?: string) => {
     const selectedRecord = records?.find((record) => record.classId === _id);
@@ -26,12 +27,13 @@ const AttendanceSystem = () => {
 
           // TODO: Should be placed in the backend as endpoint i.e getLiveClassSession
           // Create API to fetch liveClassSession
-          const currentLiveClasses = data.filter((record: IClassRecord) => {
+          const liveClasses = data.filter((record: IClassRecord) => {
             const endTime = new Date(`${record.date} ${record.endTime}`);
             return endTime >= currentTime;
           });
 
           setRecent(endedClasses);
+          setLiveClasses(liveClasses)
         }
       } catch (error) {
         console.error("Error fetching class records:", error);
@@ -48,10 +50,10 @@ const AttendanceSystem = () => {
         <div className="bg-neutral-300 rounded-md p-4 w-full">
           <p className="text-2xl font-bold m-2">Class Session</p>
           <p>Shows the current running live class on your User Session</p>
-          {classSession?.map((session) => (
+          {liveClasses?.map((liveClass) => (
             <div className="bg-neutral-400 rounded-md p-2">
-              <p className="text-2xl font-bold">{session.course}</p>
-              <p className="text-lg font-bold">{session.classroom}</p>
+              <p className="text-2xl font-bold">{liveClass.course}</p>
+              <p className="text-lg font-bold">{liveClass.classroom}</p>
               <div className="flex justify-between mt-8">
                 <p>Attendance: 23/30</p>
                 <button className="bg-red-500 px-2 py-1 text-white font-bold">

@@ -197,7 +197,7 @@ export const ClassRecords = () => {
               ) : null}
               <form>
                 <p>Seach Student Name</p>
-                <SearchBox className="my-2" placeholder="Seach name / matrik" />
+                <SearchBox className="my-2" placeholder="Seach name / matrik" query={searchQuery} onChange={setSearchQuery} />
                 <div className="flex justify-between mt-4">
                   <Button
                     onClick={() => handleSubmitManualAttendance}

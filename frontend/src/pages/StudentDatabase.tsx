@@ -7,20 +7,20 @@ import { IStudent } from "shared-library/types";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<IStudent[]>();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredStudentList, setFilteredStudentList] = useState<
     IStudent[] | undefined
   >();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [feedback, setFeedback] = useState({
-    success: "",
-    error: "",
+    success: '',
+    error: '',
   });
   const [formData, setFormData] = useState<Omit<IStudent, "studentId">>({
-    name: "",
-    email: "",
-    phone: "",
-    course: "",
+    name: '',
+    email: '',
+    phone: '',
+    course: '',
   });
 
   const [registerStudentModal, setRegisterStudentModal] = useState(false);
@@ -54,10 +54,10 @@ const StudentDatabase = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (
-      formData.email === "" ||
-      formData.name === "" ||
-      formData.phone === "" ||
-      formData.course === ""
+      formData.email === '' ||
+      formData.name === '' ||
+      formData.phone === '' ||
+      formData.course === ''
     ) {
       setFeedback({...feedback,error: "Please fill in all user data"})
       return;
@@ -73,20 +73,19 @@ const StudentDatabase = () => {
       setFeedback({ ...feedback, success: "Successfully added user!" });
       // Clear form inputs
       setFormData({
-        email: "",
-        name: "",
-        phone: "",
-        course: "",
+        email: '',
+        name: '',
+        phone: '',
+        course: '',
       });
       setTimeout(() => {
-        setFeedback({ ...feedback, success: "" });
+        setFeedback({ ...feedback, success: '' });
       }, 3000);
       // Fetch updated user list
       const updatedStudentList = await getAllStudents();
       setStudentList(updatedStudentList);
+      setRegisterStudentModal(!registerStudentModal)
 
-      console.log("New user registered successfully");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setFeedback({ ...feedback, error: error.message });
     }
@@ -201,7 +200,7 @@ const StudentDatabase = () => {
                 value={formData.course}
                 onChange={handleChange}
               >
-                <option value="" disabled>
+                <option value='' disabled>
                   Select a course
                 </option>
                 <option value="IT">Information Technology</option>

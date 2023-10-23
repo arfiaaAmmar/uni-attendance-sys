@@ -7,6 +7,7 @@ import {
   updateClassRecord
 } from "../api/classRecordApi";
 import SearchBox from '../components/SearchBox';
+import { CLASSROOM_LIST, STUDENT_COURSES_LIST } from '../../../shared-library/constants';
 import {
   Feedback,
   IClassRecord, IStudentAttendance
@@ -17,8 +18,8 @@ const ClassSession = () => {
   const [filteredStudentList, setFilteredStudentList] =
     useState<IStudentAttendance[]>();
   const [modal, setModal] = useState({
-    initialCreateClass: false,
-    manualAttendance: false
+    initiateClassModal: false,
+    manualAttendanceModal: false
   });
   const [feedback, setFeedback] = useState<Feedback>({
     success: "",
@@ -32,7 +33,8 @@ const ClassSession = () => {
   };
 
   // })
-  const [searchQuery, setSearchQuery] = useState("");
+  const [mainQuery, setMainQuery] = useState('');
+  const [manualAttendanceQuery, setManualAttendanceQuery] = useState('');
   const [classRecordForm, setClassRecordForm] = useState<IClassRecord>({
     lecturer: sessionStorage.getItem("userName")!,
     classroom: "",
@@ -46,12 +48,12 @@ const ClassSession = () => {
   const handleInitialFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (
-      classRecordForm.course === "" ||
-      classRecordForm.lecturer === "" ||
-      classRecordForm.classroom === "" ||
-      classRecordForm.startTime === "" ||
-      classRecordForm.endTime === "" ||
-      classRecordForm.date === new Date().getDate().toLocaleString("en-US")
+      classRecordForm.course === '' ||
+      classRecordForm.lecturer === '' ||
+      classRecordForm.classroom === '' ||
+      classRecordForm.startTime === '' ||
+      classRecordForm.endTime === '' ||
+      classRecordForm.date === ''
     ) {
       setFeedback({ ...feedback, error: "Please fill in all user data" });
       return;
@@ -71,12 +73,12 @@ const ClassSession = () => {
       ) as IClassRecord;
       try {
         if (!existingSession) {
-          setModal({...modal, initialCreateClass: true})
+          setModal({...modal, initiateClassModal: true})
         }
         if (existingSession) {
-          setModal({...modal, initialCreateClass: false})
+          setModal({...modal, initiateClassModal: false})
           const data = await getClassRecord(existingSession.classId);
-          setStudentList(data);
+          setStudentList(data.attendance);
         }
       } catch (error) {
         console.error("Error fetching user list:", error);
@@ -90,12 +92,12 @@ const ClassSession = () => {
         ["studentName", "studentId", "attendanceTime"].some((prop) =>
           student[prop as keyof IStudentAttendance]
             ?.toLowerCase()
-            .includes(searchQuery.toLowerCase())
+            .includes(mainQuery.toLowerCase())
         )
       );
       setFilteredStudentList(filteredList);
     }
-  }, [studentList, searchQuery]);
+  }, [studentList, mainQuery]);
 
   const handleSubmitClassSession = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -171,7 +173,7 @@ const ClassSession = () => {
       <p className="mb-8">
         To view, download, edit and print past class sessions.
       </p>
-      <SearchBox query={searchQuery} onChange={setSearchQuery} />
+      <SearchBox query={mainQuery} onChange={setMainQuery} />
       <div className="flex justify-between">
         <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
           <div className="flex">
@@ -205,7 +207,7 @@ const ClassSession = () => {
           <div>
             <button
               className="bg-purple-400 rounded-md py-2 px-2 mr-2"
-              onClick={() => setModal({...modal, manualAttendance: true})}
+              onClick={() => setModal({...modal, manualAttendanceModal: true})}
             >
               Manual Attendance
             </button>
@@ -246,7 +248,7 @@ const ClassSession = () => {
           </div>
         ))}
       </div>
-      {modal.manualAttendance && (
+      {modal.manualAttendanceModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Start Class</p>
@@ -258,7 +260,7 @@ const ClassSession = () => {
 
             <form onSubmit={handleSubmitClassSession}>
               <p>Seach Student Name</p>
-              <SearchBox placeholder="Seach name / matrik"/>
+              <SearchBox placeholder="Seach name / matrik" query={mainQuery} onChange={setManualAttendanceQuery}/>
               <div className="flex justify-between mt-4">
                 <Button
                   onClick={handleSubmitClassSession}
@@ -269,7 +271,7 @@ const ClassSession = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setModal({...modal, manualAttendance: false})}
+                  onClick={() => setModal({...modal, manualAttendanceModal: false})}
                   variant="outlined"
                   className="text-gray-600"
                 >
@@ -280,7 +282,7 @@ const ClassSession = () => {
           </div>
         </div>
       )}
-      {modal.initialCreateClass && (
+      {modal.initiateClassModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Create New Class Session</p>
@@ -309,10 +311,11 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select a course
                 </option>
-                <option value="IT">Information Technology</option>
-                <option value="Security">Security</option>
-                <option value="Secretary">Secretary</option>
-                <option value="FnB">Food & Beverage</option>
+                {
+                  STUDENT_COURSES_LIST.map(course => (
+                    <option value={course}>{course}</option>
+                  ))
+                }
               </select>
               <select
                 name="classroom"
@@ -324,10 +327,11 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select classroom
                 </option>
-                <option value="Classroom 1">Classroom 1</option>
-                <option value="Classroom 2">Classroom 2</option>
-                <option value="Classroom 3">Classroom 3</option>
-                <option value="Classroom 4">Classroom 4</option>
+                {
+                  CLASSROOM_LIST.map(classroom => (
+                    <option value={classroom}>{classroom}</option>
+                  ))
+                }
               </select>
               <input
                 type="text"
@@ -361,7 +365,7 @@ const ClassSession = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setModal({...modal, initialCreateClass: false})}
+                  onClick={() => setModal({...modal, initiateClassModal: false})}
                   variant="outlined"
                   className="text-gray-600"
                 >

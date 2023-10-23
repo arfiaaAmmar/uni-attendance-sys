@@ -83,6 +83,26 @@ export const getAllClassRecords = async (req: Request, res: Response) => {
   }
 };
 
+export const getLiveClassSessions = async (req: Request, res: Response) => {
+  try {
+    const currentDate = new Date(); // Get the current date and time
+
+    // Find all class records where the date is today and the endTime is in the future
+    const liveClassRecords = await ClassRecordModel.find({
+      date: { $eq: currentDate.toISOString().split("T")[0] }, // Compare only the date part
+      endTime: { $gt: currentDate.toISOString().split("T")[1] }, // Compare only the time part
+    }).exec();
+
+    if (liveClassRecords.length === 0) {
+      return res.status(404).json({ message: "No live class sessions found" });
+    }
+
+    res.json(liveClassRecords);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const updateClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
   const updatedData = req.body; // Updated data can contain both student and class details

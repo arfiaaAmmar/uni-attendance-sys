@@ -20,6 +20,7 @@ import {
   deleteClassRecord,
   getAllClassRecords,
   getClassRecord,
+  getLiveClassSessions,
   postAttendance,
   postClassRecord,
   updateClassRecord,
@@ -58,7 +59,8 @@ app.post("/register-student", registerStudent);
 app.get("/get-student", getStudent);
 app.get("/get-all-students", getAllStudents);
 app.delete("/delete-student/:studentId", removeStudent);
-//Class Record - Also can 
+//Class Record - Also can configure ClassSession as well
+app.get("/get-live-class-sessions", getLiveClassSessions);
 app.post("/post-class-record", postClassRecord);
 app.post("/post-attendance/:classId", postAttendance);
 app.get("/get-class-record/:classId", getClassRecord);
