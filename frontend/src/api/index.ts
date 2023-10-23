@@ -1,6 +1,7 @@
+import { API_BASE_URL } from 'frontend/src/utils/constants';
+
 export { registerStudent, getStudent, getAllStudents } from './studentDbApi';
 export { registerAdmin, loginAdmin, getAdminData } from "./adminApi";
-export const API_BASE_URL = "http://localhost:8888";
 
 
 export const handleDelete = async (id: string, type: "admin" | "student" | "class-record") => {

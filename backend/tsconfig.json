@@ -9,7 +9,7 @@
     "noEmit": false,
     "skipLibCheck": true,
   },
-  "include": ["../shared-library/types.ts", "../backend/src/"],
+  "include": ["../shared-library/**/*.ts"],
   "exclude": [
     "node_modules"
   ]

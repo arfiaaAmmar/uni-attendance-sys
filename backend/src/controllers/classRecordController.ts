@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ClassRecordModel } from "../model/model";
-import { IClassRecord } from "shared-library/types";
+import { IClassRecord } from '../../../shared-library/types';
 
 export const postClassRecord = async (req: Request, res: Response) => {
   try {

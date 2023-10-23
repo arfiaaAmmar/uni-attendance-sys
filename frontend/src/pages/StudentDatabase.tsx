@@ -4,26 +4,27 @@ import SearchBox from "../components/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
 import { getAllStudents, registerStudent } from "../api";
 import { IStudent } from "shared-library/types";
+import { filterSearchQuery } from "../helpers/search-functions";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<IStudent[]>();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [registerModal, setRegisterModal] = useState(false);
   const [filteredStudentList, setFilteredStudentList] = useState<
     IStudent[] | undefined
   >();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [feedback, setFeedback] = useState({
-    success: '',
-    error: '',
+    success: "",
+    error: "",
   });
   const [formData, setFormData] = useState<Omit<IStudent, "studentId">>({
-    name: '',
-    email: '',
-    phone: '',
-    course: '',
+    name: "",
+    email: "",
+    phone: "",
+    course: "",
   });
 
-  const [registerStudentModal, setRegisterStudentModal] = useState(false);
 
   useEffect(() => {
     const fetchAllStudents = async () => {
@@ -34,32 +35,25 @@ const StudentDatabase = () => {
         console.error("Error fetching user list:", error);
       }
     };
+    const filteredList = filterSearchQuery<IStudent>(
+      searchQuery,
+      studentList!,
+      ["name", "studentId", "course", "email", "phone"]
+    );
+    setFilteredStudentList(filteredList);
 
     fetchAllStudents();
-  }, []);
-
-  useEffect(() => {
-    if (studentList) {
-      const filteredList = studentList.filter((student) =>
-        ["name", "studentId", "course"].some((prop) =>
-          student[prop as keyof IStudent]
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-      );
-      setFilteredStudentList(filteredList);
-    }
   }, [studentList, searchQuery]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (
-      formData.email === '' ||
-      formData.name === '' ||
-      formData.phone === '' ||
-      formData.course === ''
+      formData.email === "" ||
+      formData.name === "" ||
+      formData.phone === "" ||
+      formData.course === ""
     ) {
-      setFeedback({...feedback,error: "Please fill in all user data"})
+      setFeedback({ ...feedback, error: "Please fill in all user data" });
       return;
     }
     try {
@@ -73,19 +67,18 @@ const StudentDatabase = () => {
       setFeedback({ ...feedback, success: "Successfully added user!" });
       // Clear form inputs
       setFormData({
-        email: '',
-        name: '',
-        phone: '',
-        course: '',
+        email: "",
+        name: "",
+        phone: "",
+        course: "",
       });
       setTimeout(() => {
-        setFeedback({ ...feedback, success: '' });
+        setFeedback({ ...feedback, success: "" });
       }, 3000);
       // Fetch updated user list
       const updatedStudentList = await getAllStudents();
       setStudentList(updatedStudentList);
-      setRegisterStudentModal(!registerStudentModal)
-
+      setRegisterModal(!registerModal);
     } catch (error: any) {
       setFeedback({ ...feedback, error: error.message });
     }
@@ -133,7 +126,7 @@ const StudentDatabase = () => {
         </button>
         <button
           className="bg-green-600 px-2 py-1 font-semibold"
-          onClick={() => setRegisterStudentModal(true)}
+          onClick={() => setRegisterModal(true)}
         >
           Register New Student
         </button>
@@ -158,7 +151,7 @@ const StudentDatabase = () => {
         ))}
       </div>
 
-      {registerStudentModal && (
+      {registerModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8">
             <p className="text-lg mb-4">Register Student</p>
@@ -200,7 +193,7 @@ const StudentDatabase = () => {
                 value={formData.course}
                 onChange={handleChange}
               >
-                <option value='' disabled>
+                <option value="" disabled>
                   Select a course
                 </option>
                 <option value="IT">Information Technology</option>
@@ -218,7 +211,7 @@ const StudentDatabase = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setRegisterStudentModal(!registerStudentModal)}
+                  onClick={() => setRegisterModal(!registerModal)}
                   variant="outlined"
                   className="text-gray-600"
                 >

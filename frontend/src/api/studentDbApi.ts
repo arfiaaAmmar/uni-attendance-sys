@@ -1,5 +1,5 @@
 import { IStudent } from "shared-library/types";
-import { API_BASE_URL } from ".";
+import { API_BASE_URL } from "../utils/constants";
 
 export const registerStudent = async (studentForm: Omit<IStudent, "studentId">) => {
   try {
@@ -68,4 +68,7 @@ export const getAllStudents = async () => {
     throw (error as Error).message
   }
 };
+
+
+
 

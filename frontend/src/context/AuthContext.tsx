@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-// AuthContext.tsx
 import React, { createContext, useState } from "react";
 import { IAdmin } from "shared-library/types";
 

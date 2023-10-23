@@ -1,5 +1,5 @@
+import { API_BASE_URL } from "frontend/src/utils/constants";
 import { IAdmin } from "shared-library/types";
-import { API_BASE_URL } from ".";
 
 export const registerAdmin = async (userForm: IAdmin) => {
   try {

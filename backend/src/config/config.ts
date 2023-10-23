@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import express from 'express'
-import path from 'path'
+import express from "express"
+import path from "path"
 
 const envPath = path.resolve(__dirname, '.env')
 // console.log('ENV file path:', envPath)

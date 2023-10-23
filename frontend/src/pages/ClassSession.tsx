@@ -4,57 +4,55 @@ import { Link } from "react-router-dom";
 import {
   getClassRecord,
   postClassRecord,
-  updateClassRecord
+  updateClassRecord,
 } from "../api/classRecordApi";
-import SearchBox from '../components/SearchBox';
-import { CLASSROOM_LIST, STUDENT_COURSES_LIST } from '../../../shared-library/constants';
+import SearchBox from "../components/SearchBox";
+import {
+  CLASSROOM_LIST,
+  STUDENT_COURSES,
+  dateTimeFormatForClassRecord,
+} from "../utils/constants";
 import {
   Feedback,
-  IClassRecord, IStudentAttendance
+  IClassRecord,
+  IStudentAttendance,
 } from "shared-library/types";
+import { filterSearchQuery } from "../helpers/search-functions";
+import { getStudent } from "../api";
 
 const ClassSession = () => {
-  const [studentList, setStudentList] = useState<IStudentAttendance[]>();
-  const [filteredStudentList, setFilteredStudentList] =
+  const [mainList, setMainList] = useState<IStudentAttendance[]>();
+  const [filteredMainList, setFilteredMainList] =
     useState<IStudentAttendance[]>();
+  const [manualAttendanceList, setManualAttendanceList] = useState([]);
   const [modal, setModal] = useState({
     initiateClassModal: false,
-    manualAttendanceModal: false
+    manualAttendanceModal: false,
   });
   const [feedback, setFeedback] = useState<Feedback>({
     success: "",
     error: "",
   });
-  const formatDateTime = () => {
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString("en-GB");
-    const formattedTime = now.toLocaleTimeString("en-US", { hour12: false });
-    return `${formattedDate}-${formattedTime}`;
-  };
 
   // })
-  const [mainQuery, setMainQuery] = useState('');
-  const [manualAttendanceQuery, setManualAttendanceQuery] = useState('');
+  const [mainQuery, setMainQuery] = useState("");
+  const [manualAttendanceQuery, setManualAttendanceQuery] = useState("");
   const [classRecordForm, setClassRecordForm] = useState<IClassRecord>({
     lecturer: sessionStorage.getItem("userName")!,
-    classroom: "",
-    course: "",
+    classroom: "Classroom 1",
+    course: "Food & Beverages",
     date: new Date().toLocaleDateString("en-GB"),
     startTime: "Not set",
     endTime: "Not set",
-    attendance: studentList,
+    attendance: mainList,
   });
+  const emptyClassRecordForm = Object.values(classRecordForm).some(
+    (value) => value === ""
+  );
 
   const handleInitialFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (
-      classRecordForm.course === '' ||
-      classRecordForm.lecturer === '' ||
-      classRecordForm.classroom === '' ||
-      classRecordForm.startTime === '' ||
-      classRecordForm.endTime === '' ||
-      classRecordForm.date === ''
-    ) {
+    if (emptyClassRecordForm) {
       setFeedback({ ...feedback, error: "Please fill in all user data" });
       return;
     }
@@ -66,60 +64,60 @@ const ClassSession = () => {
     }
   };
 
+  const handleManualAttendanceQuery = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    e.preventDefault();
+    const studentList = await getStudent(e.target.value);
+    setManualAttendanceList(studentList)
+  };
+
+  const handleManualAttendanceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+  };
+
   useEffect(() => {
     async () => {
       const existingSession = JSON.parse(
         sessionStorage.getItem("classSession")!
       ) as IClassRecord;
       try {
-        if (!existingSession) {
-          setModal({...modal, initiateClassModal: true})
-        }
+        if (!existingSession) setModal({ ...modal, initiateClassModal: true });
         if (existingSession) {
-          setModal({...modal, initiateClassModal: false})
+          setModal({ ...modal, initiateClassModal: false });
           const data = await getClassRecord(existingSession.classId);
-          setStudentList(data.attendance);
+          setMainList(data.attendance);
+
+          const filteredMainListData = filterSearchQuery<IStudentAttendance>(
+            mainQuery,
+            mainList!,
+            ["studentName", "studentId"]
+          );
+          setFilteredMainList(filteredMainListData);
         }
       } catch (error) {
         console.error("Error fetching user list:", error);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    if (studentList) {
-      const filteredList = studentList.filter((student) =>
-        ["studentName", "studentId", "attendanceTime"].some((prop) =>
-          student[prop as keyof IStudentAttendance]
-            ?.toLowerCase()
-            .includes(mainQuery.toLowerCase())
-        )
-      );
-      setFilteredStudentList(filteredList);
-    }
-  }, [studentList, mainQuery]);
+  }, [mainList, mainQuery]);
 
   const handleSubmitClassSession = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (
-      classRecordForm.classroom === "" ||
-      classRecordForm.course === "" ||
-      classRecordForm.startTime === "" ||
-      classRecordForm.endTime === ""
-    ) {
+    if (emptyClassRecordForm) {
       setFeedback({ ...feedback, error: "Please fill in all class info" });
       return;
     }
     try {
       //Post class
       await postClassRecord({
-        classId: `${classRecordForm.course}-${formatDateTime()}`,
+        classId: `${classRecordForm.course}-${dateTimeFormatForClassRecord()}`,
         lecturer: sessionStorage.getItem("userName"),
         classroom: classRecordForm.classroom,
         course: classRecordForm.course,
         startTime: classRecordForm.startTime,
         endTime: classRecordForm.endTime,
-        attendance: studentList,
+        attendance: mainList,
         date: classRecordForm.date,
       });
       setFeedback({ ...feedback, success: "Successfully started class!" });
@@ -173,7 +171,7 @@ const ClassSession = () => {
       <p className="mb-8">
         To view, download, edit and print past class sessions.
       </p>
-      <SearchBox query={mainQuery} onChange={setMainQuery} />
+      <SearchBox query={mainQuery} onChange={handleManualAttendanceQuery} />
       <div className="flex justify-between">
         <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
           <div className="flex">
@@ -207,7 +205,9 @@ const ClassSession = () => {
           <div>
             <button
               className="bg-purple-400 rounded-md py-2 px-2 mr-2"
-              onClick={() => setModal({...modal, manualAttendanceModal: true})}
+              onClick={() =>
+                setModal({ ...modal, manualAttendanceModal: true })
+              }
             >
               Manual Attendance
             </button>
@@ -236,7 +236,7 @@ const ClassSession = () => {
         <p className="font-semibold w-1/6">Status</p>
       </div>
       <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
-        {filteredStudentList?.map((student, index) => (
+        {filteredMainList?.map((student, index) => (
           <div
             key={student.studentId}
             className="flex px-4 py-2 justify-evenly h-14"
@@ -258,12 +258,17 @@ const ClassSession = () => {
               <p className="text-green-600 font-bold">{feedback.success}</p>
             ) : null}
 
-            <form onSubmit={handleSubmitClassSession}>
+            <form onSubmit={handleManualAttendanceSubmit}>
               <p>Seach Student Name</p>
-              <SearchBox placeholder="Seach name / matrik" query={mainQuery} onChange={setManualAttendanceQuery}/>
+              <SearchBox
+                placeholder="Seach name / matrik"
+                query={manualAttendanceQuery}
+                onChange={setManualAttendanceQuery}
+                suggestions={fetchSuggestionData}
+              />
               <div className="flex justify-between mt-4">
                 <Button
-                  onClick={handleSubmitClassSession}
+                  onChange={handleManualAttendanceQuery}
                   variant="contained"
                   className="bg-green-600 text-white font-bold"
                   type="submit"
@@ -271,7 +276,9 @@ const ClassSession = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setModal({...modal, manualAttendanceModal: false})}
+                  onClick={() =>
+                    setModal({ ...modal, manualAttendanceModal: false })
+                  }
                   variant="outlined"
                   className="text-gray-600"
                 >
@@ -311,11 +318,9 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select a course
                 </option>
-                {
-                  STUDENT_COURSES_LIST.map(course => (
-                    <option value={course}>{course}</option>
-                  ))
-                }
+                {Object.values(STUDENT_COURSES).map((course) => (
+                  <option value={course}>{course}</option>
+                ))}
               </select>
               <select
                 name="classroom"
@@ -327,11 +332,9 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select classroom
                 </option>
-                {
-                  CLASSROOM_LIST.map(classroom => (
-                    <option value={classroom}>{classroom}</option>
-                  ))
-                }
+                {CLASSROOM_LIST.map((classroom) => (
+                  <option value={classroom}>{classroom}</option>
+                ))}
               </select>
               <input
                 type="text"
@@ -365,7 +368,9 @@ const ClassSession = () => {
                   Submit
                 </Button>
                 <Button
-                  onClick={() => setModal({...modal, initiateClassModal: false})}
+                  onClick={() =>
+                    setModal({ ...modal, initiateClassModal: false })
+                  }
                   variant="outlined"
                   className="text-gray-600"
                 >

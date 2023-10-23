@@ -1,38 +1,6 @@
 import { IClassRecord, IStudentAttendance } from "shared-library/types";
-
-const API_BASE_URL = "http://localhost:8888";
-
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
-  }
-
-  return response.json();
-}
-
-async function handleAPIRequest<T>(
-  url: string,
-  method: string,
-  data?: any
-): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    // Add any other common headers here
-  };
-
-  try {
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    return await handleResponse<T>(response);
-  } catch (error) {
-    throw (error as Error).message;
-  }
-}
+import { handleAPIRequest } from "../helpers/handlers";
+import { API_BASE_URL } from "frontend/src/utils/constants";
 
 export const postClassRecord = async <T>(classData: T) => {
   return handleAPIRequest<T>(
