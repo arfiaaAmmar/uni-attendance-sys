@@ -1,7 +1,7 @@
 // studentController.ts
 import { Request, Response } from "express";
 import { StudentModel } from "../model/model";
-import { IStudent } from "shared-library/types";
+import { IStudent } from "../../../shared-library/types";
 
 export const registerStudent = async (req: Request, res: Response) => {
   try {
@@ -33,6 +33,24 @@ export const registerStudent = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+export const searchStudent = async (req: Request, res: Response) => {
+  const { query } = req.query;
+
+  try {
+    const students = await StudentModel.find({
+      name: { $regex: new RegExp(query, 'i') },
+    }).limit(10);
+
+    const suggestions = students.map((student) => student.name);
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
 
 
 export const getStudent = async (req: Request, res:Response) => {

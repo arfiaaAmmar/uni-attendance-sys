@@ -18,7 +18,6 @@ import {
   IStudentAttendance,
 } from "shared-library/types";
 import { filterSearchQuery } from "../helpers/search-functions";
-import { getStudent } from "../api";
 
 const ClassSession = () => {
   const [mainList, setMainList] = useState<IStudentAttendance[]>();
@@ -68,13 +67,11 @@ const ClassSession = () => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     e.preventDefault();
-    const studentList = await getStudent(e.target.value);
-    setManualAttendanceList(studentList)
   };
 
   const handleManualAttendanceSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    
   };
 
   useEffect(() => {
@@ -171,7 +168,7 @@ const ClassSession = () => {
       <p className="mb-8">
         To view, download, edit and print past class sessions.
       </p>
-      <SearchBox query={mainQuery} onChange={handleManualAttendanceQuery} />
+      <SearchBox query={mainQuery} onChange={setMainQuery} />
       <div className="flex justify-between">
         <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
           <div className="flex">
@@ -268,7 +265,6 @@ const ClassSession = () => {
               />
               <div className="flex justify-between mt-4">
                 <Button
-                  onChange={handleManualAttendanceQuery}
                   variant="contained"
                   className="bg-green-600 text-white font-bold"
                   type="submit"

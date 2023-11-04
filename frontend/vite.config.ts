@@ -20,6 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': new URL('src', import.meta.url).pathname,
+      'shared-library': new URL('../shared-library', import.meta.url).pathname
     },
   },
 });

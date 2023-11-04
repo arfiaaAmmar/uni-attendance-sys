@@ -1,5 +1,6 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import mongoose from "mongoose";
+import express from "express"
 import cors from "cors";
 import { MONGODB_URI, app, port } from "./config/config";
 import {
@@ -14,6 +15,7 @@ import {
   getStudent,
   registerStudent,
   removeStudent,
+  searchStudent,
 } from "./controllers/studentDbController";
 import {
   deleteAttendanceRecord,
@@ -29,8 +31,7 @@ import {
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");
 }
-//
-//MongoDBの接続
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
@@ -56,7 +57,8 @@ app.put("/update-admin-data", updateAdminData);
 app.delete("/delete-admin/:adminId", deleteAdmin);
 //Student DB
 app.post("/register-student", registerStudent);
-app.get("/get-student", getStudent);
+app.get("/get-student:studentId", getStudent);
+app.get("/search-student", searchStudent);
 app.get("/get-all-students", getAllStudents);
 app.delete("/delete-student/:studentId", removeStudent);
 //Class Record - Also can configure ClassSession as well

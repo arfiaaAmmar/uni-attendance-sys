@@ -1,5 +1,5 @@
 import { Schema, Document, model } from "mongoose";
-import { IAdmin, IClassRecord, IStudent } from "../../../shared-library/types";
+import { IAdmin, IClassRecord, IStudent } from "shared-library/types";
 
 // Define the User interface
 type IAdminModel = IAdmin & Document;

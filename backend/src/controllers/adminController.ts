@@ -1,12 +1,11 @@
-// adminController.ts
+import bcrypt from 'bcrypt';
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
 import { Document } from "mongoose";
 import { AdminModel } from "../model/model";
-import { IAdmin } from "shared-library/types";
+import { IAdmin } from 'shared-library/types';
 
 export const registerAdmin = async (req: Request, res: Response) => {
   try {
@@ -92,17 +91,14 @@ export const updateAdminData = async (req: Request, res: Response) => {
   const { email, ...adminData } = req.body as Omit<IAdmin, "_id">;
 
   try {
-    // Finding the existing admin based on the email, using lean()
     const selectedAdmin = await AdminModel.findOne({ email }).lean();
 
     if (!selectedAdmin) {
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    // Updating the selectedAdmin with the new data
     Object.assign(selectedAdmin, adminData);
 
-    // Saving the updated admin
     await AdminModel.updateOne({ _id: selectedAdmin._id }, adminData);
 
     return res
