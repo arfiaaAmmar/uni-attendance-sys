@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { ClassRecordModel } from "../model/model";
-import { IClassRecord } from '../../../shared-library/types';
+import { IClassRecord } from "../../../shared-library/types";
 
-export const postClassRecord = async (req: Request, res: Response) => {
+const postClassRecord = async (req: Request, res: Response) => {
   try {
     const {
       classId,
@@ -14,7 +14,7 @@ export const postClassRecord = async (req: Request, res: Response) => {
       date,
       attendance,
     } = req.body;
-    
+
     //Create new class record
     const newClassRecord = await ClassRecordModel.create({
       classId,
@@ -33,7 +33,7 @@ export const postClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const postAttendance = async (req: Request, res: Response) => {
+const postAttendance = async (req: Request, res: Response) => {
   const { classId } = req.params;
   const attendanceBody = req.body as Pick<IClassRecord, "attendance">;
 
@@ -53,7 +53,7 @@ export const postAttendance = async (req: Request, res: Response) => {
   }
 };
 
-export const getClassRecord = async (req: Request, res: Response) => {
+const getClassRecord = async (req: Request, res: Response) => {
   const { _id } = req.params;
 
   try {
@@ -69,7 +69,7 @@ export const getClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllClassRecords = async (req: Request, res: Response) => {
+const getAllClassRecords = async (req: Request, res: Response) => {
   try {
     // Retrieve class record by ID
     const classRecord = await ClassRecordModel.find({}, { password: 0 }).exec();
@@ -83,7 +83,7 @@ export const getAllClassRecords = async (req: Request, res: Response) => {
   }
 };
 
-export const getLiveClassSessions = async (req: Request, res: Response) => {
+const getLiveClassSessions = async (req: Request, res: Response) => {
   try {
     const currentDate = new Date(); // Get the current date and time
 
@@ -103,7 +103,7 @@ export const getLiveClassSessions = async (req: Request, res: Response) => {
   }
 };
 
-export const updateClassRecord = async (req: Request, res: Response) => {
+const updateClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
   const updatedData = req.body; // Updated data can contain both student and class details
 
@@ -132,7 +132,7 @@ export const updateClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteClassRecord = async (req: Request, res: Response) => {
+const deleteClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
@@ -148,7 +148,7 @@ export const deleteClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteAttendanceRecord = async (req: Request, res: Response) => {
+const deleteAttendanceRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
@@ -163,3 +163,16 @@ export const deleteAttendanceRecord = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+const classRecordController = {
+  getLiveClassSessions,
+  postClassRecord,
+  postAttendance,
+  getClassRecord,
+  getAllClassRecords,
+  updateClassRecord,
+  deleteClassRecord,
+  deleteAttendanceRecord,
+};
+
+export default classRecordController;

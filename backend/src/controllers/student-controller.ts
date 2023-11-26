@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { StudentModel } from "../model/model";
 import { IStudent } from "../../../shared-library/types";
 
-export const registerStudent = async (req: Request, res: Response) => {
+const registerStudent = async (req: Request, res: Response) => {
   try {
     const { email, name, phone, course } = req.body;
 
@@ -35,12 +35,16 @@ export const registerStudent = async (req: Request, res: Response) => {
 };
 
 
-export const searchStudent = async (req: Request, res: Response) => {
+const searchStudent = async (req: Request, res: Response) => {
   const { query } = req.query;
+
+  if (typeof query !== "string") {
+    return res.status(400).json({ error: "Invalid query" });
+  }
 
   try {
     const students = await StudentModel.find({
-      name: { $regex: new RegExp(query, 'i') },
+      name: { $regex: new RegExp(query, "i") },
     }).limit(10);
 
     const suggestions = students.map((student) => student.name);
@@ -48,12 +52,13 @@ export const searchStudent = async (req: Request, res: Response) => {
     res.json(suggestions);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
 
-export const getStudent = async (req: Request, res:Response) => {
+
+const getStudent = async (req: Request, res:Response) => {
   const { studentId } = req.params
 
   try {
@@ -68,7 +73,7 @@ export const getStudent = async (req: Request, res:Response) => {
   }
 }
 
-export const getAllStudents = async (req: Request, res: Response) => {
+const getAllStudents = async (req: Request, res: Response) => {
   try {
     const students = await StudentModel.find({}, { password: 0 }).exec();
 
@@ -82,7 +87,7 @@ export const getAllStudents = async (req: Request, res: Response) => {
   }
 };
 
-export const removeStudent = async (req: Request, res: Response) => {
+const removeStudent = async (req: Request, res: Response) => {
   const { studentId } = req.params;
 
   try {
@@ -101,3 +106,14 @@ export const removeStudent = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+const studentController = {
+  registerStudent,
+  getStudent,
+  searchStudent,
+  getAllStudents,
+  removeStudent,
+}
+
+export default studentController
+

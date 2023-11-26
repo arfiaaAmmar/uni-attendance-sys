@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Autosuggest from "react-autosuggest";
+import { useState } from "react";
+import Autosuggest from 'react-autosuggest';
 
 type SearchProps = {
   query: string;

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Box, CssBaseline, Typography } from "@mui/material";
-import { getAdminData, loginAdmin } from "../api/adminApi";
+import { getAdminData, loginAdmin } from "../api/admin-api";
 import websiteLogo from "../assets/app_icon.png";
 import bgImage from "../assets/login_bg.jpg";
 import { AuthContext } from "../context/AuthContext";

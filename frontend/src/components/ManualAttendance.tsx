@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
-import { getAllStudents } from "../api/studentDbApi";
-import { postAttendance, updateClassRecord } from "../api/classRecordApi";
+import { getAllStudents } from "../api/student-api";
+import { postAttendance, updateClassRecord } from "../api/class-record-api";
 import { IStudent } from "shared-library/types";
 
 type ManualAttendanceProps = {

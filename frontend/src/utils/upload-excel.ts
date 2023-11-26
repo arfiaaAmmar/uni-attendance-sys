@@ -1,7 +1,7 @@
 import { IClassrooms, ICollegeCourses } from "shared-library/types";
 import * as XLSX from "xlsx";
-import { updateClassRecord } from "../api/classRecordApi";
-import { registerStudent } from "../api/studentDbApi";
+import { updateClassRecord } from "../api/class-record-api";
+import { registerStudent } from "../api/student-api";
 
 export const handleUploadExcelForStudentRegistration = (
   file: File | undefined

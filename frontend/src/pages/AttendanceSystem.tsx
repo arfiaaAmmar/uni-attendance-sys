@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IClassRecord } from "shared-library/types";
-import { getAllClassRecords } from "../api/classRecordApi";
+import { getAllClassRecords } from "../api/class-record-api";
 
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<IClassRecord[]>();

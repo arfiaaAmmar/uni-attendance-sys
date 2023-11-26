@@ -5,7 +5,7 @@ import {
   getClassRecord,
   postClassRecord,
   updateClassRecord,
-} from "../api/classRecordApi";
+} from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import {
   CLASSROOM_LIST,

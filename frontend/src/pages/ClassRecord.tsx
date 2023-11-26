@@ -2,7 +2,7 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Feedback, IClassRecord } from "shared-library/types";
-import { getAllClassRecords, postClassRecord } from "../api/classRecordApi";
+import { getAllClassRecords, postClassRecord } from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";

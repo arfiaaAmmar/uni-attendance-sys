@@ -1,13 +1,13 @@
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
 import { Document } from "mongoose";
 import { AdminModel } from "../model/model";
-import { IAdmin } from 'shared-library/types';
+import { IAdmin } from "shared-library/types";
 
-export const registerAdmin = async (req: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone } = req.body as Omit<
       IAdmin,
@@ -37,21 +37,16 @@ export const registerAdmin = async (req: Request, res: Response) => {
   }
 };
 
-export const loginAdmin = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await AdminModel.findOne({ email });
-
     if (!user) return res.status(401).json({ message: "User not found" });
-
-    // Compare passwords
     const passwordMatch = await bcrypt.compare(password, user?.password!);
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid email or password" });
 
-    // Generate JWT token
     const token = jwt.sign({ userId: user._id }, JWT_SECRET!);
 
     res.json({ message: "Login successful", token });
@@ -61,7 +56,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
   }
 };
 
-export const getAdminData = async (req: Request, res: Response) => {
+const getAdminData = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token)
@@ -87,7 +82,7 @@ export const getAdminData = async (req: Request, res: Response) => {
   }
 };
 
-export const updateAdminData = async (req: Request, res: Response) => {
+const updateAdminData = async (req: Request, res: Response) => {
   const { email, ...adminData } = req.body as Omit<IAdmin, "_id">;
 
   try {
@@ -110,7 +105,7 @@ export const updateAdminData = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteAdmin = async (req: Request, res: Response) => {
+const deleteAdmin = async (req: Request, res: Response) => {
   const { adminId } = req.params;
 
   try {
@@ -130,3 +125,12 @@ export const deleteAdmin = async (req: Request, res: Response) => {
   }
 };
 
+const adminController = {
+  register,
+  login,
+  getAdminData,
+  updateAdminData,
+  deleteAdmin,
+};
+
+export default adminController;
