@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { IClassRecord } from "shared-library/types";
+import { ClassRecord } from "shared-library/types";
 import { getAllClassRecords } from "../api/class-record-api";
 
 const AttendanceSystem = () => {
-  const [records, setRecord] = useState<IClassRecord[]>();
-  const [recent, setRecent] = useState<IClassRecord[]>();
-  const [liveClasses, setLiveClasses] = useState<IClassRecord[]>()
+  const [records, setRecord] = useState<ClassRecord[]>();
+  const [recent, setRecent] = useState<ClassRecord[]>();
+  const [liveClasses, setLiveClasses] = useState<ClassRecord[]>()
 
   const handleDownloadPDF = async (_id?: string) => {
     const selectedRecord = records?.find((record) => record.classId === _id);
@@ -20,14 +20,14 @@ const AttendanceSystem = () => {
         if (data && data.length > 0) {
           const currentTime = new Date();
 
-          const endedClasses = data.filter((record: IClassRecord) => {
+          const endedClasses = data.filter((record: ClassRecord) => {
             const endTime = new Date(`${record.date} ${record.endTime}`);
             return endTime < currentTime;
           });
 
           // TODO: Should be placed in the backend as endpoint i.e getLiveClassSession
           // Create API to fetch liveClassSession
-          const liveClasses = data.filter((record: IClassRecord) => {
+          const liveClasses = data.filter((record: ClassRecord) => {
             const endTime = new Date(`${record.date} ${record.endTime}`);
             return endTime >= currentTime;
           });

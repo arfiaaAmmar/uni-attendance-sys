@@ -1,0 +1,13 @@
+{
+  "name": "shared-library",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "mongoose": "^7.1.2"
+  },
+  "devDependencies": {}
+}

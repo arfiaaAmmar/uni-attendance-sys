@@ -3,22 +3,22 @@ import { useEffect, useRef, useState } from "react";
 import SearchBox from "../components/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
 import { getAllStudents, registerStudent } from "../api";
-import { IStudent } from "shared-library/types";
+import { Student } from "shared-library/types";
 import { filterSearchQuery } from "../helpers/search-functions";
 
 const StudentDatabase = () => {
-  const [studentList, setStudentList] = useState<IStudent[]>();
+  const [studentList, setStudentList] = useState<Student[]>();
   const [searchQuery, setSearchQuery] = useState("");
   const [registerModal, setRegisterModal] = useState(false);
   const [filteredStudentList, setFilteredStudentList] = useState<
-    IStudent[] | undefined
+    Student[] | undefined
   >();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [feedback, setFeedback] = useState({
     success: "",
     error: "",
   });
-  const [formData, setFormData] = useState<Omit<IStudent, "studentId">>({
+  const [formData, setFormData] = useState<Omit<Student, "studentId">>({
     name: "",
     email: "",
     phone: "",
@@ -35,7 +35,7 @@ const StudentDatabase = () => {
         console.error("Error fetching user list:", error);
       }
     };
-    const filteredList = filterSearchQuery<IStudent>(
+    const filteredList = filterSearchQuery<Student>(
       searchQuery,
       studentList!,
       ["name", "studentId", "course", "email", "phone"]

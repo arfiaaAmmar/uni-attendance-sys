@@ -3,26 +3,18 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
-import { Document } from "mongoose";
 import { AdminModel } from "../model/model";
-import { IAdmin } from "shared-library/types";
+import { FM } from "shared-library/src/constants";
+import { handleCatchError } from "../helpers/shared-helpers";
+import { Admin } from "shared-library/src/types";
 
-const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, phone } = req.body as Omit<
-      IAdmin,
-      keyof Document
-    >;
-
-    // Check if user already exists
+    const { name, email, password, phone } = req.body;
     const existingUser = await AdminModel.findOne({ email });
-    if (existingUser)
-      return res.status(409).json({ message: "User already exists" });
+    if (existingUser) return res.status(409).json({ message: FM.userExist });
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password!, 10);
-
-    // Create new user
     await AdminModel.create({
       name,
       email,
@@ -30,107 +22,78 @@ const register = async (req: Request, res: Response) => {
       phone,
     });
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: FM.userRegisterSuccess });
   } catch (error) {
-    console.error("Error registering user", error);
-    res.status(500).json({ message: "Internal server error" });
+    handleCatchError(res, error, FM.userRegisterFailed);
   }
 };
 
-const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     const user = await AdminModel.findOne({ email });
-    if (!user) return res.status(401).json({ message: "User not found" });
+    if (!user) return res.status(401).json({ message: FM.userNotFound });
     const passwordMatch = await bcrypt.compare(password, user?.password!);
     if (!passwordMatch)
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: FM.invalidCredentials });
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET!);
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: FM.loginSuccess, token });
   } catch (error) {
-    console.error("Failed to login:", error);
-    res.sendStatus(500).json({ message: "Internal server error" });
+    handleCatchError(res, error, FM.loginFailed);
   }
 };
 
-const getAdminData = async (req: Request, res: Response) => {
+export const getAdminData = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token)
-    return res
-      .status(401)
-      .json({ message: "Authorization token not provided" });
+  if (!token) return res.status(401).json({ message: FM.noAuthToken });
 
   try {
     const decoded: any = jwt.verify(token, JWT_SECRET!);
     const userId: ObjectId = new ObjectId(decoded.userId);
+    const user = (await AdminModel.findById(userId)) as Admin;
+    const { email, name, phone } = user;
+    if (!user) return res.status(404).json({ message: FM.userNotFound });
 
-    const user = await AdminModel.findById(userId);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.json({
-      email: user.email,
-      name: user.name,
-      phone: user.phone,
-    });
+    res.json({ email, name, phone });
   } catch (error) {
-    return res.status(401).json({ message: "User not found" });
+    handleCatchError(res, error, FM.userNotFound);
   }
 };
 
-const updateAdminData = async (req: Request, res: Response) => {
-  const { email, ...adminData } = req.body as Omit<IAdmin, "_id">;
+export const updateAdminData = async (req: Request, res: Response) => {
+  const { email, ...adminData } = req.body;
 
   try {
     const selectedAdmin = await AdminModel.findOne({ email }).lean();
-
-    if (!selectedAdmin) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
+    if (!selectedAdmin)
+      return res.status(404).json({ message: FM.adminNotFound });
 
     Object.assign(selectedAdmin, adminData);
-
     await AdminModel.updateOne({ _id: selectedAdmin._id }, adminData);
 
     return res
       .status(200)
-      .json({ message: "Admin updated successfully", admin: selectedAdmin });
+      .json({ message: FM.adminUpdateSuccess, admin: selectedAdmin });
   } catch (error) {
-    console.error("Error updating admin:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    handleCatchError(res, error, FM.adminUpdateError);
   }
 };
 
-const deleteAdmin = async (req: Request, res: Response) => {
+export const deleteAdmin = async (req: Request, res: Response) => {
   const { adminId } = req.params;
 
   try {
-    // Check if student exists
     const existingStudent = await AdminModel.findById(adminId);
-    if (!existingStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
+    if (!existingStudent)
+      return res.status(404).json({ message: FM.studentNotFound });
 
-    // Remove the student
     await AdminModel.findByIdAndDelete(adminId);
-
-    res.status(200).json({ message: "Student deleted successfully" });
+    res.status(200).json({ message: FM.studentDeleteSuccess });
   } catch (error) {
-    console.error("Failed to delete student:", error);
-    res.status(500).json({ message: "Internal server error" });
+    handleCatchError(res, error, FM.studentDeleteFailed);
   }
 };
-
-const adminController = {
-  register,
-  login,
-  getAdminData,
-  updateAdminData,
-  deleteAdmin,
-};
-
-export default adminController;

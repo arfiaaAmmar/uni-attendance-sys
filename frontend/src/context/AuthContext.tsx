@@ -1,10 +1,10 @@
 import React, { createContext, useState } from "react";
-import { IAdmin } from "shared-library/types";
+import { Admin } from "shared-library/types";
 
 interface AuthContextProps {
-  user: IAdmin | null;
+  user: Admin | null;
   isLoggedIn: boolean | null;
-  setUser: React.Dispatch<React.SetStateAction<IAdmin | null>>;
+  setUser: React.Dispatch<React.SetStateAction<Admin | null>>;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
@@ -20,7 +20,7 @@ type AuthProviderProps = {
 };
 
 export const AuthContextProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<IAdmin | null>(null);
+  const [user, setUser] = useState<Admin | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
 
   return (

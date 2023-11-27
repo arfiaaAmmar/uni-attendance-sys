@@ -1,16 +1,17 @@
 // studentController.ts
 import { Request, Response } from "express";
 import { StudentModel } from "../model/model";
-import { IStudent } from "../../../shared-library/types";
+import { Student } from "../../../shared-library/src/types";
+import { FM } from "shared-library/src/constants";
 
-const registerStudent = async (req: Request, res: Response) => {
+export const registerStudent = async (req: Request, res: Response) => {
   try {
     const { email, name, phone, course } = req.body;
 
     // Check if user already exists
     const existingUser = await StudentModel.findOne({ email });
     if (existingUser)
-      return res.status(409).json({ message: "User already exist" });
+      return res.status(409).json({ message: FM.userExist });
 
     // Create random matrik number based on current time
     const randomNumber = Math.floor(Math.random() * 10000);
@@ -27,19 +28,19 @@ const registerStudent = async (req: Request, res: Response) => {
       course,
     });
 
-    res.status(201).json({ message: "Student registered successfully" });
+    res.status(201).json({ message: FM.studentRegisterSuccess });
   } catch (error) {
-    console.error("Error registering user", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error(FM.studentRegisterFailed, error);
+    res.status(500).json({ message: FM.serverError });
   }
 };
 
 
-const searchStudent = async (req: Request, res: Response) => {
+export const searchStudent = async (req: Request, res: Response) => {
   const { query } = req.query;
 
   if (typeof query !== "string") {
-    return res.status(400).json({ error: "Invalid query" });
+    return res.status(400).json({ error: FM.invalidQuery });
   }
 
   try {
@@ -52,68 +53,57 @@ const searchStudent = async (req: Request, res: Response) => {
     res.json(suggestions);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    res.status(500).json({ error: FM.default });
   }
 };
 
 
 
-const getStudent = async (req: Request, res:Response) => {
+export const getStudent = async (req: Request, res:Response) => {
   const { studentId } = req.params
 
   try {
-    const student: IStudent | null = await StudentModel.findOne({ studentId })
+    const student: Student | null = await StudentModel.findOne({ studentId })
 
-    if(!student) return res.status(404).json({ message:"Student not found"})
+    if(!student) return res.status(404).json({ message:FM.studentNotFound})
 
     res.json(student)
   } catch (error ){
-    console.error('Error retrieving student:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error(FM.studentRetrievalFailed, error);
+    res.status(500).json({ message: FM.serverError });
   }
 }
 
-const getAllStudents = async (req: Request, res: Response) => {
+export const getAllStudents = async (req: Request, res: Response) => {
   try {
     const students = await StudentModel.find({}, { password: 0 }).exec();
 
     if (students.length === 0) {
-      return res.status(404).json({ message: "No students found" });
+      return res.status(404).json({ message: FM.studentNotFound });
     }
 
     res.json(students);
   } catch (error) {
-    return res.status(401).json({ message: "Students not found" });
+    return res.status(401).json({ message: FM.studentNotFound });
   }
 };
 
-const removeStudent = async (req: Request, res: Response) => {
+export const removeStudent = async (req: Request, res: Response) => {
   const { studentId } = req.params;
 
   try {
     // Check if student exists
     const existingStudent = await StudentModel.findById(studentId);
     if (!existingStudent) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({ message: FM.studentNotFound });
     }
 
     // Remove the student
     await StudentModel.findByIdAndDelete(studentId);
 
-    res.status(200).json({ message: "Student deleted successfully" });
+    res.status(200).json({ message: FM.studentDeleteSuccess });
   } catch (error) {
-    console.error("Failed to delete student:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error(FM.studentDeleteFailed, error);
+    res.status(500).json({ message: FM.serverError });
   }
 };
-
-const studentController = {
-  registerStudent,
-  getStudent,
-  searchStudent,
-  getAllStudents,
-  removeStudent,
-}
-
-export default studentController
-

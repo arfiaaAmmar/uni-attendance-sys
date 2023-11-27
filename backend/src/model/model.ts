@@ -1,10 +1,5 @@
-import { Schema, Document, model } from "mongoose";
-import { IAdmin, IClassRecord, IStudent } from "shared-library/types";
-
-// Define the User interface
-type IAdminModel = IAdmin & Document;
-type IStudentModel = IStudent & Document;
-type IClassRecordModel = IClassRecord & Document;
+import { Schema, model } from "mongoose";
+import { IAdminModel, IClassRecordModel, IStudentModel } from "shared-library/src/types";
 
 // Define the User schema
 const adminSchema = new Schema<IAdminModel>({

@@ -1,20 +1,20 @@
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Feedback, IClassRecord } from "shared-library/types";
+import { Feedback, ClassRecord } from "shared-library/types";
 import { getAllClassRecords, postClassRecord } from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
 
 export const ClassRecords = () => {
-  const [records, setRecords] = useState<IClassRecord[]>([]);
+  const [records, setRecords] = useState<ClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [filteredRecord, setFilteredRecord] = useState<IClassRecord[] | undefined>();
-  const [selectedRecord, setSelectedRecord] = useState<IClassRecord | undefined>();
-  const [updatedRecord, setUpdatedRecord] = useState<IClassRecord | undefined>();
+  const [filteredRecord, setFilteredRecord] = useState<ClassRecord[] | undefined>();
+  const [selectedRecord, setSelectedRecord] = useState<ClassRecord | undefined>();
+  const [updatedRecord, setUpdatedRecord] = useState<ClassRecord | undefined>();
   const [actionModal, setActionModal] = useState({
     editRecordModal: false,
     viewRecordModal: false,
@@ -94,7 +94,7 @@ export const ClassRecords = () => {
           "startTime",
           "endTime",
         ].some((prop) => {
-          const propertyValue = record[prop as keyof IClassRecord];
+          const propertyValue = record[prop as keyof ClassRecord];
 
           if (propertyValue === null || propertyValue === undefined) {
             return false; // Skip filtering for null or undefined values

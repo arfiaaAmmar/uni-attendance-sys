@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "frontend/src/utils/constants";
-import { IAdmin } from "shared-library/types";
+import { Admin } from "shared-library/src/types.js";
 
-export const registerAdmin = async (userForm: IAdmin) => {
+export const registerAdmin = async (userForm: Admin) => {
   try {
     const response = await fetch(`${API_BASE_URL}/register-admin`, {
       method: "POST",

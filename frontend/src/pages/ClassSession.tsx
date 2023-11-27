@@ -14,15 +14,15 @@ import {
 } from "../utils/constants";
 import {
   Feedback,
-  IClassRecord,
-  IStudentAttendance,
+  ClassRecord,
+  StudentAttendance,
 } from "shared-library/types";
 import { filterSearchQuery } from "../helpers/search-functions";
 
 const ClassSession = () => {
-  const [mainList, setMainList] = useState<IStudentAttendance[]>();
+  const [mainList, setMainList] = useState<StudentAttendance[]>();
   const [filteredMainList, setFilteredMainList] =
-    useState<IStudentAttendance[]>();
+    useState<StudentAttendance[]>();
   const [manualAttendanceList, setManualAttendanceList] = useState([]);
   const [modal, setModal] = useState({
     initiateClassModal: false,
@@ -36,7 +36,7 @@ const ClassSession = () => {
   // })
   const [mainQuery, setMainQuery] = useState("");
   const [manualAttendanceQuery, setManualAttendanceQuery] = useState("");
-  const [classRecordForm, setClassRecordForm] = useState<IClassRecord>({
+  const [classRecordForm, setClassRecordForm] = useState<ClassRecord>({
     lecturer: sessionStorage.getItem("userName")!,
     classroom: "Classroom 1",
     course: "Food & Beverages",
@@ -78,7 +78,7 @@ const ClassSession = () => {
     async () => {
       const existingSession = JSON.parse(
         sessionStorage.getItem("classSession")!
-      ) as IClassRecord;
+      ) as ClassRecord;
       try {
         if (!existingSession) setModal({ ...modal, initiateClassModal: true });
         if (existingSession) {
@@ -86,7 +86,7 @@ const ClassSession = () => {
           const data = await getClassRecord(existingSession.classId);
           setMainList(data.attendance);
 
-          const filteredMainListData = filterSearchQuery<IStudentAttendance>(
+          const filteredMainListData = filterSearchQuery<StudentAttendance>(
             mainQuery,
             mainList!,
             ["studentName", "studentId"]

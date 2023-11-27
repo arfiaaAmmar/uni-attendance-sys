@@ -1,4 +1,4 @@
-import { IClassRecord, IStudentAttendance } from "shared-library/types";
+import { ClassRecord, StudentAttendance } from "shared-library/src/types.js";
 import { handleAPIRequest } from "../helpers/handlers";
 import { API_BASE_URL } from "frontend/src/utils/constants";
 
@@ -12,7 +12,7 @@ export const postClassRecord = async <T>(classData: T) => {
 
 export const postAttendance = async (
   classId: string,
-  attendanceData: IStudentAttendance
+  attendanceData: StudentAttendance
 ) => {
   return handleAPIRequest<void>(
     `${API_BASE_URL}/post-attendance/${classId}`,
@@ -22,7 +22,7 @@ export const postAttendance = async (
 };
 
 export const getClassRecord = async (_id: string | undefined) => {
-  return handleAPIRequest<IClassRecord>(
+  return handleAPIRequest<ClassRecord>(
     `${API_BASE_URL}/get-class-record/${_id}`,
     "GET"
   );
@@ -30,9 +30,9 @@ export const getClassRecord = async (_id: string | undefined) => {
 
 export const updateClassRecord = async (
   classId: string,
-  data: IClassRecord
+  data: ClassRecord
 ) => {
-  return handleAPIRequest<IClassRecord>(
+  return handleAPIRequest<ClassRecord>(
     `${API_BASE_URL}/update-class-record/${classId}`,
     "PUT",
     data

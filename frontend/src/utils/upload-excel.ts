@@ -1,4 +1,4 @@
-import { IClassrooms, ICollegeCourses } from "shared-library/types";
+import { Classrooms, Courses } from "shared-library/src/types.js";
 import * as XLSX from "xlsx";
 import { updateClassRecord } from "../api/class-record-api";
 import { registerStudent } from "../api/student-api";
@@ -55,8 +55,8 @@ export const handleUploadExcelForAttendance = (
       const excelData = XLSX.utils.sheet_to_json(worksheet) as Array<{
         classId: string;
         lecturer: string;
-        classroom: IClassrooms | string;
-        course: ICollegeCourses | string;
+        classroom: Classrooms | string;
+        course: Courses | string;
         date: string;
         startTime: string;
         endTime: string;

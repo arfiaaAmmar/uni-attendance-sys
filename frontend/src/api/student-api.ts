@@ -1,9 +1,10 @@
-import { IStudent } from "shared-library/types";
+import { ENDPOINTS } from 'shared-library/src/constants.js';
+import { Student } from "shared-library/src/types.js";
 import { API_BASE_URL } from "../utils/constants";
 
-export const registerStudent = async (studentForm: Omit<IStudent, "studentId">) => {
+export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/register-student`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.registerAdmin}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +52,7 @@ export const getStudent = async (studentId: string) => {
 
 export const getAllStudents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get-all-students`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.getAllStudents}`, {
       headers: {
         "Content-Type": "application/json",
       },
