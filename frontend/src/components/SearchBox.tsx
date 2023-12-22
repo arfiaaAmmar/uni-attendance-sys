@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Autosuggest from 'react-autosuggest';
+import Autosuggest from "react-autosuggest";
 
 type SearchProps = {
   query: string;
   onChange: (newQuery: string) => void;
-  suggestions?: string[];
+  suggestions: string[];
   placeholder?: string;
   className?: string;
 };
@@ -16,7 +16,7 @@ const SearchBox: React.FC<SearchProps> = ({
   placeholder,
   className,
 }) => {
-  const [suggestionsState, setSuggestions] = useState<string[] | undefined>([]);
+  const [suggestionsState, setSuggestionsState] = useState(suggestions);
 
   const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
     const inputValue = value.trim().toLowerCase();
@@ -24,16 +24,15 @@ const SearchBox: React.FC<SearchProps> = ({
       suggestion.toLowerCase().includes(inputValue)
     );
 
-    if (filteredSuggestions) setSuggestions(filteredSuggestions);
-
+    if (filteredSuggestions) setSuggestionsState(filteredSuggestions);
   };
 
   const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
+    setSuggestionsState([]);
   };
 
   const inputProps = {
-    placeholder: placeholder ? placeholder : "Search ...",
+    placeholder: placeholder || "Search ...",
     value: query,
     onChange: (_: any, { newValue }: { newValue: string }) =>
       onChange(newValue),
@@ -41,7 +40,7 @@ const SearchBox: React.FC<SearchProps> = ({
 
   return (
     <Autosuggest
-      suggestions={suggestionsState!}
+      suggestions={suggestionsState}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={(suggestion) => suggestion}

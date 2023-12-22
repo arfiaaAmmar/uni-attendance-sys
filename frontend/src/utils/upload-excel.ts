@@ -1,4 +1,4 @@
-import { Classrooms, Courses } from "shared-library/src/types.js";
+import { Classrooms, Courses } from "shared-library/src/types";
 import * as XLSX from "xlsx";
 import { updateClassRecord } from "../api/class-record-api";
 import { registerStudent } from "../api/student-api";
@@ -18,7 +18,7 @@ export const handleUploadExcelForStudentRegistration = (
         email: string;
         name: string;
         phone: string;
-        course: string;
+        course: Courses;
       }>;
       console.log("Excel Data:", excelData);
 

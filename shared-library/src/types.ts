@@ -6,6 +6,7 @@ export type Courses =
   | "Security"
   | "Secretary";
 export type Classrooms = "Classroom 1" | "Classroom 2" | "Classroom 3";
+export type HandleDeleteType = "admin" | "student" | "class-record";
 
 export type Feedback = {
   success: string;
@@ -13,6 +14,7 @@ export type Feedback = {
 };
 
 export type Admin = {
+  _id?: string;
   email: string;
   name: string;
   password?: string;
@@ -24,7 +26,7 @@ export type Student = {
   name: string;
   email: string;
   phone: string;
-  course: string;
+  course?: Courses;
 };
 
 export type StudentAttendance = {
@@ -34,6 +36,7 @@ export type StudentAttendance = {
 };
 
 export type ClassRecord = {
+  _id?:string;
   lecturer: string;
   classroom: Classrooms | string;
   course: Courses | string;

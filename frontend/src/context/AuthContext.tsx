@@ -1,5 +1,5 @@
-import React, { createContext, useState } from "react";
-import { Admin } from "shared-library/types";
+import { createContext, useMemo, useState } from "react";
+import { Admin } from "shared-library/src/types";
 
 interface AuthContextProps {
   user: Admin | null;
@@ -22,9 +22,10 @@ type AuthProviderProps = {
 export const AuthContextProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<Admin | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
+  const contextValueObj = useMemo(() => ({user, setUser, isLoggedIn, setIsLoggedIn}), []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={contextValueObj}>
       {children}
     </AuthContext.Provider>
   );

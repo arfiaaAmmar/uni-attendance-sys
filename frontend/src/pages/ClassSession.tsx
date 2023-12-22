@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   getClassRecord,
@@ -12,12 +12,13 @@ import {
   STUDENT_COURSES,
   dateTimeFormatForClassRecord,
 } from "../utils/constants";
-import {
-  Feedback,
-  ClassRecord,
-  StudentAttendance,
-} from "shared-library/types";
 import { filterSearchQuery } from "../helpers/search-functions";
+import {
+  ClassRecord,
+  Feedback,
+  StudentAttendance,
+} from "shared-library/src/types";
+import { defFeedback } from "shared-library/src/constants";
 
 const ClassSession = () => {
   const [mainList, setMainList] = useState<StudentAttendance[]>();
@@ -28,12 +29,7 @@ const ClassSession = () => {
     initiateClassModal: false,
     manualAttendanceModal: false,
   });
-  const [feedback, setFeedback] = useState<Feedback>({
-    success: "",
-    error: "",
-  });
-
-  // })
+  const [feedback, setFeedback] = useState<Feedback>(defFeedback);
   const [mainQuery, setMainQuery] = useState("");
   const [manualAttendanceQuery, setManualAttendanceQuery] = useState("");
   const [classRecordForm, setClassRecordForm] = useState<ClassRecord>({
@@ -45,11 +41,39 @@ const ClassSession = () => {
     endTime: "Not set",
     attendance: mainList,
   });
+
+  useEffect(() => {
+    const fetchClassSessions = async () => {
+      const existingSession: ClassRecord = JSON.parse(
+        sessionStorage.getItem("classSession")!
+      );
+      try {
+        if (!existingSession) setModal({ ...modal, initiateClassModal: true });
+        if (existingSession) {
+          setModal({ ...modal, initiateClassModal: false });
+          const data = await getClassRecord(existingSession._id!);
+          setMainList(data.attendance);
+
+          const filteredMainListData = filterSearchQuery<StudentAttendance>(
+            mainQuery,
+            mainList!,
+            ["studentName", "studentId"]
+          );
+          setFilteredMainList(filteredMainListData);
+        }
+      } catch (error) {
+        console.error("Error fetching user list:", error);
+      }
+    };
+
+    fetchClassSessions();
+  }, [mainList, mainQuery]);
+
   const emptyClassRecordForm = Object.values(classRecordForm).some(
     (value) => value === ""
   );
 
-  const handleInitialFormSubmit = async (event: React.FormEvent) => {
+  const handleInitialFormSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (emptyClassRecordForm) {
       setFeedback({ ...feedback, error: "Please fill in all user data" });
@@ -64,42 +88,20 @@ const ClassSession = () => {
   };
 
   const handleManualAttendanceQuery = async (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: ChangeEvent<HTMLInputElement>
   ) => {
     e.preventDefault();
   };
 
-  const handleManualAttendanceSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const handleManualAttendanceSubmit = async (e: FormEvent) => {
+    e.preventDefault();
   };
 
-  useEffect(() => {
-    async () => {
-      const existingSession = JSON.parse(
-        sessionStorage.getItem("classSession")!
-      ) as ClassRecord;
-      try {
-        if (!existingSession) setModal({ ...modal, initiateClassModal: true });
-        if (existingSession) {
-          setModal({ ...modal, initiateClassModal: false });
-          const data = await getClassRecord(existingSession.classId);
-          setMainList(data.attendance);
+  const fetchSuggestionData = () => {
+    return ["test", "test2"];
+  };
 
-          const filteredMainListData = filterSearchQuery<StudentAttendance>(
-            mainQuery,
-            mainList!,
-            ["studentName", "studentId"]
-          );
-          setFilteredMainList(filteredMainListData);
-        }
-      } catch (error) {
-        console.error("Error fetching user list:", error);
-      }
-    };
-  }, [mainList, mainQuery]);
-
-  const handleSubmitClassSession = async (event: React.FormEvent) => {
+  const handleSubmitClassSession = async (event: FormEvent) => {
     event.preventDefault();
     if (emptyClassRecordForm) {
       setFeedback({ ...feedback, error: "Please fill in all class info" });
@@ -134,7 +136,7 @@ const ClassSession = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setClassRecordForm((prevData) => ({ ...prevData, [name]: value }));
@@ -146,7 +148,7 @@ const ClassSession = () => {
     //display in modal to confirm
     //set add attendance
     // Clear form inputs
-    updateClassRecord;
+    updateClassRecord();
 
     setClassRecordForm({
       lecturer: sessionStorage.getItem("userName")!,
@@ -314,8 +316,8 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select a course
                 </option>
-                {Object.values(STUDENT_COURSES).map((course) => (
-                  <option value={course}>{course}</option>
+                {Object.values(STUDENT_COURSES).map((course, index) => (
+                  <option key={index} value={course}>{course}</option>
                 ))}
               </select>
               <select
@@ -328,8 +330,8 @@ const ClassSession = () => {
                 <option value="" disabled>
                   Select classroom
                 </option>
-                {CLASSROOM_LIST.map((classroom) => (
-                  <option value={classroom}>{classroom}</option>
+                {CLASSROOM_LIST.map((classroom, index) => (
+                  <option key={index} value={classroom}>{classroom}</option>
                 ))}
               </select>
               <input

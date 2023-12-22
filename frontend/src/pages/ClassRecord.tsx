@@ -1,20 +1,20 @@
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Feedback, ClassRecord } from "shared-library/types";
-import { getAllClassRecords, postClassRecord } from "../api/class-record-api";
+import { getAllClassRecords } from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
+import { ClassRecord, Feedback } from "shared-library/src/types";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [filteredRecord, setFilteredRecord] = useState<ClassRecord[] | undefined>();
-  const [selectedRecord, setSelectedRecord] = useState<ClassRecord | undefined>();
-  const [updatedRecord, setUpdatedRecord] = useState<ClassRecord | undefined>();
+  const [filteredRecord, setFilteredRecord] = useState<ClassRecord[]>();
+  const [selectedRecord, setSelectedRecord] = useState<ClassRecord>();
+  const [updatedRecord, setUpdatedRecord] = useState<ClassRecord>();
   const [actionModal, setActionModal] = useState({
     editRecordModal: false,
     viewRecordModal: false,
@@ -34,7 +34,7 @@ export const ClassRecords = () => {
   });
 
   const handleDownloadPDF = async (_id?: string) => {
-    const selectedRecord = records.find((record) => record.classId === _id);
+    const selectedRecord = records.find((record) => record._id === _id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
@@ -50,7 +50,7 @@ export const ClassRecords = () => {
   const handleEditModel = async (_id?: string) => {
     setActionModal({ ...actionModal, editRecordModal: true });
     const selectedRecord = records.find(
-      (record) => record.classId === record.classId
+      (record) => record._id
     );
 
     if (selectedRecord) {
@@ -64,7 +64,7 @@ export const ClassRecords = () => {
     }
   }
 
-  const handleUpdateRecord = async (classId: string | undefined) => {
+  const handleUpdateRecord = async (classId: string) => {
     try {
       setUpdatedRecord(updatedRecord);
     } catch (error) {
@@ -142,13 +142,13 @@ export const ClassRecords = () => {
             <div className="w-2/12">
               <button
                 className="bg-orange-300 px-3 py-1"
-                onClick={() => handleDownloadPDF(record.classId)}
+                onClick={() => handleDownloadPDF(record._id)}
               >
                 View | Download
               </button>
               <button
                 className="bg-green-300 px-3 py-1"
-                onClick={() => handleEditModel(record.classId)}
+                onClick={() => handleEditModel(record._id)}
               >
                 Edit
               </button>
@@ -235,7 +235,7 @@ export const ClassRecords = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
             <h1 className="text-2xl font-bold my-2">Edit Record</h1>
-            <SearchBox query={searchQuery} onChange={setSearchQuery} />
+            <SearchBox suggestions={} query={searchQuery} onChange={setSearchQuery} />
             <div className="flex justify-between">
               <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
                 <div className="flex">
@@ -313,7 +313,7 @@ export const ClassRecords = () => {
               </button>
               <button
                 className="bg-green-400 px-2 py-1 rounded-md"
-                onClick={() => handleUpdateRecord(selectedRecord?.classId)}
+                onClick={() => handleUpdateRecord(selectedRecord?._id!)}
               >
                 Update Record
               </button>

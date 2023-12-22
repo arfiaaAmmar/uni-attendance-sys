@@ -1,16 +1,28 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2021",
+    "lib": ["ESNext"],
     "module": "Node16",
+    "target": "esnext",
     "moduleResolution": "Node16",
-    "outDir": "dist",
+    "noEmit": true,
+    "moduleDetection": "force",
     "strict": true,
-    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "composite": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
     "paths": {
-      "shared-library": ["./shared-library/**/*.ts"]
+      "@shared-library/*": ["../shared-library/src/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@middleware/*": ["./src/middleware/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@models/*": ["./src/models/*"]
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [{ "path": "../shared-library" }]
 }

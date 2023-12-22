@@ -1,9 +1,9 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { ClickAwayListener, IconButton } from "@mui/material";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { AppRoutesType } from "./routes";
+import { AppRoutesType } from "../routes/routes";
 
 interface SidebarProps {
   items: AppRoutesType[];

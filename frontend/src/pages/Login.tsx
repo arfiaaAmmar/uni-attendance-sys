@@ -1,54 +1,62 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, FormEvent } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Box, CssBaseline, Typography } from "@mui/material";
 import { getAdminData, loginAdmin } from "../api/admin-api";
-import websiteLogo from "../assets/app_icon.png";
-import bgImage from "../assets/login_bg.jpg";
 import { AuthContext } from "../context/AuthContext";
-import { Admin } from "shared-library/types";
+import IMG from "../assets/assets";
+import { FM, PAGES_PATH, defFeedback } from "@shared-library/constants";
+import { Admin } from "@shared-library/types";
 
 const Login = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState("");
+  const [credential, setCredential] = useState({
+    email: "",
+    password: "",
+  });
+  const [feedback, setFeedback] = useState(defFeedback);
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     if (
-      email == "" ||
-      password == "" ||
-      email.includes(" ") ||
-      password.includes(" ")
+      credential.email == "" ||
+      credential.password == "" ||
+      credential.email.includes(" ") ||
+      credential.password.includes(" ")
     ) {
-      setError("Please enter username and password");
+      setFeedback({ ...feedback, error: "Please enter username and password" });
       return;
     }
     try {
-      await loginAdmin(email, password);
-      const data = (await getAdminData()) as Admin;
-      sessionStorage.setItem("userEmail", data.email);
-      sessionStorage.setItem("userName", data.name);
-      sessionStorage.setItem("userId", data._id!)
-      setUser(data);
-      navigate("/admin/student_database");
+      await loginAdmin(credential.email, credential.password);
+      const { email, name, phone, _id } = (await getAdminData()) as Admin;
+      const userLocalSessionData = {
+        _id,
+        email,
+        name,
+        phone,
+      };
+      sessionStorage.setItem(
+        "userSessionData",
+        JSON.stringify(userLocalSessionData)
+      );
+      setUser(userLocalSessionData);
+      navigate(PAGES_PATH.studentDB);
     } catch (error: any) {
       console.error("Error logging in:", error);
-      setError(error);
+      setFeedback(error);
     }
   };
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      return "Are you sure you want to leave this page ?";
+      return FM.leavePageConfirmation;
     };
 
     const handlePopState = () => {
-      navigate("/login");
+      navigate(PAGES_PATH.login);
     };
 
     window.onbeforeunload = handleBeforeUnload;
@@ -64,7 +72,7 @@ const Login = () => {
     <Box
       sx={{
         height: "100vh",
-        backgroundImage: `url(${bgImage})`,
+        backgroundImage: `url(${IMG.loginBg})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -73,7 +81,7 @@ const Login = () => {
       <div className="bg-black w-screen h-20">
         <div className="h-full w-max">
           <img
-            src={websiteLogo}
+            src={IMG.appIcon}
             alt="website logo"
             className="object-contain w-full h-full"
           />
@@ -85,7 +93,9 @@ const Login = () => {
         <input
           required
           placeholder="Email Address"
-          onChange={(e: any) => setEmail(e.target.value)}
+          onChange={(e: any) =>
+            setCredential({ ...credential, email: e.target.value })
+          }
           name="email"
           className="rounded-md px-2 py-1 block my-2 w-full"
           autoComplete="email"
@@ -97,7 +107,9 @@ const Login = () => {
           placeholder="Password"
           type="password"
           className="rounded-md px-2 py-1 block my-2 w-full"
-          onChange={(e: any) => setPassword(e.target.value)}
+          onChange={(e: any) =>
+            setCredential({ ...credential, password: e.target.value })
+          }
           autoComplete="current-password"
         />
         {/* <FormControlLabel
@@ -124,7 +136,11 @@ const Login = () => {
         >
           Login
         </Button>
-        {error && <Typography sx={{ color: "red" }}>{error}</Typography>}
+        {feedback.success ? (
+          <Typography sx={{ color: "green" }}>{feedback.success}</Typography>
+        ) : (
+          <Typography sx={{ color: "red" }}>{feedback.error}</Typography>
+        )}
       </div>
     </Box>
   );

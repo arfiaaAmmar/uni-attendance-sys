@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ClassRecord } from "shared-library/types";
 import { getAllClassRecords } from "../api/class-record-api";
+import { ClassRecord } from "@shared-library/types";
 
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<ClassRecord[]>();
@@ -9,7 +9,7 @@ const AttendanceSystem = () => {
   const [liveClasses, setLiveClasses] = useState<ClassRecord[]>()
 
   const handleDownloadPDF = async (_id?: string) => {
-    const selectedRecord = records?.find((record) => record.classId === _id);
+    const selectedRecord = records?.find((record) => record._id === _id);
   };
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const AttendanceSystem = () => {
           <p className="text-2xl font-bold m-2">Class Session</p>
           <p>Shows the current running live class on your User Session</p>
           {liveClasses?.map((liveClass) => (
-            <div className="bg-neutral-400 rounded-md p-2">
+            <div key={liveClass._id} className="bg-neutral-400 rounded-md p-2">
               <p className="text-2xl font-bold">{liveClass.course}</p>
               <p className="text-lg font-bold">{liveClass.classroom}</p>
               <div className="flex justify-between mt-8">
@@ -73,13 +73,13 @@ const AttendanceSystem = () => {
           <p className="text-2xl font-bold m-2">Class History</p>
           <p>Shows the current running live class on your User Session</p>
           {recent?.map((prevRecord) => (
-            <div className="bg-neutral-400 rounded-md p-2 my-2">
+            <div key={prevRecord._id} className="bg-neutral-400 rounded-md p-2 my-2">
               <p className="text-2xl font-bold">{prevRecord.course}</p>
               <p className="text-lg font-bold">{prevRecord.classroom}</p>
               <div className="flex justify-end mt-8">
                 <button
                   className="bg-orange-300 px-3 py-1"
-                  onClick={() => handleDownloadPDF(prevRecord.classId)}
+                  onClick={() => handleDownloadPDF(prevRecord._id)}
                 >
                   View | Dwnld | Print
                 </button>

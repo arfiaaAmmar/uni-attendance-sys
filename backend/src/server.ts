@@ -1,33 +1,11 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import mongoose from "mongoose";
-import express from "express";
 import cors from "cors";
 import { MONGODB_URI, app, port } from "./config/config";
-import {
-  deleteAdmin,
-  getAdminData,
-  login,
-  register,
-  updateAdminData,
-} from "./controllers/admin-controller";
-import {
-  getAllStudents,
-  getStudent,
-  registerStudent,
-  removeStudent,
-  searchStudent,
-} from "./controllers/student-controller";
-import {
-  deleteAttendanceRecord,
-  deleteClassRecord,
-  getAllClassRecords,
-  getClassRecord,
-  getLiveClassSessions,
-  postAttendance,
-  postClassRecord,
-  updateClassRecord,
-} from "./controllers/class-record-controller";
-import { ENDPOINTS, FM } from "shared-library/src/constants";
+import { ClassRecordController } from "@controllers/class-record-controller";
+import { AdminController } from "@controllers/admin-controller";
+import { StudentController } from "@controllers/student-controller";
+import { FM, API } from "@shared-library/constants";
 
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");
@@ -51,26 +29,28 @@ app.get("/", (req: Request, res: Response) => {
 
 //Endpoints
 //User & Admin
-app.post(ENDPOINTS.registerAdmin, register);
-app.post(ENDPOINTS.adminLogin, login);
-app.get(ENDPOINTS.getAdminData, getAdminData);
-app.put(ENDPOINTS.updateAdminData, updateAdminData);
-app.delete(ENDPOINTS.deleteAdmin, deleteAdmin);
+app.post(API.registerAdmin, AdminController.register);
+app.post(API.adminLogin, AdminController.login);
+app.get(API.getAdminData, AdminController.getAdmin);
+app.put(API.updateAdminData, AdminController.updateAdmin);
+app.delete(API.deleteAdmin, AdminController.remove);
+
 //Student DB
-app.post(ENDPOINTS.registerStudent, registerStudent);
-app.get(ENDPOINTS.getStudent, getStudent);
-app.get(ENDPOINTS.searchStudent, searchStudent);
-app.get(ENDPOINTS.getAllStudents, getAllStudents);
-app.delete(ENDPOINTS.deleteStudent, removeStudent);
+app.post(API.registerStudent, StudentController.register);
+app.get(API.getStudent, StudentController.get);
+app.get(API.searchStudent, StudentController.search);
+app.get(API.getAllStudents, StudentController.getAll);
+app.delete(API.deleteStudent, StudentController.remove);
+
 //Class Record - Also can configure ClassSession as well
-app.get(ENDPOINTS.getLiveClassSessions, getLiveClassSessions);
-app.post(ENDPOINTS.postClassRecord, postClassRecord);
-app.post(ENDPOINTS.postAttendance, postAttendance);
-app.get(ENDPOINTS.getClassRecord, getClassRecord);
-app.get(ENDPOINTS.getAllClassRecords, getAllClassRecords);
-app.put(ENDPOINTS.updateClassRecord, updateClassRecord);
-app.delete(ENDPOINTS.deleteClassRecord, deleteClassRecord);
-app.delete(ENDPOINTS.deleteAttendanceRecord, deleteAttendanceRecord);
+app.get(API.getLiveClassSessions, ClassRecordController.getLiveSessions);
+app.post(API.postClassRecord, ClassRecordController.post);
+app.post(API.postAttendance, ClassRecordController.postAttendance);
+app.get(API.getClassRecord, ClassRecordController.getRecord);
+app.get(API.getAllClassRecords, ClassRecordController.getAll);
+app.put(API.updateClassRecord, ClassRecordController.updateRecord);
+app.delete(API.deleteClassRecord, ClassRecordController.removeRecord);
+app.delete(API.removeAttendance, ClassRecordController.removeAttendance);
 
 //サーバーの起動
 app.listen(port, () => {

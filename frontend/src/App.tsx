@@ -1,62 +1,62 @@
 import "tailwindcss/tailwind.css";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import Login from "./pages/Login";
-import React, { useEffect, useState } from "react";
-import { adminRoutes } from "./components/routes";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import AttendanceSystem from "./pages/AttendanceSystem";
-import Sidebar from "./components/Sidebar";
-import StudentDatabase from "./pages/StudentDatabase";
-import ClassSession from "./pages/ClassSession";
-import ClassRecords from "./pages/ClassRecord";
+import { adminRoutes } from "./routes/routes";
+import { PAGES_PATH } from "@shared-library/constants";
+import Login from "@pages/Login";
+import Sidebar from "@components/Sidebar";
+import AttendanceSystem from "@pages/AttendanceSystem";
+import ClassRecords from "@pages/ClassRecord";
+import ClassSession from "@pages/ClassSession";
+import StudentDatabase from "@pages/StudentDatabase";
 
 function App(): JSX.Element {
   const [sidebar, setSidebar] = useState(true);
   // const userRole = localStorage.getItem("userSession");
-  const userRole = true
+  const userRole = true;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!userRole) {
-      navigate("/login");
+      navigate(PAGES_PATH.login);
     }
     if (userRole) {
-      navigate("/admin/student_database");
+      navigate(PAGES_PATH.studentDB);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-
-      <>
-        <Route
-          path="/admin/*"
-          element={<AdminRoutes sidebar={sidebar} setSidebar={setSidebar} />}
-        />
-      </>
+      <Route path={PAGES_PATH.login} element={<Login />} />
+      <Route
+        path="/admin/*"
+        element={<AdminRoutes sidebar={sidebar} setSidebar={setSidebar} />}
+      />
     </Routes>
   );
 }
 
-interface AdminRoutesProps {
+type AdminRoutes = {
   sidebar: boolean;
-  setSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-}
+  setSidebar: Dispatch<SetStateAction<boolean>>;
+};
+type AdminRoutesProps = Readonly<AdminRoutes>;
+
 function AdminRoutes({ sidebar, setSidebar }: AdminRoutesProps): JSX.Element {
   const location = useLocation();
+  const { studentDB, attendanceSys, classSession, classHistory } = PAGES_PATH;
 
   const renderContent = () => {
     switch (location.pathname) {
-      case "/admin/student_database":
+      case studentDB:
         return <StudentDatabase />;
-      case "/admin/attendance_system":
+      case attendanceSys:
         return <AttendanceSystem />;
-      case "/admin/attendance_system/class_session":
+      case classSession:
         return <ClassSession />;
-      case "/admin/attendance_system/class_history":
+      case classHistory:
         return <ClassRecords />;
       default:
         return <div>Invalid page</div>;

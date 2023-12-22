@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { ClassRecordModel } from "../model/model";
-import { FM } from "shared-library/src/constants";
-import { ClassRecord, IClassRecordModel } from "shared-library/src/types";
-import { handleCatchError } from "../helpers/shared-helpers";
+import { ClassRecordModel } from "@models/model";
+import { handleCatchError } from "@helpers/shared-helpers";
+import { FM } from "@shared-library/constants";
+import { ClassRecord, IClassRecordModel } from "@shared-library/types";
 
-export const postClassRecord = async (req: Request, res: Response) => {
+const post = async (req: Request, res: Response) => {
   try {
     const input: ClassRecord = req.body;
     const newClassRecord = await ClassRecordModel.create({ ...input });
@@ -14,7 +14,7 @@ export const postClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const postAttendance = async (req: Request, res: Response) => {
+const postAttendance = async (req: Request, res: Response) => {
   const { classId } = req.params;
   const attendanceBody: Pick<ClassRecord, "attendance"> = req.body;
 
@@ -32,7 +32,7 @@ export const postAttendance = async (req: Request, res: Response) => {
   }
 };
 
-export const getClassRecord = async (req: Request, res: Response) => {
+const getRecord = async (req: Request, res: Response) => {
   const { _id } = req.params;
 
   try {
@@ -45,7 +45,7 @@ export const getClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllClassRecords = async (req: Request, res: Response) => {
+const getAll = async (req: Request, res: Response) => {
   try {
     // Retrieve class record by ID
     const classRecord = await ClassRecordModel.find({}, { password: 0 }).exec();
@@ -57,7 +57,7 @@ export const getAllClassRecords = async (req: Request, res: Response) => {
   }
 };
 
-export const getLiveClassSessions = async (req: Request, res: Response) => {
+const getLiveSessions = async (req: Request, res: Response) => {
   try {
     const currentDate = new Date(); // Get the current date and time
 
@@ -75,7 +75,7 @@ export const getLiveClassSessions = async (req: Request, res: Response) => {
   }
 };
 
-export const updateClassRecord = async (req: Request, res: Response) => {
+const updateRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
   const updatedData: IClassRecordModel = req.body;
 
@@ -95,7 +95,7 @@ export const updateClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteClassRecord = async (req: Request, res: Response) => {
+const removeRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
@@ -108,15 +108,26 @@ export const deleteClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteAttendanceRecord = async (req: Request, res: Response) => {
+const removeAttendance = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
-    const deletedRecord = await ClassRecordModel.findByIdAndDelete(classId);
-    if (!deletedRecord)
+    const deletedAttendance = await ClassRecordModel.findByIdAndDelete(classId);
+    if (!deletedAttendance)
       return res.status(404).json({ message: FM.classRecordNotFound });
     res.json({ message: FM.classRecordDeleteSuccess });
   } catch (error) {
     handleCatchError(res, error, FM.classRecordDeleteFailed);
   }
+};
+
+export const ClassRecordController = {
+  post,
+  postAttendance,
+  getRecord,
+  getAll,
+  getLiveSessions,
+  updateRecord,
+  removeRecord,
+  removeAttendance,
 };

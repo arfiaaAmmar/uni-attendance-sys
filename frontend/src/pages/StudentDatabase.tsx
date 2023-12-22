@@ -1,30 +1,25 @@
 import { Button } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import SearchBox from "../components/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
-import { getAllStudents, registerStudent } from "../api";
-import { Student } from "shared-library/types";
 import { filterSearchQuery } from "../helpers/search-functions";
+import { Student } from "shared-library/src/types";
+import { getAllStudents, registerStudent } from "../api/student-api";
+import { defFeedback } from "shared-library/src/constants";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>();
   const [searchQuery, setSearchQuery] = useState("");
   const [registerModal, setRegisterModal] = useState(false);
-  const [filteredStudentList, setFilteredStudentList] = useState<
-    Student[] | undefined
-  >();
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [feedback, setFeedback] = useState({
-    success: "",
-    error: "",
-  });
+  const [feedback, setFeedback] = useState(defFeedback);
   const [formData, setFormData] = useState<Omit<Student, "studentId">>({
     name: "",
     email: "",
     phone: "",
-    course: "",
+    course: undefined,
   });
-
 
   useEffect(() => {
     const fetchAllStudents = async () => {
@@ -35,29 +30,30 @@ const StudentDatabase = () => {
         console.error("Error fetching user list:", error);
       }
     };
-    const filteredList = filterSearchQuery<Student>(
-      searchQuery,
-      studentList!,
-      ["name", "studentId", "course", "email", "phone"]
-    );
-    setFilteredStudentList(filteredList);
+    const filteredList = filterSearchQuery<Student>(searchQuery, studentList!, [
+      "name",
+      "studentId",
+      "course",
+      "email",
+      "phone",
+    ]);
+    setFilteredStudents(filteredList);
 
     fetchAllStudents();
   }, [studentList, searchQuery]);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (
       formData.email === "" ||
       formData.name === "" ||
       formData.phone === "" ||
-      formData.course === ""
+      formData.course === null
     ) {
       setFeedback({ ...feedback, error: "Please fill in all user data" });
       return;
     }
     try {
-      // Register the new user
       await registerStudent({
         email: formData.email,
         name: formData.name,
@@ -65,12 +61,11 @@ const StudentDatabase = () => {
         course: formData.course,
       });
       setFeedback({ ...feedback, success: "Successfully added user!" });
-      // Clear form inputs
       setFormData({
         email: "",
         name: "",
         phone: "",
-        course: "",
+        course: undefined,
       });
       setTimeout(() => {
         setFeedback({ ...feedback, success: "" });
@@ -85,16 +80,14 @@ const StudentDatabase = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleUploadButton = () => {
-    if (fileInputRef.current) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+    if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
       if (selectedFile) {
@@ -138,7 +131,7 @@ const StudentDatabase = () => {
         <p className="font-semibold w-3/12">Course</p>
       </div>
       <div className="bg-neutral-200 h-[60vh] overflow-y-auto">
-        {filteredStudentList?.map((student, index) => (
+        {filteredStudents?.map((student, index) => (
           <li
             key={student.studentId}
             className="flex px-4 py-2 justify-between scroll-auto"
@@ -190,16 +183,18 @@ const StudentDatabase = () => {
                 name="course"
                 id="course"
                 className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-                value={formData.course}
+                value={formData.course?.toString()}
                 onChange={handleChange}
               >
                 <option value="" disabled>
                   Select a course
                 </option>
-                <option value="IT">Information Technology</option>
+                <option value="Information Technology">
+                  Information Technology
+                </option>
                 <option value="Security">Security</option>
                 <option value="Secretary">Secretary</option>
-                <option value="FnB">Food & Beverage</option>
+                <option value="Food & Beverage">Food & Beverage</option>
               </select>
               <div className="flex justify-between mt-4">
                 <Button

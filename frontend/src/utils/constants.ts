@@ -12,8 +12,6 @@ export const CLASSROOM_LIST = [
   "Classroom 4",
 ];
 
-export const API_BASE_URL = "http://localhost:8888";
-
 export const dateTimeFormatForClassRecord = () => {
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-GB");

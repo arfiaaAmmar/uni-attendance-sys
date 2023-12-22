@@ -1,10 +1,5 @@
 {
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "moduleResolution": "Node16"
-  },
-  "scripts": {
+  "script": {
     "build:frontend": "yarn workspace shared-library build && vite build",
     "build:backend": "yarn workspace backend build"
   },
@@ -12,6 +7,6 @@
   "references": [
     { "path": "./frontend" },
     { "path": "./backend" },
-    // { "path": "./shared-library" }
+    { "path": "./shared-library" }
   ]
 }

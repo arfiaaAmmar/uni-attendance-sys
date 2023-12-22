@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@mui/material";
 import { getAllStudents } from "../api/student-api";
-import { postAttendance, updateClassRecord } from "../api/class-record-api";
-import { Student } from "shared-library/types";
+import { postAttendance } from "../api/class-record-api";
+import { Student } from "shared-library/src/types";
 
 type ManualAttendanceProps = {
   classId: string;
   manualAttendanceModal: boolean;
-  setManualAttendanceModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setManualAttendanceModal: Dispatch<SetStateAction<boolean>>;
 };
 
 const ManualAttendance = ({
@@ -38,7 +38,6 @@ const ManualAttendance = ({
     const { name, value } = event.target;
     setManualAttendanceForm((prevForm) => ({ ...prevForm, [name]: value }));
 
-    // Filter suggestions based on user input
     const filteredSuggestions = suggestions.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
@@ -46,8 +45,6 @@ const ManualAttendance = ({
     );
 
     setSuggestions(filteredSuggestions);
-
-    // Show/hide suggestions
     setShowSuggestions(!!value);
   };
 

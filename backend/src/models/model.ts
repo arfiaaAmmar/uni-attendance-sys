@@ -1,5 +1,5 @@
+import { IAdminModel, IStudentModel, IClassRecordModel } from "@shared-library/types";
 import { Schema, model } from "mongoose";
-import { IAdminModel, IClassRecordModel, IStudentModel } from "shared-library/src/types";
 
 // Define the User schema
 const adminSchema = new Schema<IAdminModel>({

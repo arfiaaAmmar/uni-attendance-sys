@@ -3,12 +3,12 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
-import { AdminModel } from "../model/model";
-import { FM } from "shared-library/src/constants";
-import { handleCatchError } from "../helpers/shared-helpers";
-import { Admin } from "shared-library/src/types";
+import { AdminModel } from "@models/model";
+import { Admin } from "@shared-library/types";
+import { FM } from "@shared-library/constants";
+import { handleCatchError } from "@helpers/shared-helpers";
 
-export const register = async (req: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone } = req.body;
     const existingUser = await AdminModel.findOne({ email });
@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const getAdminData = async (req: Request, res: Response) => {
+const getAdmin = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: FM.noAuthToken });
@@ -64,7 +64,7 @@ export const getAdminData = async (req: Request, res: Response) => {
   }
 };
 
-export const updateAdminData = async (req: Request, res: Response) => {
+const updateAdmin = async (req: Request, res: Response) => {
   const { email, ...adminData } = req.body;
 
   try {
@@ -83,7 +83,7 @@ export const updateAdminData = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteAdmin = async (req: Request, res: Response) => {
+const remove = async (req: Request, res: Response) => {
   const { adminId } = req.params;
 
   try {
@@ -96,4 +96,12 @@ export const deleteAdmin = async (req: Request, res: Response) => {
   } catch (error) {
     handleCatchError(res, error, FM.studentDeleteFailed);
   }
+};
+
+export const AdminController = {
+  register,
+  login,
+  getAdmin,
+  updateAdmin,
+  remove,
 };

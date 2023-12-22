@@ -1,10 +1,9 @@
-import { ENDPOINTS } from 'shared-library/src/constants.js';
-import { Student } from "shared-library/src/types.js";
-import { API_BASE_URL } from "../utils/constants";
+import { API_BASE_URL, API } from "@shared-library/constants";
+import { Student } from "@shared-library/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.registerAdmin}`, {
+    const response = await fetch(`${API_BASE_URL}${API.registerAdmin}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,14 +30,14 @@ export const registerStudent = async (studentForm: Omit<Student, "studentId">) =
 
 export const getStudent = async (studentId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get-student/${studentId}`, {
+    const response = await fetch(`${API_BASE_URL}${API.getStudent.replace(':studentId', studentId)}`, {
       headers: {
         "Content-Type": "application/json",
       },
     })
     const data = await response.json()
 
-    if (!response.ok){
+    if (!response.ok) {
       const error = data.error || "An error occured"
       throw new Error(error)
     }
@@ -52,7 +51,7 @@ export const getStudent = async (studentId: string) => {
 
 export const getAllStudents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.getAllStudents}`, {
+    const response = await fetch(`${API_BASE_URL}${API.getAllStudents}`, {
       headers: {
         "Content-Type": "application/json",
       },

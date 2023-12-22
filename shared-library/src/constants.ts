@@ -1,11 +1,15 @@
-export const ENDPOINTS = {
+export const CONTENT_TYPE_APPLICATION_JSON = { "Content-Type": "application/json" };
+
+export const API_BASE_URL = "http://localhost:8888";
+
+export const API = {
   registerAdmin: "/register-admin",
   adminLogin: "/admin-login",
   getAdminData: "/get-admin-data",
   updateAdminData: "/update-admin-data",
   deleteAdmin: "/delete-admin/:adminId",
   registerStudent: "/register-student",
-  getStudent: "/get-student:studentId",
+  getStudent: "/get-student/:studentId",
   searchStudent: "/search-student",
   getAllStudents: "/get-all-students",
   deleteStudent: "/delete-student/:studentId",
@@ -16,8 +20,16 @@ export const ENDPOINTS = {
   getAllClassRecords: "/get-all-class-records",
   updateClassRecord: "/update-class-record/:classId",
   deleteClassRecord: "/delete-class-record/:classId",
-  deleteAttendanceRecord: "/delete-attendance/:classId",
+  removeAttendance: "/delete-attendance/:classId",
 } as const;
+
+export const PAGES_PATH = {
+  login: '/login',
+  studentDB: 'admin/student_database',
+  attendanceSys: 'admin/attendance_system',
+  classSession: "/admin/attendance_system/class_session",
+  classHistory: "/admin/attendance_system/class_history",
+} as const
 
 export const FM = {
   default: "An error occured",
@@ -49,4 +61,10 @@ export const FM = {
   mongoDBConnectionFailed: " Failed to connect to MongoDB",
   serverError: "Internal server error",
   noAuthToken: "Authorization token not provided",
+  leavePageConfirmation: "Are you sure you want to leave this page ?",
 } as const;
+
+export const defFeedback = {
+  success: "",
+  error: "",
+}

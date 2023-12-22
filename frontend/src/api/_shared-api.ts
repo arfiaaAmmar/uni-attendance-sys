@@ -1,12 +1,8 @@
-import { API_BASE_URL } from "frontend/src/utils/constants";
+import { API_BASE_URL } from "@shared-library/constants";
+import { HandleDeleteType } from "@shared-library/types";
 
-export { registerStudent, getStudent, getAllStudents } from "./student-api.js";
-export { registerAdmin, loginAdmin, getAdminData } from "./admin-api.js";
 
-export const handleDelete = async (
-  id: string,
-  type: "admin" | "student" | "class-record"
-) => {
+export const handleDelete = async (id: string, type: HandleDeleteType) => {
   try {
     const response = await fetch(`${API_BASE_URL}/delete-${type}/${id}`, {
       method: "DELETE",
