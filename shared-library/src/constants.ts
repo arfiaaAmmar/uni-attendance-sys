@@ -2,7 +2,8 @@ export const CONTENT_TYPE_APPLICATION_JSON = { "Content-Type": "application/json
 
 export const API_BASE_URL = "http://localhost:8888";
 
-export const API = {
+export const ENDPOINT = {
+  queryStudentDB: "/query-student-db/suggestions?query=${value}",
   registerAdmin: "/register-admin",
   adminLogin: "/admin-login",
   getAdminData: "/get-admin-data",

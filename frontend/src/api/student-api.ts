@@ -1,9 +1,9 @@
-import { API_BASE_URL, API } from "@shared-library/constants";
+import { API_BASE_URL, ENDPOINT, FM } from "@shared-library/constants";
 import { Student } from "@shared-library/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${API.registerAdmin}`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.registerAdmin}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const registerStudent = async (studentForm: Omit<Student, "studentId">) =
 
 export const getStudent = async (studentId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${API.getStudent.replace(':studentId', studentId)}`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.getStudent.replace(':studentId', studentId)}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -51,7 +51,7 @@ export const getStudent = async (studentId: string) => {
 
 export const getAllStudents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}${API.getAllStudents}`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.getAllStudents}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -59,7 +59,7 @@ export const getAllStudents = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      const error = data.error || "An error occured";
+      const error = data.error || FM.default;
       throw new Error(error);
     }
 
@@ -68,6 +68,23 @@ export const getAllStudents = async () => {
     throw (error as Error).message
   }
 };
+
+export const queryStudents = async (query: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.queryStudentDB.replace("${value}", query)}`, {
+      headers: { "Content-Type": "application/json" }
+    })
+    const data = await response.json()
+
+    if (!response.ok) {
+      const error = data.error || FM.default
+      throw new Error(error)
+    }
+    return data
+  } catch (error) {
+    throw (error as Error).message
+  }
+}
 
 
 

@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import * as autoprefixer from "autoprefixer";
-import * as tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
+import tailwindcss from "tailwindcss";
 import purgeIcons from "vite-plugin-purge-icons";
 import tsconfigPaths from 'vite-tsconfig-paths'
-import * as path from 'path'
 
 export default defineConfig({
   plugins: [react(), purgeIcons(), tsconfigPaths()],
@@ -18,9 +17,4 @@ export default defineConfig({
     outDir: "dist",
     assetsDir: "assets",
   },
-  resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__dirname, 'src')}
-    ]
-  }
 });

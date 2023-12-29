@@ -1,12 +1,12 @@
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { Request, Response } from 'express'
 import { ObjectId } from "mongodb";
 import { JWT_SECRET } from "../config/config";
-import { AdminModel } from "@models/model";
 import { Admin } from "@shared-library/types";
 import { FM } from "@shared-library/constants";
 import { handleCatchError } from "@helpers/shared-helpers";
+import { AdminModel } from "@models/model";
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -46,7 +46,7 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const getAdmin = async (req: Request, res: Response) => {
+const get = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: FM.noAuthToken });
@@ -55,7 +55,7 @@ const getAdmin = async (req: Request, res: Response) => {
     const decoded: any = jwt.verify(token, JWT_SECRET!);
     const userId: ObjectId = new ObjectId(decoded.userId);
     const user = (await AdminModel.findById(userId)) as Admin;
-    const { email, name, phone } = user;
+    const { email, name, phone } = user || {};
     if (!user) return res.status(404).json({ message: FM.userNotFound });
 
     res.json({ email, name, phone });
@@ -64,7 +64,7 @@ const getAdmin = async (req: Request, res: Response) => {
   }
 };
 
-const updateAdmin = async (req: Request, res: Response) => {
+const update = async (req: Request, res: Response) => {
   const { email, ...adminData } = req.body;
 
   try {
@@ -98,10 +98,12 @@ const remove = async (req: Request, res: Response) => {
   }
 };
 
-export const AdminController = {
+const AdminController = {
   register,
   login,
-  getAdmin,
-  updateAdmin,
-  remove,
-};
+  get,
+  update,
+  remove
+}
+
+export default AdminController

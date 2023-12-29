@@ -1,11 +1,11 @@
-import { API_BASE_URL, API, CONTENT_TYPE_APPLICATION_JSON } from "@shared-library/constants";
+import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON } from "@shared-library/constants";
 import { Admin } from "@shared-library/types";
 import axios from "axios";
 
 export const registerAdmin = async (userForm: Admin) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}${API.registerAdmin}`,
+      `${API_BASE_URL}${ENDPOINT.registerAdmin}`,
       userForm,
       { headers: CONTENT_TYPE_APPLICATION_JSON }
     );
@@ -19,7 +19,7 @@ export const registerAdmin = async (userForm: Admin) => {
 export const loginAdmin = async (email: string, password: string) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}${API.adminLogin}`,
+      `${API_BASE_URL}${ENDPOINT.adminLogin}`,
       { email, password },
       { headers: CONTENT_TYPE_APPLICATION_JSON }
     );
@@ -43,7 +43,7 @@ export const getAdminData = async () => {
 
   try {
     const response = await axios.get(
-      `${API_BASE_URL}${API.getAdminData}`,
+      `${API_BASE_URL}${ENDPOINT.getAdminData}`,
       config
     );
     return response.data;

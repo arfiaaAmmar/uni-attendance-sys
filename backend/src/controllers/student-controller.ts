@@ -1,4 +1,3 @@
-// studentController.ts
 import { handleCatchError } from "@helpers/shared-helpers";
 import { StudentModel } from "@models/model";
 import { FM } from "@shared-library/constants";
@@ -66,11 +65,7 @@ const get = async (req: Request, res: Response) => {
 const getAll = async (req: Request, res: Response) => {
   try {
     const students = await StudentModel.find({}, { password: 0 }).exec();
-
-    if (students.length === 0) {
-      return res.status(404).json({ message: FM.studentNotFound });
-    }
-
+    if (students.length === 0) return res.status(404).json({ message: FM.studentNotFound });
     res.json(students);
   } catch (error) {
     handleCatchError(res, error, FM.studentNotFound);
@@ -79,12 +74,9 @@ const getAll = async (req: Request, res: Response) => {
 
 const remove = async (req: Request, res: Response) => {
   const { studentId } = req.params;
-
   try {
     const existingStudent = await StudentModel.findById(studentId);
-    if (!existingStudent) {
-      return res.status(404).json({ message: FM.studentNotFound });
-    }
+    if (!existingStudent) return res.status(404).json({ message: FM.studentNotFound });
 
     await StudentModel.findByIdAndDelete(studentId);
 
@@ -94,10 +86,24 @@ const remove = async (req: Request, res: Response) => {
   }
 };
 
-export const StudentController = {
+const query = async (req: Request, res: Response) => {
+  const { query } = req.query;
+  try {
+    const suggestions = await StudentModel.find({ name: { $regex: query, $options: 'i' } }).limit(10);
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+const StudentController = {
   register,
   search,
   get,
   getAll,
   remove,
-};
+  query
+}
+
+export default StudentController;

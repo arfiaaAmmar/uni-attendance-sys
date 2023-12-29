@@ -148,7 +148,7 @@ const ClassSession = () => {
     //display in modal to confirm
     //set add attendance
     // Clear form inputs
-    updateClassRecord();
+    // updateClassRecord();
 
     setClassRecordForm({
       lecturer: sessionStorage.getItem("userName")!,
@@ -263,7 +263,6 @@ const ClassSession = () => {
                 placeholder="Seach name / matrik"
                 query={manualAttendanceQuery}
                 onChange={setManualAttendanceQuery}
-                suggestions={fetchSuggestionData}
               />
               <div className="flex justify-between mt-4">
                 <Button
@@ -317,7 +316,9 @@ const ClassSession = () => {
                   Select a course
                 </option>
                 {Object.values(STUDENT_COURSES).map((course, index) => (
-                  <option key={index} value={course}>{course}</option>
+                  <option key={index} value={course}>
+                    {course}
+                  </option>
                 ))}
               </select>
               <select
@@ -331,7 +332,9 @@ const ClassSession = () => {
                   Select classroom
                 </option>
                 {CLASSROOM_LIST.map((classroom, index) => (
-                  <option key={index} value={classroom}>{classroom}</option>
+                  <option key={index} value={classroom}>
+                    {classroom}
+                  </option>
                 ))}
               </select>
               <input

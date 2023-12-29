@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, CssBaseline, Typography } from "@mui/material";
 import { getAdminData, loginAdmin } from "../api/admin-api";
 import { AuthContext } from "../context/AuthContext";
-import IMG from "../assets/assets";
+import IMG from "../assets/_assets";
 import { FM, PAGES_PATH, defFeedback } from "@shared-library/constants";
 import { Admin } from "@shared-library/types";
 

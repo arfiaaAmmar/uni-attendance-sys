@@ -1,34 +1,34 @@
+import { queryStudents } from "@api/student-api";
 import { useState } from "react";
 import Autosuggest from "react-autosuggest";
 
 type SearchProps = {
   query: string;
   onChange: (newQuery: string) => void;
-  suggestions: string[];
   placeholder?: string;
-  className?: string;
 };
 
-const SearchBox: React.FC<SearchProps> = ({
-  query,
-  onChange,
-  suggestions,
-  placeholder,
-  className,
-}) => {
-  const [suggestionsState, setSuggestionsState] = useState(suggestions);
+const SearchBox: React.FC<SearchProps> = ({ query, onChange, placeholder }) => {
+  const [suggestions, setSuggestions] = useState([]);
 
-  const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
+  const fetchSuggestions = async (query: string) => {
+    try {
+      const data = await queryStudents(query);
+      setSuggestions(data);
+    } catch (error) {
+      console.error("Error fetching students", error);
+    }
+  };
+
+  const onSuggestionsFetchRequested = async ({ value }: { value: string }) => {
     const inputValue = value.trim().toLowerCase();
-    const filteredSuggestions = suggestions?.filter((suggestion) =>
-      suggestion.toLowerCase().includes(inputValue)
-    );
-
-    if (filteredSuggestions) setSuggestionsState(filteredSuggestions);
+    if (inputValue.length > 0) {
+      await fetchSuggestions(inputValue);
+    }
   };
 
   const onSuggestionsClearRequested = () => {
-    setSuggestionsState([]);
+    setSuggestions([]);
   };
 
   const inputProps = {
@@ -40,7 +40,7 @@ const SearchBox: React.FC<SearchProps> = ({
 
   return (
     <Autosuggest
-      suggestions={suggestionsState}
+      suggestions={suggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={(suggestion) => suggestion}

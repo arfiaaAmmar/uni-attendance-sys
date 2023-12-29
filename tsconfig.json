@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared-library/*": ["./shared-library/src/*"],
+    }
+  },
   "script": {
     "build:frontend": "yarn workspace shared-library build && vite build",
     "build:backend": "yarn workspace backend build"

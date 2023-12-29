@@ -5,13 +5,13 @@ import { getAllClassRecords } from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
-import { ClassRecord, Feedback } from "shared-library/src/types";
+import { ClassRecord } from "shared-library/src/types";
+import { defFeedback } from "@shared-library/constants";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
   const [filteredRecord, setFilteredRecord] = useState<ClassRecord[]>();
   const [selectedRecord, setSelectedRecord] = useState<ClassRecord>();
   const [updatedRecord, setUpdatedRecord] = useState<ClassRecord>();
@@ -21,11 +21,7 @@ export const ClassRecords = () => {
     printRecord: false,
     manualAttendance: false,
   });
-
-    const [feedback, setFeedback] = useState<Feedback>({
-      success: "",
-      error: "",
-    });
+  const [feedback, setFeedback] = useState(defFeedback);
 
   const [manualAttendanceInput, setManualAttendanceInput] = useState({
     studentName: "",
@@ -49,9 +45,7 @@ export const ClassRecords = () => {
 
   const handleEditModel = async (_id?: string) => {
     setActionModal({ ...actionModal, editRecordModal: true });
-    const selectedRecord = records.find(
-      (record) => record._id
-    );
+    const selectedRecord = records.find((record) => record._id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
@@ -62,7 +56,7 @@ export const ClassRecords = () => {
         manualAttendance: false,
       });
     }
-  }
+  };
 
   const handleUpdateRecord = async (classId: string) => {
     try {
@@ -72,7 +66,7 @@ export const ClassRecords = () => {
     }
   };
 
-  const handleSubmitManualAttendance = async () => {}
+  const handleSubmitManualAttendance = async () => {};
 
   useEffect(() => {
     const fetchAllClassRecords = async () => {
@@ -132,8 +126,8 @@ export const ClassRecords = () => {
         <p className="font-semibold w-2/12">Action</p>
       </div>
       <div className="bg-neutral-200 h-[70vh] overflow-y-auto">
-        {filteredRecord?.map((record, index) => (
-          <div key={index} className="flex px-4 py-2 justify-evenly">
+        {filteredRecord?.map((record) => (
+          <div key={record._id} className="flex px-4 py-2 justify-evenly">
             <p className="w-3/12">
               {record.date} {record?.startTime}
             </p>
@@ -156,7 +150,6 @@ export const ClassRecords = () => {
           </div>
         ))}
       </div>
-
       {actionModal.viewRecordModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-full h-full">
@@ -183,8 +176,6 @@ export const ClassRecords = () => {
           </div>
         </div>
       )}
-
-      //manualAttendance
       {actionModal.manualAttendance && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-md p-8 flex gap-8">
@@ -197,7 +188,11 @@ export const ClassRecords = () => {
               ) : null}
               <form>
                 <p>Seach Student Name</p>
-                <SearchBox className="my-2" placeholder="Seach name / matrik" query={searchQuery} onChange={setSearchQuery} />
+                <SearchBox
+                  placeholder="Seach name / matrik"
+                  query={searchQuery}
+                  onChange={setSearchQuery}
+                />
                 <div className="flex justify-between mt-4">
                   <Button
                     onClick={() => handleSubmitManualAttendance}
@@ -209,7 +204,10 @@ export const ClassRecords = () => {
                   </Button>
                   <Button
                     onClick={() =>
-                      setActionModal({ ...actionModal, manualAttendance: false })
+                      setActionModal({
+                        ...actionModal,
+                        manualAttendance: false,
+                      })
                     }
                     variant="outlined"
                     className="text-gray-600"
@@ -220,7 +218,10 @@ export const ClassRecords = () => {
               </form>
             </div>
             <div>
-              <Avatar style={{ width: '100px', height: '100px'}} className="mx-auto mb-4" />
+              <Avatar
+                style={{ width: "100px", height: "100px" }}
+                className="mx-auto mb-4"
+              />
               <p className="text-sm text-gr">Student Name</p>
               <p className="text-xl">Ammar Hazim</p>
               <p className="text-sm">Student Id </p>
@@ -235,7 +236,10 @@ export const ClassRecords = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
             <h1 className="text-2xl font-bold my-2">Edit Record</h1>
-            <SearchBox suggestions={} query={searchQuery} onChange={setSearchQuery} />
+            <SearchBox
+              query={searchQuery}
+              onChange={setSearchQuery}
+            />
             <div className="flex justify-between">
               <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
                 <div className="flex">

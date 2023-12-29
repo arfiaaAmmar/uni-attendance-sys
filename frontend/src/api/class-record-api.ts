@@ -1,11 +1,11 @@
 
 import { handleAPIRequest } from "@helpers/handlers";
-import { API, API_BASE_URL } from "@shared-library/constants";
+import { ENDPOINT, API_BASE_URL } from "@shared-library/constants";
 import { ClassRecord, HandleDeleteType, StudentAttendance } from "@shared-library/types";
 
 export const postClassRecord = async <T>(classData: T) => {
   return handleAPIRequest<T>(
-    `${API_BASE_URL}${API.postClassRecord}`,
+    `${API_BASE_URL}${ENDPOINT.postClassRecord}`,
     "POST",
     classData
   );
@@ -16,7 +16,7 @@ export const postAttendance = async (
   attendanceData: StudentAttendance
 ) => {
   return handleAPIRequest<void>(
-    `${API_BASE_URL}${API.postAttendance.replace(":classId", _id)}`,
+    `${API_BASE_URL}${ENDPOINT.postAttendance.replace(":classId", _id)}`,
     "POST",
     attendanceData
   );
@@ -24,14 +24,14 @@ export const postAttendance = async (
 
 export const getClassRecord = async (_id: string) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_BASE_URL}${API.getClassRecord.replace(":classId", _id)}`,
+    `${API_BASE_URL}${ENDPOINT.getClassRecord.replace(":classId", _id)}`,
     "GET"
   );
 };
 
 export const updateClassRecord = async (_id: string, data: ClassRecord) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_BASE_URL}${API.updateClassRecord.replace(":classId", _id)}`,
+    `${API_BASE_URL}${ENDPOINT.updateClassRecord.replace(":classId", _id)}`,
     "PUT",
     data
   );
@@ -39,14 +39,14 @@ export const updateClassRecord = async (_id: string, data: ClassRecord) => {
 
 export const getAllClassRecords = async () => {
   return handleAPIRequest<any[]>(
-    `${API_BASE_URL}${API.getAllClassRecords}`,
+    `${API_BASE_URL}${ENDPOINT.getAllClassRecords}`,
     "GET"
   );
 };
 
 export const getLiveClassRecords = async () => {
   return handleAPIRequest<any[]>(
-    `${API_BASE_URL}${API.getLiveClassSessions}`,
+    `${API_BASE_URL}${ENDPOINT.getLiveClassSessions}`,
     "GET"
   );
 };

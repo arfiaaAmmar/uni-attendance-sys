@@ -51,4 +51,3 @@ export const truncateText = (txt: string, maxLength: number): string => {
 export const firstLetterUppercase = (txt: string) => {
   return txt.charAt(0).toUpperCase() + txt.slice(1);
 };
-
