@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@shared-library/*": ["./shared-library/src/*"],
-    }
+    "esModuleInterop": true,
+    "skipLibCheck": true,
   },
   "script": {
     "build:frontend": "yarn workspace shared-library build && vite build",
@@ -11,8 +10,8 @@
   },
   "exclude": ["./node_modules"],
   "references": [
-    { "path": "./frontend" },
-    { "path": "./backend" },
-    { "path": "./shared-library" }
+    { "path": "./packages/frontend" },
+    { "path": "./packages/backend" },
+    { "path": "./packages/shared-library" }
   ]
 }
