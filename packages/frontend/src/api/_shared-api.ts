@@ -1,5 +1,5 @@
-import { API_BASE_URL } from "packages/shared-library/src/constants";
-import { HandleDeleteType } from "packages/shared-library/src/types";
+import { API_BASE_URL } from "@shared-library/constants";
+import { HandleDeleteType } from "@shared-library/types";
 
 
 export const handleDelete = async (id: string, type: HandleDeleteType) => {
@@ -17,3 +17,11 @@ export const handleDelete = async (id: string, type: HandleDeleteType) => {
     );
   }
 };
+
+
+
+
+
+
+
+

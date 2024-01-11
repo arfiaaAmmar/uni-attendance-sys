@@ -1,7 +1,6 @@
 import { Schema, model } from "mongoose";
-import { IAdminModel, IClassRecordModel, IStudentModel } from "packages/shared-library/src/types"
+import { IAdminModel, IClassRecordModel, IScannerRecordModel, IStudentModel } from "@shared-library/types"
 
-// Define the User schema
 const adminSchema = new Schema<IAdminModel>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -17,6 +16,7 @@ const studentSchema = new Schema<IStudentModel>({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   course: { type: String, required: true },
+  attendanceScannerId: { type: Number, required: true },
 });
 
 export const StudentModel = model<IStudentModel>("Student", studentSchema);
@@ -30,9 +30,9 @@ const classRecord = new Schema<IClassRecordModel>({
   endTime: { type: String, required: true },
   attendance: [
     {
-      studentName: { type: String },
-      studentId: { type: String },
-      attendanceTime: { type: String },
+      studentName: { type: String, required: true },
+      studentId: { type: String, required: true },
+      attendanceTime: { type: String, required: true },
     },
   ],
 });
@@ -41,3 +41,14 @@ export const ClassRecordModel = model<IClassRecordModel>(
   "Class Record",
   classRecord
 );
+
+const scannerRecord = new Schema<IScannerRecordModel>({
+  studentName: { type: String, required: true },
+  attendanceId: { type: Number, required: true },
+  attendanceTime: { type: String, required: true },
+})
+
+export const ScannerRecordModel = model<IScannerRecordModel>(
+  "Scanner Attendance",
+  scannerRecord
+)

@@ -2,7 +2,7 @@ import { getAuthorisedUser } from "@api/admin-api"
 import { getAllClassRecords, getClassRecord, getLiveClassRecords } from "@api/class-record-api"
 import { getAllStudents, getStudent } from "@api/student-api"
 import { useDataFetching } from "@helpers/shared-helpers"
-import { Admin, ClassRecord, Student } from "packages/shared-library/src/types"
+import { Admin, ClassRecord, Student } from "@shared-library/types"
 
 
 export const useUserProfile = () => {

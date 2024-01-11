@@ -5,8 +5,8 @@ import { getAllClassRecords } from "../api/class-record-api";
 import SearchBox from "../components/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
-import { ClassRecord } from "packages/shared-library/src/types";
-import { defFeedback } from "packages/shared-library/src/constants";
+import { ClassRecord } from "@shared-library/types";
+import { defFeedback } from "@shared-library/constants";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);

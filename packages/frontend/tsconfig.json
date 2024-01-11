@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "outDir": "dist",
@@ -12,11 +12,11 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
+    "esModuleInterop": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "declaration": true,
-    "esModuleInterop": true,
     "baseUrl": "./",
     "paths": {
       "@shared-library/*": ["../shared-library/src/*"],

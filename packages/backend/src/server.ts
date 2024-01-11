@@ -5,7 +5,7 @@ import { MONGODB_URI, app, port } from "./config/config";
 import AdminController from "@controllers/admin-controller";
 import StudentController from "@controllers/student-controller";
 import ClassRecordController from "@controllers/class-record-controller";
-import { FM, ENDPOINT } from "packages/shared-library/src/constants";
+import { FM, ENDPOINT } from "@shared-library/constants";
 
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");

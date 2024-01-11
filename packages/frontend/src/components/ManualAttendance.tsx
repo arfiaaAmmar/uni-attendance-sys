@@ -24,7 +24,7 @@ const ManualAttendance = ({
   const [error, setError] = useState();
 
   useEffect(() => {
-    async () => {
+    const initialStudentListFetch = async () => {
       try {
         const data = await getAllStudents();
         setSuggestions(data);
@@ -32,6 +32,7 @@ const ManualAttendance = ({
         console.error("Error fetching data:", error);
       }
     };
+    initialStudentListFetch()
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +122,6 @@ const ManualAttendance = ({
                     ))}
                   </ul>
                 )}
-                {/* Buttons and other form components */}
                 <Button
                   onClick={() =>
                     setManualAttendanceModal(!manualAttendanceModal)

@@ -11,8 +11,8 @@ import {
 import { getAuthorisedUser, loginAdmin } from "../api/admin-api";
 import { AuthContext } from "../context/AuthContext";
 import IMG from "../assets/_assets";
-import { FM, PAGES_PATH, defFeedback } from "packages/shared-library/src/constants";
-import { Admin } from "packages/shared-library/src/types";
+import { FM, PAGES_PATH, defFeedback } from "@shared-library/constants";
+import { Admin } from "@shared-library/types";
 
 const Login = () => {
   const [credential, setCredential] = useState({

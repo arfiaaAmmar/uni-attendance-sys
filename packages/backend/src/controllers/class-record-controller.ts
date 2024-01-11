@@ -1,8 +1,8 @@
 // ClassRecordController.ts
 import { handleCatchError } from "@helpers/shared-helpers";
 import { ClassRecordModel } from "@models/model";
-import { FM } from "packages/shared-library/src/constants";
-import { ClassRecord, IClassRecordModel } from "packages/shared-library/src/types";
+import { FM } from "@shared-library/constants";
+import { ClassRecord, IClassRecordModel } from "@shared-library/types";
 import { Request, Response } from "express";
 
   const post = async (req: Request, res: Response) => {

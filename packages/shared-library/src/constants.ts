@@ -3,9 +3,11 @@ export const CONTENT_TYPE_APPLICATION_JSON = { "Content-Type": "application/json
 export const STORAGE = {
   token: "token",
   userData: "userData",
+  classSession: "classSession",
 } as const;
 
 export const API_BASE_URL = "http://localhost:8888";
+// export const API_BASE_URL + "http://localhost:8888";
 
 export const ENDPOINT = {
   queryStudentDB: "/query-student-db/suggestions?query=${value}",
@@ -64,13 +66,29 @@ export const FM = {
   classRecordDeleteFailed: "Error deleting class record",
   liveClassSessionNotFound: "No live class sessions found",
   addingAttendanceFailed: "Error adding attendance",
+  addingAttendanceSuccess: "Attendance added successfully",
   mongoDBConnectionFailed: " Failed to connect to MongoDB",
+  classStartSuccess: "Class started successfully",
   serverError: "Internal server error",
   noAuthToken: "Authorization token not provided",
+  pleaseCreateClassFirst: "Please create class session first",
   leavePageConfirmation: "Are you sure you want to leave this page ?",
 } as const;
 
 export const defFeedback = {
   success: "",
   error: "",
-}
+};
+export const STUDENT_COURSES = {
+  IT: "Information Technology",
+  FnB: "Food & Beverages",
+  SECRETARY: "Secretary",
+  SECURITY: "Security",
+};
+
+export const CLASSROOM_LIST = [
+  "Classroom 1",
+  "Classroom 2",
+  "Classroom 3",
+  "Classroom 4",
+];

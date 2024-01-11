@@ -1,19 +1,31 @@
-
 import { handleAPIRequest } from "@helpers/handlers";
-import { ENDPOINT, API_BASE_URL } from "packages/shared-library/src/constants";
-import { ClassRecord, HandleDeleteType, StudentAttendance } from "packages/shared-library/src/types";
+import { ENDPOINT, API_BASE_URL, STORAGE } from "@shared-library/constants";
+import { ClassRecord, HandleDeleteType, Attendance } from "@shared-library/types";
 
-export const postClassRecord = async <T>(classData: T) => {
-  return handleAPIRequest<T>(
+/**
+ * Posts a class record to the API.
+ *
+ * @param {ClassRecord} classData - The class record data to be posted.
+ * @returns {Promise<ClassRecord>} A promise that resolves to the posted class record.
+ */
+export const postClassRecord = async (classData: ClassRecord) => {
+  return handleAPIRequest<ClassRecord>(
     `${API_BASE_URL}${ENDPOINT.postClassRecord}`,
     "POST",
     classData
   );
 };
 
+/**
+ * Posts attendance data for a specific class.
+ *
+ * @param {string} _id - The ID of the class.
+ * @param {Attendance} attendanceData - The attendance data to be posted.
+ * @returns {Promise<void>} A promise that resolves when the attendance is posted successfully.
+ */
 export const postAttendance = async (
   _id: string,
-  attendanceData: StudentAttendance
+  attendanceData: Attendance
 ) => {
   return handleAPIRequest<void>(
     `${API_BASE_URL}${ENDPOINT.postAttendance.replace(":classId", _id)}`,
@@ -22,6 +34,12 @@ export const postAttendance = async (
   );
 };
 
+/**
+ * Retrieves a class record from the API based on the provided ID.
+ *
+ * @param {string} _id - The ID of the class record.
+ * @returns {Promise<ClassRecord>} A promise that resolves to the retrieved class record.
+ */
 export const getClassRecord = async (_id: string) => {
   return handleAPIRequest<ClassRecord>(
     `${API_BASE_URL}${ENDPOINT.getClassRecord.replace(":classId", _id)}`,
@@ -29,6 +47,13 @@ export const getClassRecord = async (_id: string) => {
   );
 };
 
+/**
+ * Updates a class record in the API.
+ *
+ * @param {string} _id - The ID of the class record to be updated.
+ * @param {ClassRecord} data - The updated class record data.
+ * @returns {Promise<ClassRecord>} A promise that resolves to the updated class record.
+ */
 export const updateClassRecord = async (_id: string, data: ClassRecord) => {
   return handleAPIRequest<ClassRecord>(
     `${API_BASE_URL}${ENDPOINT.updateClassRecord.replace(":classId", _id)}`,
@@ -37,6 +62,11 @@ export const updateClassRecord = async (_id: string, data: ClassRecord) => {
   );
 };
 
+/**
+ * Retrieves all class records from the API.
+ *
+ * @returns {Promise<any[]>} A promise that resolves to an array of class records.
+ */
 export const getAllClassRecords = async () => {
   return handleAPIRequest<any[]>(
     `${API_BASE_URL}${ENDPOINT.getAllClassRecords}`,
@@ -44,6 +74,11 @@ export const getAllClassRecords = async () => {
   );
 };
 
+/**
+ * Retrieves live class session records from the API.
+ *
+ * @returns {Promise<any[]>} A promise that resolves to an array of live class session records.
+ */
 export const getLiveClassRecords = async () => {
   return handleAPIRequest<any[]>(
     `${API_BASE_URL}${ENDPOINT.getLiveClassSessions}`,
@@ -51,6 +86,22 @@ export const getLiveClassRecords = async () => {
   );
 };
 
+/**
+ * Retrieves class session data from the sessionStorage.
+ *
+ * @returns {ClassRecord} The retrieved class session data.
+ */
+export const getClassSessionData = (): ClassRecord => {
+  return JSON.parse(sessionStorage.getItem(STORAGE.classSession!)!);
+};
+
+/**
+ * Handles the deletion of a resource (class record or attendance) from the API.
+ *
+ * @param {string} id - The ID of the resource to be deleted.
+ * @param {HandleDeleteType} type - The type of resource to be deleted.
+ * @returns {Promise<void>} A promise that resolves when the resource is deleted successfully.
+ */
 export const handleDelete = async (id: string, type: HandleDeleteType) => {
   try {
     const response = await fetch(`${API_BASE_URL}/delete-${type}/${id}`, {

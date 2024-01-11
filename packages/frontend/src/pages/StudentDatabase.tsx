@@ -3,9 +3,9 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import SearchBox from "../components/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
 import { filterSearchQuery } from "../helpers/search-functions";
-import { Student } from "packages/shared-library/src/types";
+import { Student } from "@shared-library/types";
 import { getAllStudents, registerStudent } from "../api/student-api";
-import { defFeedback } from "packages/shared-library/src/constants";
+import { defFeedback } from "@shared-library/constants";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>();

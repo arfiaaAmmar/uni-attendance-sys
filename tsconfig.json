@@ -1,9 +1,4 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-  },
   "script": {
     "build:frontend": "yarn workspace shared-library build && vite build",
     "build:backend": "yarn workspace backend build"

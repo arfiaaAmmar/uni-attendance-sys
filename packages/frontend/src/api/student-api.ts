@@ -1,5 +1,5 @@
-import { API_BASE_URL, ENDPOINT, FM } from "packages/shared-library/src/constants";
-import { Student } from "packages/shared-library/src/types";
+import { API_BASE_URL, ENDPOINT, FM } from "@shared-library/constants";
+import { Student } from "@shared-library/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   try {

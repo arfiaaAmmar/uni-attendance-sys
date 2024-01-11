@@ -7,10 +7,11 @@ export type Courses =
   | "Secretary";
 export type Classrooms = "Classroom 1" | "Classroom 2" | "Classroom 3";
 export type HandleDeleteType = "admin" | "student" | "class-record";
+export type ClassStatus = "Not started" | "Ongoing" | "Ended"
 
 export type Feedback = {
   success: string;
-  error: string | unknown;
+  error: string;
 };
 
 export type Admin = {
@@ -27,26 +28,35 @@ export type Student = {
   email: string;
   phone: string;
   course?: Courses;
+  attendanceScannerId?: number;
 };
 
-export type StudentAttendance = {
+export type Attendance = {
   studentName: string;
   studentId: string;
   attendanceTime: string;
 };
 
 export type ClassRecord = {
-  _id?:string;
+  _id?: string;
   lecturer: string;
-  classroom: Classrooms | string;
-  course: Courses | string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  attendance?: StudentAttendance[];
+  classroom: Classrooms;
+  course: Courses;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  attendance?: Attendance[];
 };
+
+export type ScannerRecord = {
+  _id?: string;
+  attendanceId: number;
+  studentName: string;
+  attendanceTime: string;
+}
 
 // Define the User interface
 export type IAdminModel = Admin & Document;
 export type IStudentModel = Student & Document;
 export type IClassRecordModel = ClassRecord & Document;
+export type IScannerRecordModel = ScannerRecord & Document;
