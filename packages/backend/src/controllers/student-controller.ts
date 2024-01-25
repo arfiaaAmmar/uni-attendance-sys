@@ -3,11 +3,11 @@ import { StudentModel } from "@models/model";
 import { FM } from "@shared-library/constants";
 import { Student } from "@shared-library/types";
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 
-const register = async (req: Request, res: Response) => {
+export const registerStudent = async (req: Request, res: Response) => {
   try {
-    const { email, name, phone, course } = req.body as Student;
+    const { email, name, phone, course } = req.body as Omit<Student, "studentId">;
 
     const existingUser = await StudentModel.findOne({ email });
     if (existingUser) return res.status(409).json({ message: FM.userExist });
@@ -28,7 +28,7 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-const search = async (req: Request, res: Response) => {
+export const searchStudent = async (req: Request, res: Response) => {
   const { query } = req.query;
 
   if (typeof query !== "string") {
@@ -48,7 +48,7 @@ const search = async (req: Request, res: Response) => {
   }
 };
 
-const get = async (req: Request, res: Response) => {
+export const getStudent = async (req: Request, res: Response) => {
   const { studentId } = req.params;
 
   try {
@@ -62,7 +62,7 @@ const get = async (req: Request, res: Response) => {
   }
 };
 
-const getAll = async (req: Request, res: Response) => {
+export const getAllStudents = async (req: Request, res: Response) => {
   try {
     const students = await StudentModel.find({}, { password: 0 }).exec();
     if (students.length === 0) return res.status(404).json({ message: FM.studentNotFound });
@@ -72,7 +72,7 @@ const getAll = async (req: Request, res: Response) => {
   }
 };
 
-const remove = async (req: Request, res: Response) => {
+export const deleteStudent = async (req: Request, res: Response) => {
   const { studentId } = req.params;
   try {
     const existingStudent = await StudentModel.findById(studentId);
@@ -86,7 +86,7 @@ const remove = async (req: Request, res: Response) => {
   }
 };
 
-const query = async (req: Request, res: Response) => {
+export const query = async (req: Request, res: Response) => {
   const { query } = req.query;
   try {
     const suggestions = await StudentModel.find({ name: { $regex: query, $options: 'i' } }).limit(10);
@@ -96,14 +96,3 @@ const query = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 }
-
-const StudentController = {
-  register,
-  search,
-  get,
-  getAll,
-  remove,
-  query
-}
-
-export default StudentController;

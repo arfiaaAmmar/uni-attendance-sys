@@ -24,6 +24,7 @@
       "@helpers/*": ["./src/helpers/*"],
       "@assets/*": ["./src/assets/*"],
       "@pages/*": ["./src/pages/*"],
+      "@utils/*": ["./src/utils/*"],
       "@api/*": ["./src/api/*"]
     }
   },

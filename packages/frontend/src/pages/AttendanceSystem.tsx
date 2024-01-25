@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClassRecords } from "../api/class-record-api";
+import { getAllClassRecords, getLiveClassRecords } from "../api/class-record-api";
 import { ClassRecord } from "@shared-library/types";
 import { PAGES_PATH } from "@shared-library/constants";
 
@@ -26,12 +26,7 @@ const AttendanceSystem = () => {
             return endTime < currentTime;
           });
 
-          // TODO: Should be placed in the backend as endpoint i.e getLiveClassSession
-          // Create API to fetch liveClassSession
-          const liveClasses = data.filter((record: ClassRecord) => {
-            const endTime = new Date(`${record.date} ${record.endTime}`);
-            return endTime >= currentTime;
-          });
+          const liveClasses = await getLiveClassRecords()
 
           setRecent(endedClasses);
           setLiveClasses(liveClasses)

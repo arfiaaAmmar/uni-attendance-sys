@@ -9,10 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import { getAuthorisedUser, loginAdmin } from "../api/admin-api";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
-import { FM, PAGES_PATH, defFeedback } from "@shared-library/constants";
+import { FM, PAGES_PATH, STORAGE_NAME, defFeedback } from "@shared-library/constants";
 import { Admin } from "@shared-library/types";
+import { isEmpty } from "radash";
 
 const Login = () => {
   const [credential, setCredential] = useState({
@@ -20,20 +21,15 @@ const Login = () => {
     password: "",
     rememberMe: false,
   });
-  const [feedback, setFeedback] = useState(defFeedback);
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (
-      credential.email === "" ||
-      credential.password === "" ||
-      credential.rememberMe === false ||
-      credential.email.includes(" ") ||
-      credential.password.includes(" ")
-    ) {
-      setFeedback({ ...feedback, error: "Please enter username and password" });
+    if (isEmpty(credential)) {
+      setError(FM.pleaseEnterUsernameAndPassword);
       return;
     }
     try {
@@ -50,14 +46,14 @@ const Login = () => {
         phone,
       };
       sessionStorage.setItem(
-        "userSessionData",
+        STORAGE_NAME.userSessionData,
         JSON.stringify(userLocalSessionData)
       );
       setUser(userLocalSessionData);
       navigate(PAGES_PATH.studentDB);
     } catch (error: any) {
       console.error("Error logging in:", error);
-      setFeedback(error);
+      setError(error);
     }
   };
 
@@ -152,10 +148,10 @@ const Login = () => {
         >
           Login
         </Button>
-        {feedback.success ? (
-          <Typography sx={{ color: "green" }}>{feedback.success}</Typography>
+        {success ? (
+          <Typography sx={{ color: "green" }}>{success}</Typography>
         ) : (
-          <Typography sx={{ color: "red" }}>{feedback.error}</Typography>
+          <Typography sx={{ color: "red" }}>{error}</Typography>
         )}
       </div>
     </Box>

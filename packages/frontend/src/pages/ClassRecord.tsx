@@ -21,7 +21,8 @@ export const ClassRecords = () => {
     printRecord: false,
     manualAttendance: false,
   });
-  const [feedback, setFeedback] = useState(defFeedback);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const [manualAttendanceInput, setManualAttendanceInput] = useState({
     studentName: "",
@@ -181,10 +182,10 @@ export const ClassRecords = () => {
           <div className="bg-white rounded-md p-8 flex gap-8">
             <div className="">
               <p className="text-lg mb-4">Start Class</p>
-              {typeof feedback.error === "string" ? (
-                <p className="text-red-500 font-bold">{feedback.error}</p>
-              ) : feedback.success ? (
-                <p className="text-green-600 font-bold">{feedback.success}</p>
+              {error ? (
+                <p className="text-red-500 font-bold">{error}</p>
+              ) : success ? (
+                <p className="text-green-600 font-bold">{success}</p>
               ) : null}
               <form>
                 <p>Seach Student Name</p>
@@ -236,10 +237,7 @@ export const ClassRecords = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
             <h1 className="text-2xl font-bold my-2">Edit Record</h1>
-            <SearchBox
-              query={searchQuery}
-              onChange={setSearchQuery}
-            />
+            <SearchBox query={searchQuery} onChange={setSearchQuery} />
             <div className="flex justify-between">
               <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
                 <div className="flex">

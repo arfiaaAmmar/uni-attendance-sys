@@ -16,13 +16,15 @@ const studentSchema = new Schema<IStudentModel>({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   course: { type: String, required: true },
-  attendanceScannerId: { type: Number, required: true },
+  attendanceScannerId: { type: String }
 });
 
 export const StudentModel = model<IStudentModel>("Student", studentSchema);
 
 const classRecord = new Schema<IClassRecordModel>({
+  classId: { type: String, required: true },
   lecturer: { type: String, required: true },
+  lecturerEmail: { type: String, required: true },
   course: { type: String, required: true },
   classroom: { type: String, required: true },
   date: { type: String, required: true },

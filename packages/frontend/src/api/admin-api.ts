@@ -1,5 +1,5 @@
-import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE, FM } from "@shared-library/constants";
-import { Admin } from "@shared-library/types";
+import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "@shared-library/constants";
+import { Admin, ClassRecord } from "@shared-library/types";
 import axios from "axios";
 
 export const registerAdmin = async (userForm: Admin) => {
@@ -32,11 +32,11 @@ export const loginAdmin = async (email: string, password: string, rememberMe: bo
     }
 
     if (rememberMe) {
-      localStorage.setItem(STORAGE.token, data.token);
-      sessionStorage.removeItem(STORAGE.token);
+      localStorage.setItem(STORAGE_NAME.token, data.token);
+      sessionStorage.removeItem(STORAGE_NAME.token);
     } else {
-      sessionStorage.setItem(STORAGE.token, data.token);
-      localStorage.removeItem(STORAGE.token);
+      sessionStorage.setItem(STORAGE_NAME.token, data.token);
+      localStorage.removeItem(STORAGE_NAME.token);
     }
 
     return data;
@@ -47,8 +47,8 @@ export const loginAdmin = async (email: string, password: string, rememberMe: bo
 
 export const getAuthorisedUser = async () => {
   try {
-    const rememberedToken = localStorage.getItem(STORAGE.token);
-    const sessionToken = sessionStorage.getItem(STORAGE.token);
+    const rememberedToken = localStorage.getItem(STORAGE_NAME.token);
+    const sessionToken = sessionStorage.getItem(STORAGE_NAME.token);
 
     const token = sessionToken || rememberedToken;
     if (!token) {
@@ -78,5 +78,9 @@ export const getAuthorisedUser = async () => {
 };
 
 export const getUserSessionData = (): Admin => {
-  return JSON.parse(sessionStorage.getItem(STORAGE.userData!)!);
+  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.userSessionData!)!);
 };
+
+export const getClassSessionData = (): ClassRecord => {
+  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData!)!);
+}

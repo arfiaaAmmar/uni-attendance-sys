@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { ObjectId } from "mongodb";
 import { Admin } from "@shared-library/types";
 import { FM } from "@shared-library/constants";
@@ -8,7 +8,7 @@ import { handleCatchError } from "@helpers/shared-helpers";
 import { AdminModel } from "@models/model";
 import { JWT_SECRET } from "@config/config";
 
-const register = async (req: Request, res: Response) => {
+export const registerAdmin = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone } = req.body;
     const existingUser = await AdminModel.findOne({ email });
@@ -28,7 +28,7 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-const login = async (req: Request, res: Response) => {
+export const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -46,7 +46,7 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const get = async (req: Request, res: Response) => {
+export const getAdmin = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: FM.noAuthToken });
@@ -64,7 +64,7 @@ const get = async (req: Request, res: Response) => {
   }
 };
 
-const update = async (req: Request, res: Response) => {
+export const updateAdmin = async (req: Request, res: Response) => {
   const { email, ...adminData } = req.body;
 
   try {
@@ -83,7 +83,7 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-const remove = async (req: Request, res: Response) => {
+export const removeAdmin = async (req: Request, res: Response) => {
   const { adminId } = req.params;
 
   try {
@@ -97,13 +97,3 @@ const remove = async (req: Request, res: Response) => {
     handleCatchError(res, error, FM.studentDeleteFailed);
   }
 };
-
-const AdminController = {
-  register,
-  login,
-  get,
-  update,
-  remove
-}
-
-export default AdminController

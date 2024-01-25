@@ -1,5 +1,5 @@
 import { handleAPIRequest } from "@helpers/handlers";
-import { ENDPOINT, API_BASE_URL, STORAGE } from "@shared-library/constants";
+import { ENDPOINT, API_BASE_URL, STORAGE_NAME } from "@shared-library/constants";
 import { ClassRecord, HandleDeleteType, Attendance } from "@shared-library/types";
 
 /**
@@ -87,12 +87,24 @@ export const getLiveClassRecords = async () => {
 };
 
 /**
+ * Retrieves recently ended class session records from the API.
+ *
+ * @returns {Promise<any[]>} A promise that resolves to an array of recently ended class session records.
+ */
+export const getRecentlyEndedClasses = async () => {
+  return handleAPIRequest<any[]>(
+    `${API_BASE_URL}${ENDPOINT.getRecentlyEndedClasses}`,
+    "GET"
+  );
+};
+
+/**
  * Retrieves class session data from the sessionStorage.
  *
  * @returns {ClassRecord} The retrieved class session data.
  */
-export const getClassSessionData = (): ClassRecord => {
-  return JSON.parse(sessionStorage.getItem(STORAGE.classSession!)!);
+export const getLocalClassSessionData = (): ClassRecord => {
+  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData!)!) as ClassRecord;
 };
 
 /**

@@ -1,3 +1,7 @@
+import { getUserSessionData } from "@api/admin-api";
+import { generateClassId } from "@helpers/shared-helpers";
+import { ClassRecord } from "@shared-library/types";
+
 export const dateTimeFormatForClassRecord = () => {
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-GB");
@@ -26,3 +30,16 @@ export const formatTo12HourTime = (dateObj: Date): string => {
 
   return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
 };
+
+export const defClassSession: ClassRecord = {
+  classId: generateClassId(),
+  lecturer: '',
+  lecturerEmail: '',
+  classroom: 'Classroom 1',
+  course: 'Food & Beverage',
+  date: new Date().toLocaleDateString('en-GB'),
+  status: 'Not started',
+  startTime: 'Not set',
+  endTime: 'Not set',
+  attendance: undefined,
+}

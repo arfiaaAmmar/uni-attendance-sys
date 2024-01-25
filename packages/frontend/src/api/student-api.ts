@@ -2,8 +2,9 @@ import { API_BASE_URL, ENDPOINT, FM } from "@shared-library/constants";
 import { Student } from "@shared-library/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
+  console.log(JSON.stringify(studentForm, null, 2))
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.registerAdmin}`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.registerStudent}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

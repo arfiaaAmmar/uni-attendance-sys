@@ -1,3 +1,5 @@
+import { Dispatch } from 'react'
+import { SetStateAction } from 'react'
 import { Document } from "mongoose";
 
 export type Courses =
@@ -39,10 +41,13 @@ export type Attendance = {
 
 export type ClassRecord = {
   _id?: string;
+  classId: string;
   lecturer: string;
+  lecturerEmail: string;
   classroom: Classrooms;
   course: Courses;
   date?: string;
+  status: ClassStatus;
   startTime?: string;
   endTime?: string;
   attendance?: Attendance[];
@@ -60,3 +65,8 @@ export type IAdminModel = Admin & Document;
 export type IStudentModel = Student & Document;
 export type IClassRecordModel = ClassRecord & Document;
 export type IScannerRecordModel = ScannerRecord & Document;
+
+export type ModalActivationProps = {
+  isActive: boolean;
+  setIsActive: Dispatch<SetStateAction<boolean>>;
+};
