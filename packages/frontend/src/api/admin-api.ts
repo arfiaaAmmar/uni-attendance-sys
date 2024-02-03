@@ -45,7 +45,7 @@ export const loginAdmin = async (email: string, password: string, rememberMe: bo
   }
 };
 
-export const getAuthorisedUser = async () => {
+export const authoriseUser = async () => {
   try {
     const rememberedToken = localStorage.getItem(STORAGE_NAME.token);
     const sessionToken = sessionStorage.getItem(STORAGE_NAME.token);
@@ -68,7 +68,6 @@ export const getAuthorisedUser = async () => {
     }
 
     const data = await response.json();
-    sessionStorage.setItem("userData", JSON.stringify(data));
 
     return data;
   } catch (error) {
@@ -76,6 +75,13 @@ export const getAuthorisedUser = async () => {
     throw new Error(FM.default);
   }
 };
+
+export const setUserSessionData = (data: Omit<Admin, "password">) => {
+  sessionStorage.setItem(
+    STORAGE_NAME.userSessionData,
+    JSON.stringify(data)
+  );
+}
 
 export const getUserSessionData = (): Admin => {
   return JSON.parse(sessionStorage.getItem(STORAGE_NAME.userSessionData!)!);

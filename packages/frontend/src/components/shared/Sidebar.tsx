@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../stores/AuthContext";
 import { AppRoutesType } from "../../routes/routes";
+import { STORAGE_NAME } from "@shared-library/constants";
 
 interface SidebarProps {
   items: AppRoutesType[];
@@ -17,10 +18,8 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("userEmail");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem(STORAGE_NAME.userSessionData)
+    sessionStorage.removeItem(STORAGE_NAME.token);
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -52,11 +51,10 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
                   <Link
                     key={index + 1}
                     to={page.path}
-                    className={`block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
-                      currentPage.pathname === page.path
+                    className={`block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${currentPage.pathname === page.path
                         ? "bg-gray-100 dark:bg-gray-700"
                         : ""
-                    }`}
+                      }`}
                   >
                     <div className="font-normal text-gray-900 rounded-lg dark:text-white">
                       <span className="text-lg">{page.displayText}</span>
@@ -66,11 +64,10 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
                     <Link
                       key={index + 1}
                       to={child.path}
-                      className={`indent-10 text-white my-2 text-lg block ${
-                        currentPage.pathname == child.path
+                      className={`indent-10 text-white my-2 text-lg block ${currentPage.pathname == child.path
                           ? "bg-gray-100 dark:bg-gray-700"
                           : " "
-                      }`}
+                        }`}
                     >
                       {child.displayText}
                     </Link>

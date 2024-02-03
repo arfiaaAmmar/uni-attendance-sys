@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import { IAdminModel, IClassRecordModel, IScannerRecordModel, IStudentModel } from "@shared-library/types"
 
 const DB_COLLECTIONS = {
@@ -27,7 +27,7 @@ const studentSchema = new Schema<IStudentModel>({
 
 const classRecord = new Schema<IClassRecordModel>({
   classId: { type: String, required: true },
-  lecturerId: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.admin, required: true }, // TODO: Need to pass _id in req body
+  lecturer: { type: String, required: true },
   course: { type: String, required: true },
   classroom: { type: String, required: true },
   date: { type: String, required: true },

@@ -46,6 +46,7 @@ export const FM = {
   pleaseEnterUsernameAndPassword: "Please enter username and password",
   pleaseFillInAllUserData: "Please fill in all user data",
   invalidCredentials: "Authorization token not provided",
+  passwordDidNotMatch: "Password did not match",
   loginSuccess: "Login successful",
   loginFailed: "Failed to login",
   userExist: "User already exist",

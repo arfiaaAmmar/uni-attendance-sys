@@ -142,7 +142,15 @@ const StudentDatabase = () => {
       </div>
 
       {registerModal && (
-        <RegisterNewStudentModal registerModal={registerModal} setRegisterModal={setRegisterModal} success={success} error={error} formData={formData} handleSubmit={handleSubmit} handleChange={handleChange}></RegisterNewStudentModal>
+        <RegisterNewStudentModal
+          registerModal={registerModal}
+          setRegisterModal={setRegisterModal}
+          success={success}
+          error={error}
+          formData={formData}
+          setFormData={setFormData}
+          handleSubmit={handleSubmit}
+        />
       )}
     </div>
   );

@@ -8,7 +8,7 @@ import {
   FormControlLabel,
   Typography,
 } from "@mui/material";
-import { getAuthorisedUser, loginAdmin, registerAdmin, setUserSessionData } from "../api/admin-api";
+import { authoriseUser, loginAdmin, registerAdmin, setUserSessionData } from "../api/admin-api";
 import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
 import { FM, PAGES_PATH, STORAGE_NAME } from "@shared-library/constants";
@@ -46,7 +46,7 @@ const Login = () => {
         loginInfo.password,
         loginInfo.rememberMe
       );
-      const { email, name, phone, _id } = (await getAuthorisedUser()) as Admin;
+      const { email, name, phone, _id } = (await authoriseUser()) as Admin;
       const userSessionArgs = {
         _id,
         email,

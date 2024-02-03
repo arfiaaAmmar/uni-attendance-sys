@@ -11,20 +11,17 @@ import AttendanceSystem from "@pages/AttendanceSystem";
 import ClassRecords from "@pages/ClassRecord";
 import ClassSession from "@pages/ClassSession";
 import StudentDatabase from "@pages/StudentDatabase";
+import { authoriseUser, getUserSessionData } from "@api/admin-api";
 
 function App(): JSX.Element {
   const [sidebar, setSidebar] = useState(true);
-  // const userRole = localStorage.getItem("userSession");
-  const userRole = true;
+  const userRole = getUserSessionData()
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userRole) {
-      navigate(PAGES_PATH.login);
-    }
-    if (userRole) {
-      navigate(PAGES_PATH.studentDB);
-    }
+    if (!userRole) navigate(PAGES_PATH.login);
+    else navigate(PAGES_PATH.studentDB);
+
   }, []);
 
   return (

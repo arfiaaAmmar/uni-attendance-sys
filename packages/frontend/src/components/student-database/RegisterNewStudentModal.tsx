@@ -4,7 +4,8 @@ import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 
 type RegisternewStudentModalProps = {
-  feedback: Feedback;
+  success: string;
+  error: string;
   formData: Omit<Student, "studentId">;
   registerModal: boolean;
   setFormData: Dispatch<SetStateAction<Omit<Student, "studentId">>>
@@ -13,7 +14,8 @@ type RegisternewStudentModalProps = {
 };
 
 export function RegisterNewStudentModal({
-  feedback,
+  success,
+  error,
   formData,
   registerModal,
   setFormData,
@@ -31,7 +33,7 @@ export function RegisterNewStudentModal({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-md p-8">
         <p className="text-lg mb-4">Register Student</p>
-        <FeedbackMessage success={feedback.success} error={feedback.error} />
+        <FeedbackMessage success={success} error={error} />
         <form onSubmit={handleSubmit}>
           <input
             type="email"

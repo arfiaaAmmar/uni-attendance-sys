@@ -1,4 +1,4 @@
-import { getAuthorisedUser } from "@api/admin-api"
+import { authoriseUser } from "@api/admin-api"
 import { getAllClassRecords, getClassRecord, getLiveClassRecords } from "@api/class-record-api"
 import { getAllStudents, getStudent } from "@api/student-api"
 import { useDataFetching } from "@helpers/shared-helpers"
@@ -6,7 +6,7 @@ import { Admin, ClassRecord, Student } from "@shared-library/types"
 
 
 export const useUserProfile = () => {
-    return useDataFetching<Admin>(async () => await getAuthorisedUser())
+    return useDataFetching<Admin>(async () => await authoriseUser())
 }
 
 export const useClassRecord = (_id: string) => {
