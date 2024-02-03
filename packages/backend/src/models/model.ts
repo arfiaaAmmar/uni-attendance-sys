@@ -6,7 +6,7 @@ const DB_COLLECTIONS = {
   student: "Student",
   classRecord: "Class Record",
   scannerAttendance: "Scanner Attendance",
-} as const
+}
 
 // Lecturers are admins
 const adminSchema = new Schema<IAdminModel>({
@@ -27,7 +27,7 @@ const studentSchema = new Schema<IStudentModel>({
 
 const classRecord = new Schema<IClassRecordModel>({
   classId: { type: String, required: true },
-  lecturer: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.admin, required: true },
+  lecturerId: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.admin, required: true }, // TODO: Need to pass _id in req body
   course: { type: String, required: true },
   classroom: { type: String, required: true },
   date: { type: String, required: true },

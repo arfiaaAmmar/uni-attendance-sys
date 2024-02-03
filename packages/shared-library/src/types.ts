@@ -1,6 +1,6 @@
 import { Dispatch } from 'react'
 import { SetStateAction } from 'react'
-import { Document } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 export type Courses =
   | "Food & Beverage"
@@ -42,7 +42,7 @@ export type Attendance = {
 export type ClassRecord = {
   _id?: string;
   classId: string;
-  lecturer: Omit<Admin, 'password'>;
+  lecturerId: string;
   classroom: Classrooms;
   course: Courses;
   status: ClassStatus;
@@ -58,10 +58,10 @@ export type ScannerRecord = {
   attendanceTime: string;
 }
 
-// Define the User interface
+// For Backend MongoDB model Types
 export type IAdminModel = Admin & Document;
 export type IStudentModel = Student & Document;
-export type IClassRecordModel = ClassRecord & Document;
+export type IClassRecordModel = ClassRecord & Document
 export type IScannerRecordModel = ScannerRecord & Document;
 
 export type ModalActivationProps = {
