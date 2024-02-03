@@ -6,7 +6,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { adminRoutes } from "./routes/routes";
 import { PAGES_PATH } from "@shared-library/constants";
 import Login from "@pages/Login";
-import Sidebar from "@components/Sidebar";
+import Sidebar from "@components/shared/Sidebar";
 import AttendanceSystem from "@pages/AttendanceSystem";
 import ClassRecords from "@pages/ClassRecord";
 import ClassSession from "@pages/ClassSession";

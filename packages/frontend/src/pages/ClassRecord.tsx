@@ -2,11 +2,11 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllClassRecords } from "../api/class-record-api";
-import SearchBox from "../components/SearchBox";
+import SearchBox from "@components/shared/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
 import { ClassRecord } from "@shared-library/types";
-import { defFeedback } from "@shared-library/constants";
+import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
@@ -23,12 +23,6 @@ export const ClassRecords = () => {
   });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
-  const [manualAttendanceInput, setManualAttendanceInput] = useState({
-    studentName: "",
-    studentId: "",
-    attendanceTime: "",
-  });
 
   const handleDownloadPDF = async (_id?: string) => {
     const selectedRecord = records.find((record) => record._id === _id);
@@ -67,7 +61,7 @@ export const ClassRecords = () => {
     }
   };
 
-  const handleSubmitManualAttendance = async () => {};
+  const handleSubmitManualAttendance = async () => { };
 
   useEffect(() => {
     const fetchAllClassRecords = async () => {
@@ -120,6 +114,7 @@ export const ClassRecords = () => {
       </h3>
       <p>To view, download, edit and print past class sessions.</p>
       <SearchBox query={searchQuery} onChange={setSearchQuery} />
+      <FeedbackMessage success={success} error={error} />
       <div className="bg-neutral-400 flex px-4 py-2 justify-evenly h-14 mt-4">
         <p className="font-semibold w-3/12">Date & Time</p>
         <p className="font-semibold w-4/12">Subject</p>
@@ -133,7 +128,7 @@ export const ClassRecords = () => {
               {record.date} {record?.startTime}
             </p>
             <p className="w-4/12">{record?.course}</p>
-            <p className="w-3/12">{record?.lecturer}</p>
+            <p className="w-3/12">{record?.lecturer?.name}</p>
             <div className="w-2/12">
               <button
                 className="bg-orange-300 px-3 py-1"
@@ -177,6 +172,7 @@ export const ClassRecords = () => {
           </div>
         </div>
       )}
+
       {actionModal.manualAttendance && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-md p-8 flex gap-8">

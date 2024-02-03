@@ -18,8 +18,8 @@ export type Feedback = {
 
 export type Admin = {
   _id?: string;
-  email: string;
   name: string;
+  email: string;
   password?: string;
   phone: string;
 };
@@ -30,7 +30,7 @@ export type Student = {
   email: string;
   phone: string;
   course?: Courses;
-  attendanceScannerId?: number;
+  scannerId?: number;
 };
 
 export type Attendance = {
@@ -42,19 +42,17 @@ export type Attendance = {
 export type ClassRecord = {
   _id?: string;
   classId: string;
-  lecturer: string;
-  lecturerEmail: string;
+  lecturer: Omit<Admin, 'password'>;
   classroom: Classrooms;
   course: Courses;
-  date?: string;
   status: ClassStatus;
+  date?: string;
   startTime?: string;
   endTime?: string;
   attendance?: Attendance[];
 };
 
 export type ScannerRecord = {
-  _id?: string;
   attendanceId: number;
   studentName: string;
   attendanceTime: string;

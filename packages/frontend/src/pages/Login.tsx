@@ -11,7 +11,7 @@ import {
 import { getAuthorisedUser, loginAdmin } from "../api/admin-api";
 import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
-import { FM, PAGES_PATH, STORAGE_NAME, defFeedback } from "@shared-library/constants";
+import { FM, PAGES_PATH, STORAGE_NAME } from "@shared-library/constants";
 import { Admin } from "@shared-library/types";
 import { isEmpty } from "radash";
 

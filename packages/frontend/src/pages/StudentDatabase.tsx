@@ -1,12 +1,13 @@
-import { Button } from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import SearchBox from "../components/SearchBox";
+import SearchBox from "../components/shared/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
 import { filterSearchQuery } from "../helpers/search-functions";
 import { Student } from "@shared-library/types";
 import { getAllStudents, registerStudent } from "../api/student-api";
 import { FM } from "@shared-library/constants";
 import { isEmpty } from "radash";
+import { RegisterNewStudentModal } from "../RegisterNewStudentModal";
+
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>([]);
@@ -70,17 +71,10 @@ const StudentDatabase = () => {
       // Fetch updated user list
       const updatedStudentList = await getAllStudents();
       setStudentList(updatedStudentList);
-      setRegisterModal(!registerModal);
+      setRegisterModal(false);
     } catch (error: any) {
       setError(error.message);
     }
-  };
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleUploadButton = () => {
@@ -100,8 +94,10 @@ const StudentDatabase = () => {
     <div className="p-8 h-full">
       <p className="text-3xl mb-4 font-bold">Student Database</p>
       <div className="flex justify-between mt-8">
-        <SearchBox query={searchQuery} onChange={setSearchQuery} />
-        <div className='bg-slate-500 rounded-md m-2'>
+        <div className="border-neutral-400 border-2 rounded-md p-2 my-auto">
+          <SearchBox query={searchQuery} onChange={setSearchQuery} />
+        </div>
+        <div className="bg-slate-500 rounded-md m-2">
           <input
             type="file"
             accept=".xlsx"
@@ -123,6 +119,8 @@ const StudentDatabase = () => {
           Register New Student
         </button>
       </div>
+      {success && <p className="text-green-500 font-bold">{success}</p>}
+      {error && <p className="text-red-500 font-bold">{error}</p>}
       <div className="bg-neutral-400 flex px-4 py-2 justify-between h-14 mt-4">
         <p className="font-semibold w-1/12">No.</p>
         <p className="font-semibold w-5/12">Full Name</p>
@@ -144,77 +142,7 @@ const StudentDatabase = () => {
       </div>
 
       {registerModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-md p-8">
-            <p className="text-lg mb-4">Register Student</p>
-            {error ? (
-              <p className="text-red-500 font-bold">{error}</p>
-            ) : success ? (
-              <p className="text-green-600 font-bold">{success}</p>
-            ) : null}
-
-            <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-              />
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-              />
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
-                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-              />
-              <select
-                name="course"
-                id="course"
-                className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-                value={formData.course?.toString()}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Select a course
-                </option>
-                <option value="Information Technology">
-                  Information Technology
-                </option>
-                <option value="Security">Security</option>
-                <option value="Secretary">Secretary</option>
-                <option value="Food & Beverage">Food & Beverage</option>
-              </select>
-              <div className="flex justify-between mt-4">
-                <Button
-                  onClick={handleSubmit}
-                  variant="contained"
-                  className="bg-green-600 text-white font-bold"
-                  type="submit"
-                >
-                  Submit
-                </Button>
-                <Button
-                  onClick={() => setRegisterModal(!registerModal)}
-                  variant="outlined"
-                  className="text-gray-600"
-                >
-                  Close
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <RegisterNewStudentModal registerModal={registerModal} setRegisterModal={setRegisterModal} success={success} error={error} formData={formData} handleSubmit={handleSubmit} handleChange={handleChange}></RegisterNewStudentModal>
       )}
     </div>
   );

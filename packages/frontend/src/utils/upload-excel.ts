@@ -1,8 +1,14 @@
-import { Classrooms, Courses } from "@shared-library/types";
+import { ClassStatus, Classrooms, Courses } from "@shared-library/types";
 import * as XLSX from "xlsx";
 import { updateClassRecord } from "../api/class-record-api";
 import { registerStudent } from "../api/student-api";
 
+/**
+ * Handles the upload of an Excel file for student registration.
+ *
+ * @param {File} file - The Excel file containing student registration data.
+ * @returns {void}
+ */
 export const handleUploadExcelForStudentRegistration = (
   file: File | undefined
 ) => {
@@ -40,6 +46,13 @@ export const handleUploadExcelForStudentRegistration = (
   }
 };
 
+/**
+ * Handles the upload of an Excel file for attendance records.
+ *
+ * @param {string} classId - The ID of the class for which attendance is being uploaded.
+ * @param {File} file - The Excel file containing attendance data.
+ * @returns {void}
+ */
 export const handleUploadExcelForAttendance = (
   classId: string | undefined,
   file: File | undefined
@@ -55,6 +68,8 @@ export const handleUploadExcelForAttendance = (
       const excelData = XLSX.utils.sheet_to_json(worksheet) as Array<{
         classId: string;
         lecturer: string;
+        lecturerEmail: string;
+        status: ClassStatus;
         classroom: Classrooms | string;
         course: Courses | string;
         date: string;

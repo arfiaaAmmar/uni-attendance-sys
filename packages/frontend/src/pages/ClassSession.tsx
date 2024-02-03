@@ -7,14 +7,14 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   getClassRecord,
   getLocalClassSessionData, updateClassRecord
-} from "../api/class-record-api";
-import SearchBox from "../components/SearchBox";
+} from "@api/class-record-api";
+import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH } from "shared-library/src/constants";
-import { filterSearchQuery } from "../helpers/search-functions";
+import { filterSearchQuery } from "@helpers/search-functions";
 import { Attendance } from "@shared-library/types";
 import { getClassSessionData, getUserSessionData } from "@api/admin-api";
-import ManualAttendance from "@components/ManualAttendance";
-import InitialClassSessionForm from "@components/InitialClassSessionForm";
+import ManualAttendance from "@components/class-session/ManualAttendance";
+import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
 import { useClassSessionStore } from "../stores/Stores";
 
 const ClassSession = () => {
@@ -34,7 +34,7 @@ const ClassSession = () => {
   const navigate = useNavigate();
   const [initialFormModal, setInitialFormModal] = useState(false);
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
-  const [succes, setSuccess] = useState("");
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {

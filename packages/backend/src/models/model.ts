@@ -1,6 +1,14 @@
 import { Schema, model } from "mongoose";
 import { IAdminModel, IClassRecordModel, IScannerRecordModel, IStudentModel } from "@shared-library/types"
 
+const DB_COLLECTIONS = {
+  admin: "Admin",
+  student: "Student",
+  classRecord: "Class Record",
+  scannerAttendance: "Scanner Attendance",
+} as const
+
+// Lecturers are admins
 const adminSchema = new Schema<IAdminModel>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -8,23 +16,18 @@ const adminSchema = new Schema<IAdminModel>({
   phone: { type: String, required: true },
 });
 
-export const AdminModel = model<IAdminModel>("Admin", adminSchema);
-
 const studentSchema = new Schema<IStudentModel>({
   studentId: { type: String, required: true },
   name: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true },
   course: { type: String, required: true },
-  attendanceScannerId: { type: String }
+  scannerId: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.scannerAttendance, required: false }
 });
-
-export const StudentModel = model<IStudentModel>("Student", studentSchema);
 
 const classRecord = new Schema<IClassRecordModel>({
   classId: { type: String, required: true },
-  lecturer: { type: String, required: true },
-  lecturerEmail: { type: String, required: true },
+  lecturer: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.admin, required: true },
   course: { type: String, required: true },
   classroom: { type: String, required: true },
   date: { type: String, required: true },
@@ -39,18 +42,17 @@ const classRecord = new Schema<IClassRecordModel>({
   ],
 });
 
-export const ClassRecordModel = model<IClassRecordModel>(
-  "Class Record",
-  classRecord
-);
-
 const scannerRecord = new Schema<IScannerRecordModel>({
   studentName: { type: String, required: true },
   attendanceId: { type: Number, required: true },
   attendanceTime: { type: String, required: true },
 })
 
-export const ScannerRecordModel = model<IScannerRecordModel>(
-  "Scanner Attendance",
+export const AdminModel = model<IAdminModel>(DB_COLLECTIONS.admin, adminSchema);
+export const StudentModel = model<IStudentModel>(DB_COLLECTIONS.student, studentSchema);
+export const ClassRecordModel = model<IClassRecordModel>(DB_COLLECTIONS.classRecord,
+  classRecord
+);
+export const ScannerRecordModel = model<IScannerRecordModel>(DB_COLLECTIONS.scannerAttendance,
   scannerRecord
 )
