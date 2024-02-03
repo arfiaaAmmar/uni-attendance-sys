@@ -22,7 +22,7 @@ const studentSchema = new Schema<IStudentModel>({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   course: { type: String, required: true },
-  scannerId: { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.scannerAttendance, required: false }
+  scannerId: { type: String, required: false }, // TODO: Create UI to change/add scannerId after register
 });
 
 const classRecord = new Schema<IClassRecordModel>({
@@ -35,8 +35,8 @@ const classRecord = new Schema<IClassRecordModel>({
   endTime: { type: String, required: true },
   attendance: [
     {
-      studentName: { type: String, required: true },
       studentId: { type: String, required: true },
+      studentName: { type: String, required: true },
       attendanceTime: { type: String, required: true },
     },
   ],

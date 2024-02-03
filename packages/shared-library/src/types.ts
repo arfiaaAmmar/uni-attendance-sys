@@ -53,8 +53,8 @@ export type ClassRecord = {
 };
 
 export type ScannerRecord = {
-  attendanceId: number;
   studentName: string;
+  attendanceId: number;
   attendanceTime: string;
 }
 
