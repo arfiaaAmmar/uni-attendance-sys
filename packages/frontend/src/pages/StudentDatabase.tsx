@@ -6,7 +6,7 @@ import { Student } from "@shared-library/types";
 import { getAllStudents, registerStudent } from "../api/student-api";
 import { FM } from "@shared-library/constants";
 import { isEmpty } from "radash";
-import { RegisterNewStudentModal } from "../RegisterNewStudentModal";
+import { RegisterNewStudentModal } from "@components/student-database/RegisterNewStudentModal";
 
 
 const StudentDatabase = () => {
