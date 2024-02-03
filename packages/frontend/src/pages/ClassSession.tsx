@@ -94,7 +94,6 @@ const ClassSession = () => {
       setSession({
         classId: classId,
         lecturer: name,
-        lecturerEmail: email,
         classroom: "Classroom 1",
         course: "Food & Beverage",
         date: new Date().toISOString(),

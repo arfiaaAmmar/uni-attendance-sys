@@ -128,7 +128,7 @@ export const ClassRecords = () => {
               {record.date} {record?.startTime}
             </p>
             <p className="w-4/12">{record?.course}</p>
-            <p className="w-3/12">{record?.lecturer?.name}</p>
+            <p className="w-3/12">{record?.lecturer}</p>
             <div className="w-2/12">
               <button
                 className="bg-orange-300 px-3 py-1"

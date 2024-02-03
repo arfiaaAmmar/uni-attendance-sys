@@ -6,7 +6,7 @@ import { Student } from "@shared-library/types";
 import { getAllStudents, registerStudent } from "../api/student-api";
 import { FM } from "@shared-library/constants";
 import { isEmpty } from "radash";
-import { RegisterNewStudentModal } from "../RegisterNewStudentModal";
+import { RegisterNewStudentModal } from "@components/student-database/RegisterNewStudentModal";
 
 
 const StudentDatabase = () => {
@@ -142,7 +142,15 @@ const StudentDatabase = () => {
       </div>
 
       {registerModal && (
-        <RegisterNewStudentModal registerModal={registerModal} setRegisterModal={setRegisterModal} success={success} error={error} formData={formData} handleSubmit={handleSubmit} handleChange={handleChange}></RegisterNewStudentModal>
+        <RegisterNewStudentModal
+          registerModal={registerModal}
+          setRegisterModal={setRegisterModal}
+          success={success}
+          error={error}
+          formData={formData}
+          setFormData={setFormData}
+          handleSubmit={handleSubmit}
+        />
       )}
     </div>
   );

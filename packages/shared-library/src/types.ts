@@ -42,7 +42,7 @@ export type Attendance = {
 export type ClassRecord = {
   _id?: string;
   classId: string;
-  lecturerId: string;
+  lecturer: string;
   classroom: Classrooms;
   course: Courses;
   status: ClassStatus;
@@ -61,7 +61,7 @@ export type ScannerRecord = {
 // For Backend MongoDB model Types
 export type IAdminModel = Admin & Document;
 export type IStudentModel = Student & Document;
-export type IClassRecordModel = ClassRecord & Document
+export type IClassRecordModel = ClassRecord & Document;
 export type IScannerRecordModel = ScannerRecord & Document;
 
 export type ModalActivationProps = {

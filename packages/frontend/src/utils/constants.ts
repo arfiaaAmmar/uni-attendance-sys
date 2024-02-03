@@ -33,7 +33,7 @@ export const formatTo12HourTime = (dateObj: Date): string => {
 
 export const defClassSession: ClassRecord = {
   classId: generateClassId(),
-  lecturerId: getUserSessionData(),
+  lecturer: getUserSessionData().name,
   classroom: 'Classroom 1',
   course: 'Food & Beverage',
   date: new Date().toLocaleDateString('en-GB'),

@@ -8,7 +8,7 @@ import {
   FormControlLabel,
   Typography,
 } from "@mui/material";
-import { getAuthorisedUser, loginAdmin } from "../api/admin-api";
+import { authoriseUser, loginAdmin, registerAdmin, setUserSessionData } from "../api/admin-api";
 import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
 import { FM, PAGES_PATH, STORAGE_NAME } from "@shared-library/constants";
@@ -16,45 +16,81 @@ import { Admin } from "@shared-library/types";
 import { isEmpty } from "radash";
 
 const Login = () => {
-  const [credential, setCredential] = useState({
+  const [type, setType] = useState("login")
+  const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
+    retypePassword: "",
     rememberMe: false,
+  });
+  const [registerInfo, setRegisterInfo] = useState<Admin>({
+    email: "",
+    name: "",
+    phone: "",
+    password: "",
   });
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: FormEvent) => {
+  const adminLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (isEmpty(credential)) {
+    if (isEmpty(loginInfo)) {
       setError(FM.pleaseEnterUsernameAndPassword);
       return;
     }
     try {
       await loginAdmin(
-        credential.email,
-        credential.password,
-        credential.rememberMe
+        loginInfo.email,
+        loginInfo.password,
+        loginInfo.rememberMe
       );
-      const { email, name, phone, _id } = (await getAuthorisedUser()) as Admin;
-      const userLocalSessionData = {
+      const { email, name, phone, _id } = (await authoriseUser()) as Admin;
+      const userSessionArgs = {
         _id,
         email,
         name,
         phone,
       };
-      sessionStorage.setItem(
-        STORAGE_NAME.userSessionData,
-        JSON.stringify(userLocalSessionData)
-      );
-      setUser(userLocalSessionData);
+      setUserSessionData(userSessionArgs)
+      setUser(userSessionArgs);
       navigate(PAGES_PATH.studentDB);
     } catch (error: any) {
       console.error("Error logging in:", error);
       setError(error);
     }
+  };
+
+  const adminRegister = async (e: FormEvent) => {
+    e.preventDefault();
+    if (isEmpty(loginInfo) || isEmpty(registerInfo)) {
+      setError(FM.pleaseFillInAllUserData);
+      return;
+    }
+    if (loginInfo.password !== loginInfo.retypePassword) {
+      setError(FM.passwordDidNotMatch);
+      return;
+    }
+    try {
+      await registerAdmin({
+        email: loginInfo.email,
+        password: loginInfo.password,
+        name: registerInfo.name,
+        phone: registerInfo.phone,
+      });
+      setSuccess(FM.userRegisterSuccess);
+      setType("login");
+    } catch (error: any) {
+      console.error("Error registering:", error);
+      setError(error);
+    }
+  };
+
+  const toggleFormType = () => {
+    setType((prevType) => (prevType === "login" ? "register" : "login"));
+    setSuccess("");
+    setError("");
   };
 
   useEffect(() => {
@@ -97,12 +133,12 @@ const Login = () => {
       </div>
       <CssBaseline />
       <div className="w-2/5 h-max text-center bg-neutral-100 rounded-md p-6 mx-auto my-40 bg-opacity-50 backdrop-blur-0">
-        <h1 className="text-left">Admin</h1>
+        <h1 className="text-left font-bold text-2xl mb-8">{type === "login" ? "Login" : "Register"}</h1>
         <input
           required
           placeholder="Email Address"
           onChange={(e: any) =>
-            setCredential({ ...credential, email: e.target.value })
+            setLoginInfo({ ...loginInfo, email: e.target.value })
           }
           name="email"
           className="rounded-md px-2 py-1 block my-2 w-full"
@@ -116,20 +152,42 @@ const Login = () => {
           type="password"
           className="rounded-md px-2 py-1 block my-2 w-full"
           onChange={(e: any) =>
-            setCredential({ ...credential, password: e.target.value })
+            setLoginInfo({ ...loginInfo, password: e.target.value })
           }
           autoComplete="current-password"
         />
+        {type === "register" && (
+          <>
+            <input
+              required
+              name="name"
+              placeholder="Full Name"
+              className="rounded-md px-2 py-1 block my-2 w-full"
+              onChange={(e: any) =>
+                setRegisterInfo({ ...registerInfo, name: e.target.value })
+              }
+            />
+            <input
+              required
+              name="phone"
+              placeholder="Phone Number"
+              className="rounded-md px-2 py-1 block my-2 w-full"
+              onChange={(e: any) =>
+                setRegisterInfo({ ...registerInfo, phone: e.target.value })
+              }
+            />
+          </>
+        )}
         <FormControlLabel
           control={
             <Checkbox
               value="remember"
               color="primary"
-              checked={credential.rememberMe}
+              checked={loginInfo.rememberMe}
               onChange={() =>
-                setCredential({
-                  ...credential,
-                  rememberMe: !credential.rememberMe,
+                setLoginInfo({
+                  ...loginInfo,
+                  rememberMe: !loginInfo.rememberMe,
                 })
               }
             />
@@ -140,13 +198,21 @@ const Login = () => {
           type="submit"
           fullWidth
           variant="contained"
-          onClick={() => handleLogin}
+          onClick={type === "login" ? adminLogin : adminRegister}
           sx={{
-            backgroundColor: "#E85969",
+            backgroundColor: "green",
             width: "80%",
           }}
         >
-          Login
+          {type === "login" ? "Login" : "Register"}
+        </Button>
+        <Button
+          variant="text"
+          className="font-bold"
+          onClick={toggleFormType}
+          sx={{ color: "blue", marginTop: 2, }}
+        >
+          {type === "login" ? "Switch to Register" : "Switch to Login"}
         </Button>
         {success ? (
           <Typography sx={{ color: "green" }}>{success}</Typography>
