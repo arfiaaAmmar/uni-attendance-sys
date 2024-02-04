@@ -1,9 +1,9 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import SearchBox from "../components/shared/SearchBox";
-import { handleUploadExcelForStudentRegistration } from "../utils/upload-excel";
-import { filterSearchQuery } from "../helpers/search-functions";
+import SearchBox from "@components/shared/SearchBox";
+import { handleUploadExcelForStudentRegistration } from "@utils/upload-excel";
+import { filterSearchQuery } from "@helpers/search-functions";
 import { Student } from "@shared-library/types";
-import { getAllStudents, registerStudent } from "../api/student-api";
+import { getAllStudents, registerStudent } from "@api/student-api";
 import { FM } from "@shared-library/constants";
 import { isEmpty } from "radash";
 import { RegisterNewStudentModal } from "@components/student-database/RegisterNewStudentModal";
@@ -24,15 +24,20 @@ const StudentDatabase = () => {
     course: undefined,
   });
 
+  const fetchAllStudents = async () => {
+    try {
+      const data = await getAllStudents();
+      setStudentList(data);
+    } catch (error) {
+      console.error("Error fetching user list:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchAllStudents = async () => {
-      try {
-        const data = await getAllStudents();
-        setStudentList(data);
-      } catch (error) {
-        console.error("Error fetching user list:", error);
-      }
-    };
+    fetchAllStudents()
+  }, [])
+
+  useEffect(() => {
     const filteredList = filterSearchQuery<Student>(searchQuery, studentList, [
       "name",
       "studentId",
@@ -42,7 +47,7 @@ const StudentDatabase = () => {
     ]);
     setFilteredStudents(filteredList);
 
-    fetchAllStudents();
+    return () => setFilteredStudents([])
   }, [studentList, searchQuery]);
 
   const handleSubmit = async (event: FormEvent) => {

@@ -9,9 +9,9 @@ import {
   getLocalClassSessionData, updateClassRecord
 } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
-import { FM, PAGES_PATH } from "shared-library/src/constants";
+import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/src/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
-import { Attendance } from "@shared-library/types";
+import { Attendance, ClassRecord } from "@shared-library/types";
 import { getClassSessionData, getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
@@ -21,7 +21,7 @@ const ClassSession = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [searchResults, setSearchResults] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [session, setSession] = useState(getLocalClassSessionData());
+  const [session, setSession] = useState<ClassRecord>();
   const currentSession = useClassSessionStore();
   const sessionDetails = [
     { label: "Class", value: currentSession.classroom },
@@ -36,6 +36,11 @@ const ClassSession = () => {
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const existingSession = getLocalClassSessionData()
+    setSession(existingSession)
+  }, [])
 
   useEffect(() => {
     const fetchSessionFromLocal = async () => {
