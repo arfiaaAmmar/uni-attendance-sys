@@ -59,7 +59,6 @@ const InitialClassSessionForm = ({ setIsActive }: ModalActivationProps) => {
       await postClassRecord({
         ...form,
         lecturer: userSessionData.name,
-        lecturerEmail: userSessionData.email,
         attendance: form.attendance,
       });
       sessionStorage.setItem(

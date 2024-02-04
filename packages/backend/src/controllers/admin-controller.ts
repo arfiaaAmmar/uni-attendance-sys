@@ -46,7 +46,7 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const getAdmin = async (req: Request, res: Response) => {
+export const authoriseAdmin = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: FM.noAuthToken });

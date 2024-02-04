@@ -13,7 +13,7 @@ export const ENDPOINT = {
   queryStudentDB: "/query-student-db/suggestions?query=${value}",
   registerAdmin: "/register-admin",
   adminLogin: "/admin-login",
-  getAdminData: "/get-admin-data",
+  authoriseAdmin: "/authorise-admin",
   updateAdminData: "/update-admin-data",
   deleteAdmin: "/delete-admin/:adminId",
   registerStudent: "/register-student",

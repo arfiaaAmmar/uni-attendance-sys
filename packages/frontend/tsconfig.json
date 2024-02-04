@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "declaration": true,
+    "composite": true,
     "baseUrl": "./",
     "paths": {
       "@shared-library/*": ["../shared-library/src/*"],

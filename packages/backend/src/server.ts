@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { MONGODB_URI, app, port } from "./config/config";
-import { getAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
+import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
 import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
 import { FM, ENDPOINT } from "@shared-library/constants";
@@ -25,16 +25,16 @@ app.use(express.json());
 
 //Endpoints
 //User & Admin
-app.post(ENDPOINT.registerAdmin, registerAdmin);
-app.post(ENDPOINT.adminLogin, loginAdmin);
-app.get(ENDPOINT.getAdminData, getAdmin);
-app.put(ENDPOINT.updateAdminData, updateAdmin);
-app.delete(ENDPOINT.deleteAdmin, removeAdmin);
+app.post(ENDPOINT.registerAdmin, registerAdmin); // done
+app.post(ENDPOINT.adminLogin, loginAdmin); // done
+app.get(ENDPOINT.authoriseAdmin, authoriseAdmin); // done
+app.put(ENDPOINT.updateAdminData, updateAdmin); // done
+app.delete(ENDPOINT.deleteAdmin, removeAdmin); // done
 
 //Student DB
 // app.get(ENDPOINT.queryStudentDB, query);
-app.post(ENDPOINT.registerStudent, registerStudent);
-app.get(ENDPOINT.getStudent, getStudent);
+app.post(ENDPOINT.registerStudent, registerStudent); // done
+app.get(ENDPOINT.getStudent, getStudent); // 
 app.get(ENDPOINT.searchStudent, searchStudent);
 app.get(ENDPOINT.getAllStudents, getAllStudents);
 app.delete(ENDPOINT.deleteStudent, deleteStudent);
@@ -52,3 +52,4 @@ app.delete(ENDPOINT.removeAttendance, removeAttendance);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+

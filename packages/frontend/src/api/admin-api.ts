@@ -55,7 +55,7 @@ export const authoriseUser = async () => {
       throw new Error("Token not found");
     }
 
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.getAdminData}`, {
+    const response = await fetch(`${API_BASE_URL}${ENDPOINT.authoriseAdmin}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

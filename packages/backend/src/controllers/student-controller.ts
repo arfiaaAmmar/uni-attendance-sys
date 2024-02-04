@@ -53,7 +53,6 @@ export const getStudent = async (req: Request, res: Response) => {
 
   try {
     const student: Student | null = await StudentModel.findOne({ studentId });
-
     if (!student) return res.status(404).json({ message: FM.studentNotFound });
 
     res.json(student);

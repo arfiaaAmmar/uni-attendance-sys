@@ -1,5 +1,5 @@
-import { ClassStatus, Classrooms, Courses } from "@shared-library/types";
-import * as XLSX from "xlsx";
+import { ClassRecord, ClassStatus, Classrooms, Courses } from "@shared-library/types";
+import XLSX from "xlsx";
 import { updateClassRecord } from "../api/class-record-api";
 import { registerStudent } from "../api/student-api";
 
@@ -17,7 +17,7 @@ export const handleUploadExcelForStudentRegistration = (
     reader.onload = (e) => {
       const data = e.target?.result as string;
       const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0]; // Assuming the data is in the first sheet
+      const sheetName = workbook.SheetNames[0]; 
       const worksheet = workbook.Sheets[sheetName];
 
       const excelData = XLSX.utils.sheet_to_json(worksheet) as Array<{
@@ -65,22 +65,7 @@ export const handleUploadExcelForAttendance = (
       const sheetName = workbook.SheetNames[0]; // Assuming the data is in the first sheet
       const worksheet = workbook.Sheets[sheetName];
 
-      const excelData = XLSX.utils.sheet_to_json(worksheet) as Array<{
-        classId: string;
-        lecturer: string;
-        lecturerEmail: string;
-        status: ClassStatus;
-        classroom: Classrooms | string;
-        course: Courses | string;
-        date: string;
-        startTime: string;
-        endTime: string;
-        attendance: {
-          studentName: string;
-          studentId: string;
-          attendanceTime: string;
-        }[];
-      }>;
+      const excelData = XLSX.utils.sheet_to_json(worksheet) as ClassRecord[];
       console.log("Excel Data:", excelData);
 
       // Process the excelData to register students
