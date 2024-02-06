@@ -16,6 +16,7 @@ import { getClassSessionData, getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
 import { useClassSessionStore } from "../stores/Stores";
+import { isEmpty } from "radash";
 
 const ClassSession = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
@@ -37,33 +38,28 @@ const ClassSession = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const existingSession = getLocalClassSessionData()
-    setSession(existingSession)
-  }, [])
+  const fetchSessionFromLocal = async () => {
+    try {
+      const existingSession = getLocalClassSessionData();
+      if (!isEmpty(existingSession)) setInitialFormModal(true);
+      else {
+        setInitialFormModal(false);
+        const data = await getClassRecord(existingSession._id!);
+        setAttendance(data?.attendance!);
 
-  useEffect(() => {
-    const fetchSessionFromLocal = async () => {
-      try {
-        const existingSession = getLocalClassSessionData();
-        if (!existingSession) setInitialFormModal(true);
-        else {
-          setInitialFormModal(false);
-          const data = await getClassRecord(existingSession._id!);
-          setAttendance(data?.attendance!);
-
-          const filteredMainListData = filterSearchQuery<Attendance>(
-            searchQuery,
-            attendance,
-            ["studentName", "studentId"]
-          );
-          setSearchResults(filteredMainListData);
-        }
-      } catch (error) {
-        console.error("Error fetching user list:", error);
+        const filteredMainListData = filterSearchQuery<Attendance>(
+          searchQuery,
+          attendance,
+          ["studentName", "studentId"]
+        );
+        setSearchResults(filteredMainListData);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user list:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchSessionFromLocal();
   }, [attendance, searchQuery]);
 
@@ -192,7 +188,7 @@ const ClassSession = () => {
       />
       <InitialClassSessionForm
         isActive={initialFormModal}
-        setIsActive={() => setInitialFormModal}
+        setIsActive={setInitialFormModal}
       />
     </div>
   );

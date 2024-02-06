@@ -16,7 +16,7 @@ import { defClassSession } from "src/utils/constants";
 
 type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement>;
 
-const InitialClassSessionForm = ({ setIsActive }: ModalActivationProps) => {
+const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps) => {
   const [form, setForm] = useState<ClassRecord>(defClassSession);
   const [duration, setDuration] = useState(1);
   const [success, setSuccess] = useState("");
@@ -72,8 +72,6 @@ const InitialClassSessionForm = ({ setIsActive }: ModalActivationProps) => {
 
       // Close modal
       setIsActive(false);
-
-      console.log(FM.userRegisterSuccess);
     } catch (error: any) {
       console.error("Error registering new user:", error);
       setError(error);
@@ -85,7 +83,7 @@ const InitialClassSessionForm = ({ setIsActive }: ModalActivationProps) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+    <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ${isActive ? '' : 'hidden'}`}>
       <div className="bg-white rounded-md p-8 w-1/3">
         <p className="text-lg mb-4">Create New Class Session</p>
         <form onSubmit={submitForm}>
