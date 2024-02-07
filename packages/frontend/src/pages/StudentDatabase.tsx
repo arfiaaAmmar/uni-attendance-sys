@@ -2,9 +2,9 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import SearchBox from "@components/shared/SearchBox";
 import { handleUploadExcelForStudentRegistration } from "@utils/upload-excel";
 import { filterSearchQuery } from "@helpers/search-functions";
-import { Student } from "@shared-library/types";
+import { Student } from "shared-library/src/types";
 import { getAllStudents, registerStudent } from "@api/student-api";
-import { FM } from "@shared-library/constants";
+import { FM } from "shared-library/src/constants";
 import { isEmpty } from "radash";
 import { RegisterNewStudentModal } from "@components/student-database/RegisterNewStudentModal";
 

@@ -11,7 +11,7 @@ import {
 import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/src/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
-import { Attendance, ClassRecord } from "@shared-library/types";
+import { Attendance, ClassRecord } from "shared-library/src/types";
 import { getClassSessionData, getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";

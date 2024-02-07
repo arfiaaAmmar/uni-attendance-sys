@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { Feedback, Student } from "@shared-library/types";
+import { Feedback, Student } from "shared-library/src/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 

@@ -5,7 +5,7 @@ import { getAllClassRecords } from "../api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
 import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
-import { ClassRecord } from "@shared-library/types";
+import { ClassRecord } from "shared-library/src/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 
 export const ClassRecords = () => {

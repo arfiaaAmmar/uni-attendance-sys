@@ -1,5 +1,5 @@
-import { API_BASE_URL, ENDPOINT, FM } from "@shared-library/constants";
-import { Student } from "@shared-library/types";
+import { API_BASE_URL, ENDPOINT, FM } from "shared-library/src/constants";
+import { Student } from "shared-library/src/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   console.log(JSON.stringify(studentForm, null, 2))

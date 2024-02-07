@@ -17,18 +17,16 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "declaration": true,
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
-      "@shared-library/*": ["../shared-library/src/*"],
-      "@components/*": ["./src/components/*"],
-      "@helpers/*": ["./src/helpers/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@api/*": ["./src/api/*"]
+      "@components/*": ["components/*"],
+      "@helpers/*": ["helpers/*"],
+      "@assets/*": ["assets/*"],
+      "@pages/*": ["pages/*"],
+      "@utils/*": ["utils/*"],
+      "@api/*": ["api/*"]
     }
   },
   "include": ["./src/**/*"],
   "exclude": ["./node_modules"],
-  "references": [{ "path": "../shared-library" }]
 }

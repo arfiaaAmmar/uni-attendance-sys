@@ -1,5 +1,5 @@
 import { createContext, useMemo, useState } from "react";
-import { Admin } from "@shared-library/types";
+import { Admin } from "shared-library/src/types";
 
 interface AuthContextProps {
   user: Admin | null;

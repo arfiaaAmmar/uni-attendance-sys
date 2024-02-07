@@ -2,8 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from 'express'
 import { ObjectId } from "mongodb";
-import { Admin } from "@shared-library/types";
-import { FM } from "@shared-library/constants";
+import { Admin } from "shared-library/src/types";
+import { FM } from "shared-library/src/constants";
 import { handleCatchError } from "@helpers/shared-helpers";
 import { AdminModel } from "@models/model";
 import { JWT_SECRET } from "@config/config";
