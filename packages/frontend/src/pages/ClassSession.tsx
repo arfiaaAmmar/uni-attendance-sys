@@ -22,7 +22,7 @@ const ClassSession = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [searchResults, setSearchResults] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [session, setSession] = useState<ClassRecord>();
+  const [session, setSession] = useState(getLocalClassSessionData());
   const currentSession = useClassSessionStore();
   const sessionDetails = [
     { label: "Class", value: currentSession.classroom },
@@ -41,9 +41,12 @@ const ClassSession = () => {
   const fetchSessionFromLocal = async () => {
     try {
       const existingSession = getLocalClassSessionData();
-      if (!isEmpty(existingSession)) setInitialFormModal(true);
-      else {
+      if (!isEmpty(existingSession)) {
         setInitialFormModal(false);
+        setSession(existingSession)
+      }
+      else {
+        setInitialFormModal(true);
         const data = await getClassRecord(existingSession._id!);
         setAttendance(data?.attendance!);
 
@@ -53,6 +56,7 @@ const ClassSession = () => {
           ["studentName", "studentId"]
         );
         setSearchResults(filteredMainListData);
+        setSession({ ...data, status: "Ended"})
       }
     } catch (error) {
       console.error("Error fetching user list:", error);
