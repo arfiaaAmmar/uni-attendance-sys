@@ -22,7 +22,7 @@ const ClassSession = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [searchResults, setSearchResults] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [session, setSession] = useState<ClassRecord>();
+  const [session, setSession] = useState<ClassRecord>(getClassSessionData());
   const currentSession = useClassSessionStore();
   const sessionDetails = [
     { label: "Class", value: currentSession.classroom },
@@ -40,11 +40,10 @@ const ClassSession = () => {
 
   const fetchSessionFromLocal = async () => {
     try {
-      const existingSession = getLocalClassSessionData();
-      if (!isEmpty(existingSession)) setInitialFormModal(true);
+      if (!isEmpty(session)) setInitialFormModal(true);
       else {
         setInitialFormModal(false);
-        const data = await getClassRecord(existingSession._id!);
+        const data = await getClassRecord(session._id!);
         setAttendance(data?.attendance!);
 
         const filteredMainListData = filterSearchQuery<Attendance>(
