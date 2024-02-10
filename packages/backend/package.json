@@ -4,8 +4,8 @@
   "description": "Web server with Express, Typescript and MongoDB",
   "main": "src/server.js",
   "scripts": {
-    "start": "yarn run start",
-    "build": "tsc",
+    "start": "nodemon --exec dist/src/server.js",
+    "build": "tsc && tsc-alias",
     "dev": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "prod": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

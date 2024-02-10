@@ -10,7 +10,6 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@shared-library/*": ["../shared-library/src/*"],
       "@controllers/*": ["./src/controllers/*"],
       "@models/*": ["./src/models/*"],
       "@helpers/*": ["./src/helpers/*"],
@@ -19,5 +18,4 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
-  "references": [{ "path": "../shared-library" }]
 }

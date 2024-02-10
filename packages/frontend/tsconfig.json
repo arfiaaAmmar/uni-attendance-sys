@@ -19,7 +19,6 @@
     "declaration": true,
     "baseUrl": "./",
     "paths": {
-      "@shared-library/*": ["../shared-library/src/*"],
       "@components/*": ["./src/components/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@assets/*": ["./src/assets/*"],
@@ -29,6 +28,5 @@
     }
   },
   "include": ["./src/**/*"],
-  "exclude": ["./node_modules"],
-  "references": [{ "path": "../shared-library" }]
+  "exclude": ["./node_modules"]
 }
