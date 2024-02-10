@@ -6,9 +6,6 @@ export const STORAGE_NAME = {
   classSessionData: "classSession",
 } as const;
 
-export const API_BASE_URL = "http://localhost:8888";
-// export const API_BASE_URL + "http://localhost:8888";
-
 export const ENDPOINT = {
   queryStudentDB: "/query-student-db/suggestions?query=${value}",
   registerAdmin: "/register-admin",

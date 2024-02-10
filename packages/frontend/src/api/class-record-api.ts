@@ -1,6 +1,7 @@
 import { handleAPIRequest } from "@helpers/handlers";
-import { ENDPOINT, API_BASE_URL, STORAGE_NAME } from "shared-library/src/constants";
+import { ENDPOINT, STORAGE_NAME } from "shared-library/src/constants";
 import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/src/types";
+import { API_URL } from "src/config/config";
 
 /**
  * Posts a class record to the API.
@@ -10,7 +11,7 @@ import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/src/ty
  */
 export const postClassRecord = async (classData: ClassRecord) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_BASE_URL}${ENDPOINT.postClassRecord}`,
+    `${API_URL}${ENDPOINT.postClassRecord}`,
     "POST",
     classData
   );
@@ -28,7 +29,7 @@ export const postAttendance = async (
   attendanceData: Attendance
 ) => {
   return handleAPIRequest<void>(
-    `${API_BASE_URL}${ENDPOINT.postAttendance.replace(":classId", _id)}`,
+    `${API_URL}${ENDPOINT.postAttendance.replace(":classId", _id)}`,
     "POST",
     attendanceData
   );
@@ -42,7 +43,7 @@ export const postAttendance = async (
  */
 export const getClassRecord = async (_id: string) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_BASE_URL}${ENDPOINT.getClassRecord.replace(":classId", _id)}`,
+    `${API_URL}${ENDPOINT.getClassRecord.replace(":classId", _id)}`,
     "GET"
   );
 };
@@ -56,7 +57,7 @@ export const getClassRecord = async (_id: string) => {
  */
 export const updateClassRecord = async (_id: string, data: ClassRecord) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_BASE_URL}${ENDPOINT.updateClassRecord.replace(":classId", _id)}`,
+    `${API_URL}${ENDPOINT.updateClassRecord.replace(":classId", _id)}`,
     "PUT",
     data
   );
@@ -69,7 +70,7 @@ export const updateClassRecord = async (_id: string, data: ClassRecord) => {
  */
 export const getAllClassRecords = async () => {
   return handleAPIRequest<any[]>(
-    `${API_BASE_URL}${ENDPOINT.getAllClassRecords}`,
+    `${API_URL}${ENDPOINT.getAllClassRecords}`,
     "GET"
   );
 };
@@ -81,7 +82,7 @@ export const getAllClassRecords = async () => {
  */
 export const getLiveClassRecords = async () => {
   return handleAPIRequest<any[]>(
-    `${API_BASE_URL}${ENDPOINT.getLiveClassSessions}`,
+    `${API_URL}${ENDPOINT.getLiveClassSessions}`,
     "GET"
   );
 };
@@ -93,7 +94,7 @@ export const getLiveClassRecords = async () => {
  */
 export const getRecentlyEndedClasses = async () => {
   return handleAPIRequest<any[]>(
-    `${API_BASE_URL}${ENDPOINT.getRecentlyEndedClasses}`,
+    `${API_URL}${ENDPOINT.getRecentlyEndedClasses}`,
     "GET"
   );
 };
@@ -116,7 +117,7 @@ export const getLocalClassSessionData = (): ClassRecord => {
  */
 export const handleDelete = async (id: string, type: HandleDeleteType) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete-${type}/${id}`, {
+    const response = await fetch(`${API_URL}/delete-${type}/${id}`, {
       method: "DELETE",
     });
 

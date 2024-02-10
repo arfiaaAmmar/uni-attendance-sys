@@ -6,7 +6,6 @@ import { Admin } from "shared-library/src/types";
 import { FM } from "shared-library/src/constants";
 import { handleCatchError } from "@helpers/shared-helpers";
 import { AdminModel } from "@models/model";
-import { JWT_SECRET } from "@config/config";
 
 export const registerAdmin = async (req: Request, res: Response) => {
   try {

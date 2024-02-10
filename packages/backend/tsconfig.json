@@ -12,12 +12,12 @@
     "isolatedModules": true,
     "declaration": true,
     "paths": {
-      "@controllers/*": ["controllers/*"],
-      "@models/*": ["models/*"],
-      "@helpers/*": ["helpers/*"],
-      "@config/*": ["config/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@models/*": ["./src/models/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@config/*": ["./src/config/*"],
     },
   },
-  "include": ["./src/**/*"],
-  "exclude": ["./node_modules"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"],
 }

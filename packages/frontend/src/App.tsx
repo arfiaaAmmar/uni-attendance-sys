@@ -4,6 +4,7 @@ import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { adminRoutes } from "./routes/routes";
+import { PAGES_PATH } from "shared-library/src/constants";
 import Login from "@pages/Login";
 import Sidebar from "@components/shared/Sidebar";
 import AttendanceSystem from "@pages/AttendanceSystem";

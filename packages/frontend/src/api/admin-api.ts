@@ -1,12 +1,12 @@
-
-import axios from "axios";
-import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "shared-library/src/constants";
+import { ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "shared-library/src/constants";
 import { Admin, ClassRecord } from "shared-library/src/types";
+import axios from "axios";
+import { API_URL } from "src/config/config";
 
 export const registerAdmin = async (userForm: Admin) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}${ENDPOINT.registerAdmin}`,
+      `${API_URL}${ENDPOINT.registerAdmin}`,
       userForm,
       { headers: CONTENT_TYPE_APPLICATION_JSON }
     );
@@ -19,7 +19,7 @@ export const registerAdmin = async (userForm: Admin) => {
 
 export const loginAdmin = async (email: string, password: string, rememberMe: boolean) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.adminLogin}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.adminLogin}`, {
       method: 'POST',
       headers: CONTENT_TYPE_APPLICATION_JSON,
       body: JSON.stringify({ email, password, rememberMe })
@@ -56,7 +56,7 @@ export const authoriseUser = async () => {
       throw new Error("Token not found");
     }
 
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.authoriseAdmin}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.authoriseAdmin}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

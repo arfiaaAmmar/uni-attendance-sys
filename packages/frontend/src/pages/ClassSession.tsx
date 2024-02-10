@@ -12,10 +12,11 @@ import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/src/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
 import { Attendance, ClassRecord } from "shared-library/src/types";
+import { Attendance, ClassRecord } from "shared-library/src/types";
 import { getClassSessionData, getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
-import { useClassSessionStore } from "../stores/Stores";
+import { useClassSessionStore } from "src/stores/Stores";
 import { isEmpty } from "radash";
 
 const ClassSession = () => {
@@ -40,14 +41,10 @@ const ClassSession = () => {
 
   const fetchSessionFromLocal = async () => {
     try {
-      const existingSession = getLocalClassSessionData();
-      if (!isEmpty(existingSession)) {
-        setInitialFormModal(false);
-        setSession(existingSession)
-      }
+      if (!isEmpty(session)) setInitialFormModal(true);
       else {
-        setInitialFormModal(true);
-        const data = await getClassRecord(existingSession._id!);
+        setInitialFormModal(false);
+        const data = await getClassRecord(session._id!);
         setAttendance(data?.attendance!);
 
         const filteredMainListData = filterSearchQuery<Attendance>(
