@@ -1,10 +1,10 @@
-import { API_BASE_URL, ENDPOINT, FM } from "shared-library/src/constants";
+import { API_URL, ENDPOINT, FM } from "shared-library/src/constants";
 import { Student } from "shared-library/src/types";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   console.log(JSON.stringify(studentForm, null, 2))
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.registerStudent}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.registerStudent}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const registerStudent = async (studentForm: Omit<Student, "studentId">) =
 
 export const getStudent = async (studentId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.getStudent.replace(':studentId', studentId)}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.getStudent.replace(':studentId', studentId)}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -52,7 +52,7 @@ export const getStudent = async (studentId: string) => {
 
 export const getAllStudents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.getAllStudents}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.getAllStudents}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -72,7 +72,7 @@ export const getAllStudents = async () => {
 
 export const queryStudents = async (query: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINT.queryStudentDB.replace("${value}", query)}`, {
+    const response = await fetch(`${API_URL}${ENDPOINT.queryStudentDB.replace("${value}", query)}`, {
       headers: { "Content-Type": "application/json" }
     })
     const data = await response.json()
