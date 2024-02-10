@@ -7,8 +7,8 @@ import {
   FM,
   PAGES_PATH,
   STORAGE_NAME,
-} from "@shared-library/constants";
-import { ClassRecord, ModalActivationProps } from "@shared-library/types";
+} from "shared-library/src/constants";
+import { ClassRecord, ModalActivationProps } from "shared-library/src/types";
 import { isEmpty } from "radash";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";

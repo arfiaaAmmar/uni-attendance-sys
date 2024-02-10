@@ -1,7 +1,7 @@
-import { ClassRecord, ClassStatus, Classrooms, Courses } from "@shared-library/types";
+import { updateClassRecord } from "@api/class-record-api";
+import { registerStudent } from "@api/student-api";
+import { ClassRecord, Courses } from "shared-library/src/types";
 import * as XLSX from "xlsx";
-import { updateClassRecord } from "../api/class-record-api";
-import { registerStudent } from "../api/student-api";
 
 /**
  * Handles the upload of an Excel file for student registration.

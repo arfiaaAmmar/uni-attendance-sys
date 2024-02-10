@@ -1,5 +1,5 @@
 import { Schema, Types, model } from "mongoose";
-import { IAdminModel, IClassRecordModel, IScannerRecordModel, IStudentModel } from "@shared-library/types"
+import { IAdminModel, IClassRecordModel, IScannerRecordModel, IStudentModel } from "shared-library/src/types"
 
 const DB_COLLECTIONS = {
   admin: "Admin",

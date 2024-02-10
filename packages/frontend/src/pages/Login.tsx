@@ -11,8 +11,8 @@ import {
 import { authoriseUser, loginAdmin, registerAdmin, setUserSessionData } from "../api/admin-api";
 import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
-import { FM, PAGES_PATH, STORAGE_NAME } from "@shared-library/constants";
-import { Admin } from "@shared-library/types";
+import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/src/constants";
+import { Admin } from "shared-library/src/types";
 import { isEmpty } from "radash";
 
 const Login = () => {

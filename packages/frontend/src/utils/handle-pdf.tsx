@@ -5,7 +5,7 @@ import {
   Document,
   StyleSheet
 } from "@react-pdf/renderer";
-import { ClassRecord } from "@shared-library/types";
+import { ClassRecord } from "shared-library/src/types";
 
 //make this for Attendance Report first then afterwards make it generic
 const styles = StyleSheet.create({

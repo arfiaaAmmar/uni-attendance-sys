@@ -1,6 +1,6 @@
 import { getUserSessionData } from "@api/admin-api";
-import { STORAGE_NAME } from "@shared-library/constants";
-import { ClassRecord } from "@shared-library/types";
+import { STORAGE_NAME } from "shared-library/src/constants";
+import { ClassRecord } from "shared-library/src/types";
 import { defClassSession } from "src/utils/constants";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";

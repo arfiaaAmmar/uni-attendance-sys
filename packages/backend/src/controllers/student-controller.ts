@@ -1,7 +1,7 @@
 import { handleCatchError } from "@helpers/shared-helpers";
 import { StudentModel } from "@models/model";
 import { FM } from "@shared-library/constants";
-import { Student } from "@shared-library/types";
+import { Student } from "@shashared-library/srcpes";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from 'uuid';
 

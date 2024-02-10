@@ -1,4 +1,4 @@
-import { FM } from "@shared-library/constants";
+import { FM } from "shared-library/src/constants";
 import { Response } from "express";
 
 export const handleCatchError = (

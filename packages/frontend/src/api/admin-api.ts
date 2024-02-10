@@ -1,5 +1,5 @@
-import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "@shared-library/constants";
-import { Admin, ClassRecord } from "@shared-library/types";
+import { API_BASE_URL, ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "shared-library/src/constants";
+import { Admin, ClassRecord } from "shared-library/src/types";
 import axios from "axios";
 
 export const registerAdmin = async (userForm: Admin) => {

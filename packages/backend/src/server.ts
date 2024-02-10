@@ -5,7 +5,7 @@ import { MONGODB_URI, app, port } from "./config/config";
 import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
 import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
-import { FM, ENDPOINT } from 'shared-library/src/constants'
+import { FM, ENDPOINT } from 'shared-library/src/src/constants'
 
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");

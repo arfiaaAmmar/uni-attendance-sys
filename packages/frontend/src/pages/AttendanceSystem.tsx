@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllClassRecords, getLiveClassRecords } from "../api/class-record-api";
-import { ClassRecord } from "@shared-library/types";
-import { PAGES_PATH } from "@shared-library/constants";
+import { ClassRecord } from "shared-library/src/types";
+import { PAGES_PATH } from "shared-library/src/constants";
 
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<ClassRecord[]>();
