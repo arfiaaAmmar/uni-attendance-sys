@@ -1,18 +1,18 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { MONGODB_URI, app, port } from "./config/config";
 import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
 import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
-import { FM, ENDPOINT } from 'shared-library/src/constants'
+import { MONGODB_URI, MONGODB_URI_DEV, port } from "@config/config";
+import { FM, ENDPOINT } from "shared-library/src/constants";
 
-if (!MONGODB_URI) {
+if (!MONGODB_URI_DEV) {
   throw new Error("MONGODB_URI environment variable is not defined");
 }
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI_DEV)
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -20,6 +20,7 @@ mongoose
     console.error(FM.mongoDBConnectionFailed, error);
   });
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 

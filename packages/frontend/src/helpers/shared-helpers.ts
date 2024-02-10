@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, FormEvent } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 /**
  * Helper function for creating data fetching hooks.

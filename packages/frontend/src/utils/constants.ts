@@ -1,5 +1,5 @@
 import { getUserSessionData } from "@api/admin-api";
-import { generateClassId } from "@helpers/shared-helpers";
+import { generateClassId } from "shared-library/src/shared-helpers";
 import { ClassRecord } from "shared-library/src/types";
 
 export const dateTimeFormatForClassRecord = () => {
