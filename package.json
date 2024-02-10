@@ -4,7 +4,11 @@
   "main": "index.js",
   "scripts": {
     "start-frontend": "vite",
-    "start-backend": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts"
+    "start-backend": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
+    "remove": "yarn workspace packages/frontend run remove:deps && yarn workspace packages/backend run remove:deps",
+    "remove-deps:frontend": "rm -rf packages/frontend/node_modules packages/frontend/yarn.lock",
+    "remove-deps:backend": "rm -rf packages/backend/node_modules packages/backend/yarn.lock",
+    "remove-deps:all": "yarn run remove-deps:frontend && yarn run remove-deps:backend"
   },
   "repository": "https://github.com/arfiaaAmmar/frontend.git",
   "license": "MIT",
