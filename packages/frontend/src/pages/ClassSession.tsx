@@ -9,10 +9,10 @@ import {
   getLocalClassSessionData, updateClassRecord
 } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
-import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/src/constants";
+import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
-import { Attendance, ClassRecord } from "shared-library/src/types";
-import { Attendance, ClassRecord } from "shared-library/src/types";
+import { Attendance, ClassRecord } from "shared-library/dist/types";
+import { Attendance, ClassRecord } from "shared-library/dist/types";
 import { getClassSessionData, getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";

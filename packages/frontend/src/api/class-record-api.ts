@@ -1,6 +1,6 @@
 import { handleAPIRequest } from "@helpers/handlers";
-import { ENDPOINT, STORAGE_NAME } from "shared-library/src/constants";
-import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/src/types";
+import { ENDPOINT, STORAGE_NAME } from "shared-library/dist/constants";
+import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/dist/types";
 import { API_URL } from "src/config/config";
 
 /**

@@ -1,4 +1,4 @@
-import { HandleDeleteType } from "shared-library/src/types";
+import { HandleDeleteType } from "shared-library/dist/types";
 import { API_URL } from "src/config/config";
 
 

@@ -1,6 +1,6 @@
 import { updateClassRecord } from "@api/class-record-api";
 import { registerStudent } from "@api/student-api";
-import { ClassRecord, Courses } from "shared-library/src/types";
+import { ClassRecord, Courses } from "shared-library/dist/types";
 import * as XLSX from "xlsx";
 
 /**

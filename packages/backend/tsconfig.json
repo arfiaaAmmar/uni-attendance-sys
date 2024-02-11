@@ -1,5 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
@@ -8,16 +7,18 @@
     "strict": true,
     "esModuleInterop": true,
     "composite": true,
-    "baseUrl": "./src",
     "isolatedModules": true,
     "declaration": true,
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
+    "rootDir": "./src",
     "paths": {
-      "@controllers/*": ["controllers/*"],
-      "@models/*": ["models/*"],
-      "@helpers/*": ["helpers/*"],
-      "@config/*": ["config/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@models/*": ["./src/models/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@config/*": ["./src/config/*"],
     },
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
+  "references": [{ "path": "../shared-library" }]
 }

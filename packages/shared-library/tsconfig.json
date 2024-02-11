@@ -1,15 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "composite": true,
+    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "module": "ESNext",
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
-    "target": "ES6",
-    "rootDir": "./src",
-    "outDir": "./dist"
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
   },
-  "exclude": ["./node_modules"]
+  "include": ["src"]
 }

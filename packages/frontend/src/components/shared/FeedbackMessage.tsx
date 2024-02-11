@@ -1,4 +1,4 @@
-import { Feedback } from "shared-library/src/types";
+import { Feedback } from "shared-library/dist/types";
 
 
 export function FeedbackMessage({ success, error }: Feedback) {

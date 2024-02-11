@@ -1,25 +1,18 @@
 {
-  "name": "nabil_attendance_system",
+  "name": "uni-attendance-sys",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
     "start-frontend": "vite",
     "start-backend": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
-    "remove": "yarn workspace packages/frontend run remove:deps && yarn workspace packages/backend run remove:deps",
     "remove-deps:frontend": "rm -rf packages/frontend/node_modules packages/frontend/yarn.lock",
     "remove-deps:backend": "rm -rf packages/backend/node_modules packages/backend/yarn.lock",
-    "remove-deps:all": "yarn run remove-deps:frontend && yarn run remove-deps:backend"
+    "remove-deps:all": "yarn run remove-deps:frontend && yarn run remove-deps:backend && rm -rf node_modules yarn.lock"
   },
   "repository": "https://github.com/arfiaaAmmar/frontend.git",
   "license": "MIT",
   "private": true,
-  "workspaces": [
-    "packages/frontend",
-    "packages/backend",
-    "packages/shared-library"
-  ],
+  "workspaces": ["packages/*"],
   "dependencies": {
-    "find-up": "^7.0.0",
     "radash": "^11.0.0",
     "shared-library": "1.0.0"
   },
@@ -34,6 +27,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",
     "typescript": "5.3.3"
   }

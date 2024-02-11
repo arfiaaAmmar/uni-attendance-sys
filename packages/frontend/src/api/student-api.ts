@@ -1,5 +1,5 @@
-import { ENDPOINT, FM } from "shared-library/src/constants";
-import { Student } from "shared-library/src/types";
+import { ENDPOINT, FM } from "shared-library/dist/constants";
+import { Student } from "shared-library/dist/types";
 import { API_URL } from "src/config/config";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {

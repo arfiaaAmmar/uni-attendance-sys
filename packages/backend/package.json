@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Web server with Express, Typescript and MongoDB",
-  "main": "src/server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV='dev' node -r dist/src/server.js",
-    "start:prod": "cross-env NODE_ENV='prod' node -r dist/src/server.js",
-    "build": "tsc -p tsconfig.build.json && tsc-alias",
+    "start:dev": "cross-env NODE_ENV='dev' node dist/server.js",
+    "start:prod": "cross-env NODE_ENV='prod' node dist/server.js",
+    "build": "tsc --build && tsc-alias",
     "dev": "cross-env NODE_ENV='dev' ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

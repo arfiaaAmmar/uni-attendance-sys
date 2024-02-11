@@ -4,7 +4,7 @@ import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { adminRoutes } from "./routes/routes";
-import { PAGES_PATH } from "shared-library/src/constants";
+import { PAGES_PATH } from "shared-library/dist/constants";
 import Login from "@pages/Login";
 import Sidebar from "@components/shared/Sidebar";
 import AttendanceSystem from "@pages/AttendanceSystem";
@@ -12,7 +12,7 @@ import ClassRecords from "@pages/ClassRecord";
 import ClassSession from "@pages/ClassSession";
 import StudentDatabase from "@pages/StudentDatabase";
 import { authoriseUser, getUserSessionData } from "@api/admin-api";
-import { PAGES_PATH } from "shared-library/src/constants";
+import { PAGES_PATH } from "shared-library/dist/constants";
 
 function App(): JSX.Element {
   const [sidebar, setSidebar] = useState(true);

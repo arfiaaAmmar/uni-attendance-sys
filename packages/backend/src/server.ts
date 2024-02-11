@@ -4,15 +4,15 @@ import cors from "cors";
 import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
 import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
-import { MONGODB_URI, MONGODB_URI_DEV, port } from "@config/config";
-import { FM, ENDPOINT } from "shared-library/src/constants";
+import { MONGODB_URI, port } from "@config/config";
+import { ENDPOINT, FM } from 'shared-library/dist/constants'
 
-if (!MONGODB_URI_DEV) {
+if (!MONGODB_URI) {
   throw new Error("MONGODB_URI environment variable is not defined");
 }
 
 mongoose
-  .connect(MONGODB_URI_DEV)
+  .connect(MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB");
   })

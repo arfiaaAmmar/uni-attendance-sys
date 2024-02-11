@@ -1,6 +1,6 @@
-import { Dispatch } from 'react'
-import { SetStateAction } from 'react'
-import { Document, Schema, Types } from "mongoose";
+import { Dispatch } from 'react';
+import { SetStateAction } from 'react';
+import { Document } from "mongoose";
 
 export type Courses =
   | "Food & Beverage"

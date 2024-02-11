@@ -5,8 +5,8 @@ import {
   getLocalClassSessionData,
   postAttendance,
 } from "../../api/class-record-api";
-import { ModalActivationProps, Student } from "shared-library/src/types";
-import { FM } from "shared-library/src/constants";
+import { ModalActivationProps, Student } from "shared-library/dist/types";
+import { FM } from "shared-library/dist/constants";
 import { getClassSessionData } from "@api/admin-api";
 
 const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {

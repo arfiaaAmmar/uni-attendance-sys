@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../stores/AuthContext";
 import { AppRoutesType } from "../../routes/routes";
-import { STORAGE_NAME } from "shared-library/src/constants";
+import { STORAGE_NAME } from "shared-library/dist/constants";
 
 interface SidebarProps {
   items: AppRoutesType[];

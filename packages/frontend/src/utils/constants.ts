@@ -1,6 +1,6 @@
 import { getUserSessionData } from "@api/admin-api";
 import { generateClassId } from "shared-library/src/shared-helpers";
-import { ClassRecord } from "shared-library/src/types";
+import { ClassRecord } from "shared-library/dist/types";
 
 export const dateTimeFormatForClassRecord = () => {
   const now = new Date();
