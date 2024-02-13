@@ -39,7 +39,6 @@
     "@types/react-dom": "^18.2.4",
     "@types/xlsx": "^0.0.36",
     "@vitejs/plugin-react": "^4.0.0",
-    "autoprefixer": "^10.4.14",
     "vite": "^4.4.9",
     "vite-tsconfig-paths": "^4.2.1"
   }
