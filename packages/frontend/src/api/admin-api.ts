@@ -1,7 +1,7 @@
-import { ENDPOINT, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME, FM } from "shared-library/dist/constants";
+import { ENDPOINT,FM, CONTENT_TYPE_APPLICATION_JSON, STORAGE_NAME } from "shared-library/dist/constants";
 import { Admin, ClassRecord } from "shared-library/dist/types";
 import axios from "axios";
-import { API_URL } from "src/config/config";
+import { API_URL } from "config/config";
 
 export const registerAdmin = async (userForm: Admin) => {
   try {
@@ -19,26 +19,22 @@ export const registerAdmin = async (userForm: Admin) => {
 
 export const loginAdmin = async (email: string, password: string, rememberMe: boolean) => {
   try {
+    console.log('test', `${API_URL}${ENDPOINT.adminLogin}`)
     const response = await fetch(`${API_URL}${ENDPOINT.adminLogin}`, {
       method: 'POST',
       headers: CONTENT_TYPE_APPLICATION_JSON,
-      body: JSON.stringify({ email, password, rememberMe })
+      body: JSON.stringify({ email, password })
     });
 
     const data = await response.json()
 
     if (!response.ok) {
       const errorData: { message: string } = data
-      throw new Error(errorData.message)
+      throw new Error(errorData.message || 'Failed to login')
     }
 
-    if (rememberMe) {
-      localStorage.setItem(STORAGE_NAME.token, data.token);
-      sessionStorage.removeItem(STORAGE_NAME.token);
-    } else {
-      sessionStorage.setItem(STORAGE_NAME.token, data.token);
-      localStorage.removeItem(STORAGE_NAME.token);
-    }
+    if (rememberMe) localStorage.setItem(STORAGE_NAME.token, data.token)
+    else sessionStorage.setItem(STORAGE_NAME.token, data.token);
 
     return data;
   } catch (error) {

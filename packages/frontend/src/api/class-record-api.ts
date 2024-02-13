@@ -1,7 +1,7 @@
 import { handleAPIRequest } from "@helpers/handlers";
 import { ENDPOINT, STORAGE_NAME } from "shared-library/dist/constants";
 import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/dist/types";
-import { API_URL } from "src/config/config";
+import { API_URL } from "config/config";
 
 /**
  * Posts a class record to the API.

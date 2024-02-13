@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, FormEvent } from "react";
+import { useState, useEffect, useContext, FormEvent } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,18 +11,20 @@ import {
 import { authoriseUser, loginAdmin, registerAdmin, setUserSessionData } from "../api/admin-api";
 import { AuthContext } from "../stores/AuthContext";
 import IMG from "../assets/_assets";
-import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
+import { FM, PAGES_PATH } from "shared-library/dist/constants";
 import { Admin } from "shared-library/dist/types";
 import { isEmpty } from "radash";
 
 const Login = () => {
-  const [type, setType] = useState("login")
+  const [type, setType] = useState<"login" | "register">("login")
+  // TODO Implement valibot
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
     retypePassword: "",
     rememberMe: false,
   });
+  // TODO Implement valibot 
   const [registerInfo, setRegisterInfo] = useState<Admin>({
     email: "",
     name: "",
@@ -33,6 +35,11 @@ const Login = () => {
   const navigate = useNavigate();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
+
+  const toggleShowPassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   const adminLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -122,7 +129,7 @@ const Login = () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="bg-black w-screen h-20">
+      <div className="bg-black w-screen">
         <div className="h-full w-max">
           <img
             src={IMG.appIcon}
@@ -149,7 +156,7 @@ const Login = () => {
           required
           name="password"
           placeholder="Password"
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           className="rounded-md px-2 py-1 block my-2 w-full"
           onChange={(e: any) =>
             setLoginInfo({ ...loginInfo, password: e.target.value })
@@ -158,6 +165,20 @@ const Login = () => {
         />
         {type === "register" && (
           <>
+            <input
+              required
+              name="password"
+              placeholder="Retype password"
+              type={showPassword ? 'text' : 'password'}
+              className="rounded-md px-2 py-1 block my-2 w-full"
+              onChange={(e: any) =>
+                setLoginInfo({ ...loginInfo, retypePassword: e.target.value })
+              }
+              autoComplete="retype-password"
+            />
+            <button type="button" onClick={toggleShowPassword}>
+              {showPassword ? 'Hide' : 'Show'} Password
+            </button>
             <input
               required
               name="name"

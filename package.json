@@ -2,21 +2,27 @@
   "name": "uni-attendance-sys",
   "version": "1.0.0",
   "scripts": {
-    "start-frontend": "vite",
-    "start-backend": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
+    "start:frontend": "vite",
+    "start:backend": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
+    "start:all": "start:frontend && start:backend",
     "remove-deps:frontend": "rm -rf packages/frontend/node_modules packages/frontend/yarn.lock",
     "remove-deps:backend": "rm -rf packages/backend/node_modules packages/backend/yarn.lock",
     "remove-deps:all": "yarn run remove-deps:frontend && yarn run remove-deps:backend && rm -rf node_modules yarn.lock"
   },
-  "repository": "https://github.com/arfiaaAmmar/frontend.git",
+  "repository": "https://github.com/arfiaaAmmar/uni-attendance-sys.git",
   "license": "MIT",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "radash": "^11.0.0",
-    "shared-library": "1.0.0"
+    "shared-library": "1.0.0",
+    "uuid": "^9.0.0",
+    "valibot": "^0.28.1"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "eslint": "^7.32.0",
@@ -27,6 +33,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "prettier": "3.0.3",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",
     "typescript": "5.3.3"

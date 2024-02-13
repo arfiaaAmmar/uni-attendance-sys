@@ -1,6 +1,6 @@
 import { ENDPOINT, FM } from "shared-library/dist/constants";
 import { Student } from "shared-library/dist/types";
-import { API_URL } from "src/config/config";
+import { API_URL } from "config/config";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
   console.log(JSON.stringify(studentForm, null, 2))

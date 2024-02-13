@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.build.json",
   "script": {
     "build:frontend": "yarn workspace shared-library build && vite build",
     "build:backend": "yarn workspace backend build"

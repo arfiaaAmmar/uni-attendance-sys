@@ -7,6 +7,13 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   plugins: [react(), purgeIcons(), tsconfigPaths()],
+  resolve: {
+    preserveSymlinks: true
+  },
+  define: {
+    'process.env': process.env,
+    'import.meta.env': JSON.stringify(process.env)
+  },
   css: {
     postcss: {
       plugins: [tailwindcss, autoprefixer],

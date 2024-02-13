@@ -16,6 +16,8 @@ export type Feedback = {
   error: string;
 };
 
+export type HttpMethod = "POST" | "GET" | "PUT" | "PATCH" | "DELETE"
+
 export type Admin = {
   _id?: string;
   name: string;

@@ -1,3 +1,4 @@
+import { HttpMethod } from 'shared-library'
 
 export async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -10,7 +11,7 @@ export async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function handleAPIRequest<T>(
   url: string,
-  method: string,
+  method: HttpMethod,
   data?: any
 ): Promise<T> {
   const headers: Record<string, string> = {

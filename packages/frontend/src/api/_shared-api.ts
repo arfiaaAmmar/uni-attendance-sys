@@ -1,5 +1,5 @@
 import { HandleDeleteType } from "shared-library/dist/types";
-import { API_URL } from "src/config/config";
+import { API_URL } from "config/config";
 
 
 export const handleDelete = async (id: string, type: HandleDeleteType) => {
