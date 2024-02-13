@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV='dev' vite",
     "build:dev": "cross-env NODE_ENV='dev' && tsc && vite build",
-    "build:prod": "cross-env NODE_ENV='prod' && tsc && vite build",
+    "build:prod": "cross-env NODE_ENV='prod' && tsc --build && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
