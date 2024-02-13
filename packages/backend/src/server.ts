@@ -4,7 +4,7 @@ import cors from "cors";
 import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
 import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
-import { MONGODB_URI, port } from "@config/config";
+import { MONGODB_URI, NODE_ENV, port } from "@config/config";
 import { ENDPOINT, FM } from 'shared-library/dist/constants'
 
 if (!MONGODB_URI) {
@@ -14,7 +14,7 @@ if (!MONGODB_URI) {
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    console.log("Connected to MongoDB");
+    if (NODE_ENV === 'dev') console.log("Connected to MongoDB");
   })
   .catch((error: Error) => {
     console.error(FM.mongoDBConnectionFailed, error);

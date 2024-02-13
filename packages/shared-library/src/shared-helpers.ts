@@ -10,7 +10,6 @@
  *
  * @example
  * const truncatedText = truncateText("Lorem ipsum dolor sit amet", 10);
- * console.log(truncatedText); // "Lorem ipsu..."
  */
 export const truncateText = (txt: string, maxLength: number): string => {
     if (txt.length <= maxLength) return txt;

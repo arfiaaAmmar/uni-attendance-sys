@@ -19,7 +19,6 @@ export const registerAdmin = async (userForm: Admin) => {
 
 export const loginAdmin = async (email: string, password: string, rememberMe: boolean) => {
   try {
-    console.log('test', `${API_URL}${ENDPOINT.adminLogin}`)
     const response = await fetch(`${API_URL}${ENDPOINT.adminLogin}`, {
       method: 'POST',
       headers: CONTENT_TYPE_APPLICATION_JSON,

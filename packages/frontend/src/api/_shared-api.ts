@@ -8,7 +8,7 @@ export const handleDelete = async (id: string, type: HandleDeleteType) => {
       method: "DELETE",
     });
 
-    if (response.ok) console.log(`${type} with ID ${id} deleted successfully.`);
+    if (response.ok) console.error(`${type} with ID ${id} deleted successfully.`);
     else console.error(`Failed to delete ${type} with ID ${id}.`);
   } catch (error) {
     console.error(

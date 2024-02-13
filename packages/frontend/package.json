@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "http-server dist",
     "dev": "cross-env NODE_ENV='dev' vite",
     "build:dev": "cross-env NODE_ENV='dev' && tsc && vite build",
     "build:prod": "cross-env NODE_ENV='prod' && tsc --build && vite build",
@@ -22,6 +23,7 @@
     "autoprefixer": "^10.4.16",
     "axios": "^1.6.6",
     "dayjs": "^1.11.10",
+    "http-server": "^14.1.1",
     "jotai": "^2.6.2",
     "postcss": "^8.4.24",
     "react": "^18.2.0",
