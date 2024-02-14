@@ -1,39 +1,62 @@
 import { Button } from "@mui/material";
-import { Feedback, Student } from "shared-library/dist/types";
+import { Student } from "shared-library/dist/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
-import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { getAllStudents, registerStudent } from "@api/student-api";
+import { isUnfilledObject } from "shared-library";
 
-type RegisternewStudentModalProps = {
-  success: string;
-  error: string;
-  formData: Omit<Student, "studentId">;
+type StudentRegisterModalProps = {
   registerModal: boolean;
-  setFormData: Dispatch<SetStateAction<Omit<Student, "studentId">>>
-  handleSubmit: (event: FormEvent) => Promise<void>
-  setRegisterModal: Dispatch<React.SetStateAction<boolean>>
+  setRegisterModal: Dispatch<SetStateAction<boolean>>
 };
 
 export function RegisterNewStudentModal({
-  success,
-  error,
-  formData,
   registerModal,
-  setFormData,
-  handleSubmit,
   setRegisterModal,
-}: RegisternewStudentModalProps) {
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+}: StudentRegisterModalProps) {
+  const [success, setSuccess] = useState('')
+  const [error, setError] = useState('')
+  const [formData, setFormData] = useState<Omit<Student, "studentId">>({
+    name: "",
+    email: "",
+    phone: "",
+    course: undefined,
+  });
+
+  function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (isUnfilledObject(formData)) {
+      setError("Please fill in all data")
+      setTimeout(() => { setError("") }, 2000)
+      return
+    }
+    try {
+      await registerStudent(formData);
+      setSuccess("Successfully added user!");
+      setTimeout(() => { setSuccess("") }, 3000);
+      setFormData({
+        email: "",
+        name: "",
+        phone: "",
+        course: undefined,
+      });
+
+      await getAllStudents();
+      setRegisterModal(false);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-md p-8">
         <p className="text-lg mb-4">Register Student</p>
-        <FeedbackMessage success={success} error={error} />
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -62,10 +85,13 @@ export function RegisterNewStudentModal({
           <select
             name="course"
             id="course"
-            className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
-            value={formData.course?.toString()}
+            value={formData.course}
             onChange={handleChange}
+            className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
           >
+            <option value="" disabled selected>
+              Select a course
+            </option>
             <option value="Information Technology">
               Information Technology
             </option>
@@ -73,9 +99,9 @@ export function RegisterNewStudentModal({
             <option value="Secretary">Secretary</option>
             <option value="Food & Beverage">Food & Beverage</option>
           </select>
+          <FeedbackMessage {...{ success, error }} />
           <div className="flex justify-between mt-4">
             <Button
-              onClick={handleSubmit}
               variant="contained"
               className="bg-green-600 text-white font-bold"
               type="submit"

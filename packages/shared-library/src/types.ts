@@ -11,7 +11,7 @@ export type Classrooms = "Classroom 1" | "Classroom 2" | "Classroom 3";
 export type HandleDeleteType = "admin" | "student" | "class-record";
 export type ClassStatus = "Not started" | "Ongoing" | "Ended"
 
-export type Feedback = {
+export type FeedbackProps = {
   success: string;
   error: string;
 };

@@ -12,7 +12,7 @@ interface SidebarProps {
   setSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
+export default function Sidebar({ items, sidebar, setSidebar }: Readonly<SidebarProps>) {
   const currentPage = useLocation();
   const { setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -46,10 +46,10 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
               WELCOME BACK {sessionStorage.getItem("userName")}
             </p>
             <div className="p-4 py-6 gap-4 items-center">
-              {items.map((page, index) => (
+              {items.map((page) => (
                 <>
                   <Link
-                    key={index + 1}
+                    key={page.path}
                     to={page.path}
                     className={`block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${currentPage.pathname === page.path
                         ? "bg-gray-100 dark:bg-gray-700"
@@ -60,9 +60,9 @@ export default function Sidebar({ items, sidebar, setSidebar }: SidebarProps) {
                       <span className="text-lg">{page.displayText}</span>
                     </div>
                   </Link>
-                  {page.children?.map((child, index) => (
+                  {page.children?.map((child) => (
                     <Link
-                      key={index + 1}
+                      key={child.path}
                       to={child.path}
                       className={`indent-10 text-white my-2 text-lg block ${currentPage.pathname == child.path
                           ? "bg-gray-100 dark:bg-gray-700"

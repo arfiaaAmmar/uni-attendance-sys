@@ -1,3 +1,17 @@
+/**
+ * Check if object property contains undefined, null, empty string, whitespaces
+ *
+ * @param {Object} obj - The object to check for unfilled properties
+ * @returns {boolean} - Returns true if any property is unfilled, otherwise false
+ */
+export function isUnfilledObject(obj) {
+  for (const key in obj) {
+    const args = (obj.hasOwnProperty(key) && (obj[key] === undefined || obj[key] === null || obj[key].trim() === ''))
+    if (args) return true;
+  }
+  return false;
+}
+
 
 // STRING RELATED FUNCTIONS
 

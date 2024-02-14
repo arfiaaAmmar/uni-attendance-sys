@@ -6,9 +6,5 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc"
-  },
-  "dependencies": {
-    "mongoose": "^7.1.2"
-  },
-  "devDependencies": {}
+  }
 }

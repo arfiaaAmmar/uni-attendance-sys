@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { authoriseAdmin, loginAdmin, registerAdmin, removeAdmin, updateAdmin } from "@controllers/admin-controller";
 import { deleteStudent, getAllStudents, getStudent, registerStudent, searchStudent } from "@controllers/student-controller";
-import { getAllClassRecord, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
+import { getAllClassRecords, getClassRecord, getLiveSessions, postAttendance, postClassRecord, removeAttendance, removeClassRecord, updateClassRecord } from "@controllers/class-record-controller";
 import { MONGODB_URI, NODE_ENV, port } from "@config/config";
 import { ENDPOINT, FM } from 'shared-library/dist/constants'
 
@@ -41,14 +41,14 @@ app.get(ENDPOINT.getAllStudents, getAllStudents);
 app.delete(ENDPOINT.deleteStudent, deleteStudent);
 
 //Class Record - Also can configure ClassSession as well
-app.get(ENDPOINT.getLiveClassSessions, getLiveSessions);
-app.post(ENDPOINT.postClassRecord, postClassRecord);
-app.post(ENDPOINT.postAttendance, postAttendance);
-app.get(ENDPOINT.getClassRecord, getClassRecord);
-app.get(ENDPOINT.getAllClassRecords, getAllClassRecord);
-app.patch(ENDPOINT.updateClassRecord, updateClassRecord);
-app.delete(ENDPOINT.deleteClassRecord, removeClassRecord);
-app.delete(ENDPOINT.removeAttendance, removeAttendance);
+app.get(ENDPOINT.getLiveClassSessions, getLiveSessions); // 
+app.post(ENDPOINT.postClassRecord, postClassRecord); // Done
+app.post(ENDPOINT.postAttendance, postAttendance); // TODO Currently attendance is posted in updateClass()
+app.get(ENDPOINT.getClassRecord, getClassRecord); // Done
+app.get(ENDPOINT.getAllClassRecords, getAllClassRecords); // Done
+app.patch(ENDPOINT.updateClassRecord, updateClassRecord); // Done
+app.delete(ENDPOINT.deleteClassRecord, removeClassRecord); // Done
+app.delete(ENDPOINT.removeAttendance, removeAttendance); 
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

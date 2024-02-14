@@ -139,7 +139,7 @@ const Login = () => {
         </div>
       </div>
       <CssBaseline />
-      <div className="w-2/5 h-max text-center bg-neutral-100 rounded-md p-6 mx-auto my-40 bg-opacity-50 backdrop-blur-0">
+      <div className="w-2/5 h-max text-center bg-neutral-100 rounded-md p-6 mx-auto my-20 bg-opacity-50 backdrop-blur-0">
         <h1 className="text-left font-bold text-2xl mb-8">{type === "login" ? "Login" : "Register"}</h1>
         <input
           required

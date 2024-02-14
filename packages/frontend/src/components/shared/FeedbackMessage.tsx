@@ -1,7 +1,6 @@
-import { Feedback } from "shared-library/dist/types";
+import { FeedbackProps } from "shared-library/dist/types";
 
-
-export function FeedbackMessage({ success, error }: Feedback) {
+export function FeedbackMessage({ success, error }: FeedbackProps) {
   return (
     <>
       {error ? (

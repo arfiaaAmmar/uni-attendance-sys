@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import SearchBox from "@components/shared/SearchBox";
-import { handleUploadExcelForStudentRegistration } from "@utils/upload-excel";
+import { studentRegisterExcelUpload } from "@utils/upload-excel";
 import { filterSearchQuery } from "@helpers/search-functions";
 import { Student } from "shared-library/dist/types";
 import { getAllStudents, registerStudent } from "@api/student-api";
@@ -17,12 +17,6 @@ const StudentDatabase = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState<Omit<Student, "studentId">>({
-    name: "",
-    email: "",
-    phone: "",
-    course: undefined,
-  });
 
   const fetchAllStudents = async () => {
     try {
@@ -50,45 +44,13 @@ const StudentDatabase = () => {
     return () => setFilteredStudents([])
   }, [studentList, searchQuery]);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (isEmpty(formData)) {
-      setError(FM.pleaseFillInAllUserData);
-      return;
-    }
-    try {
-      await registerStudent({
-        email: formData.email,
-        name: formData.name,
-        phone: formData.phone,
-        course: formData.course,
-      });
-      setSuccess("Successfully added user!");
-      setFormData({
-        email: "",
-        name: "",
-        phone: "",
-        course: undefined,
-      });
-      setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-      // Fetch updated user list
-      const updatedStudentList = await getAllStudents();
-      setStudentList(updatedStudentList);
-      setRegisterModal(false);
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
-
   const handleUploadButton = () => {
     if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
       if (selectedFile) {
-        console.log("Selected file", selectedFile);
-        handleUploadExcelForStudentRegistration(selectedFile);
+        studentRegisterExcelUpload(selectedFile);
+        fetchAllStudents()
       } else {
         console.log("No file selected,");
       }
@@ -134,10 +96,7 @@ const StudentDatabase = () => {
       </div>
       <div className="bg-neutral-200 h-[60vh] overflow-y-auto">
         {filteredStudents?.map((student, index) => (
-          <li
-            key={student.studentId}
-            className="flex px-4 py-2 justify-between scroll-auto"
-          >
+          <li key={student.studentId} className="flex px-4 py-2 justify-between scroll-auto" >
             <p className="w-1/12">{index + 1}</p>{" "}
             <p className="w-5/12">{student?.name}</p>{" "}
             <p className="w-3/12">{student?.studentId}</p>{" "}
@@ -147,15 +106,7 @@ const StudentDatabase = () => {
       </div>
 
       {registerModal && (
-        <RegisterNewStudentModal
-          registerModal={registerModal}
-          setRegisterModal={setRegisterModal}
-          success={success}
-          error={error}
-          formData={formData}
-          setFormData={setFormData}
-          handleSubmit={handleSubmit}
-        />
+        <RegisterNewStudentModal {...{ registerModal, setRegisterModal }} />
       )}
     </div>
   );
