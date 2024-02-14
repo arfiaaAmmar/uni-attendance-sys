@@ -34,10 +34,10 @@ export const postAttendance = async (req: Request, res: Response) => {
 };
 
 export const getClassRecord = async (req: Request, res: Response) => {
-  const { _id } = req.params;
+  const { classId } = req.params;
 
   try {
-    const classRecord = await ClassRecordModel.findById(_id);
+    const classRecord = await ClassRecordModel.find({ classId });
     if (!classRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
     res.json(classRecord);
@@ -46,7 +46,7 @@ export const getClassRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllClassRecord = async (req: Request, res: Response) => {
+export const getAllClassRecords = async (req: Request, res: Response) => {
   try {
     const classRecord = await ClassRecordModel.find({}, { password: 0 }).exec();
     if (!classRecord)
@@ -141,7 +141,7 @@ export const removeClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
-    const deletedRecord = await ClassRecordModel.findByIdAndDelete(classId);
+    const deletedRecord = await ClassRecordModel.findOneAndDelete({ classId });
     if (!deletedRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
     res.json({ message: FM.classRecordDeleteSuccess });
