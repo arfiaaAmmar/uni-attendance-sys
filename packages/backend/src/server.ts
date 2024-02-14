@@ -46,7 +46,7 @@ app.post(ENDPOINT.postClassRecord, postClassRecord);
 app.post(ENDPOINT.postAttendance, postAttendance);
 app.get(ENDPOINT.getClassRecord, getClassRecord);
 app.get(ENDPOINT.getAllClassRecords, getAllClassRecord);
-app.put(ENDPOINT.updateClassRecord, updateClassRecord);
+app.patch(ENDPOINT.updateClassRecord, updateClassRecord);
 app.delete(ENDPOINT.deleteClassRecord, removeClassRecord);
 app.delete(ENDPOINT.removeAttendance, removeAttendance);
 

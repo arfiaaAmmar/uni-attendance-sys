@@ -2,7 +2,7 @@
 import { handleCatchError } from "@helpers/shared-helpers";
 import { ClassRecordModel } from "@models/model";
 import { FM } from "shared-library/dist/constants";
-import { ClassRecord, IClassRecordModel } from "shared-library/dist/types";
+import { Attendance, ClassRecord } from "shared-library/dist/types";
 import { Request, Response } from "express";
 
 export const postClassRecord = async (req: Request, res: Response) => {
@@ -94,19 +94,33 @@ export const getRecentlyEndedSessions = async (req: Request, res: Response) => {
   }
 };
 
-
 export const updateClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
-  const updatedData: IClassRecordModel = req.body;
+  const updatedData: Partial<ClassRecord> = req.body;
 
   try {
-    let classRecord = (await ClassRecordModel.findById(
-      classId
-    )) as IClassRecordModel;
+    let classRecord = await ClassRecordModel.findOne({ classId });
     if (!classRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
 
-    classRecord = updatedData;
+    // Iterate over each key in the updatedData object
+    for (const key in updatedData) {
+      if (key === 'attendance') {
+        // Handle updating attendance separately
+        const updatedAttendance: Attendance[] = updatedData.attendance || [];
+
+        updatedAttendance.forEach(attendanceEntry => {
+          if (attendanceEntry && classRecord?.attendance) {
+            const existingEntryIndex = classRecord.attendance.findIndex(entry => entry.studentId === attendanceEntry.studentId);
+
+            if (existingEntryIndex === -1) classRecord.attendance.push(attendanceEntry);
+            else classRecord.attendance[existingEntryIndex] = attendanceEntry;
+          }
+        });
+      } else {
+        (classRecord as any)[key] = (updatedData as any)[key];
+      }
+    }
 
     await classRecord.save();
     res.json(classRecord);
@@ -114,6 +128,14 @@ export const updateClassRecord = async (req: Request, res: Response) => {
     handleCatchError(res, error, FM.errorUpdatingClassRecord);
   }
 };
+
+
+// TODO Not sure if to make another function for this
+// export async function updateClassRecordSingleAttendance(req: Request, res: Response) {
+//   const { classId } = req.params
+//   const 
+// }
+
 
 export const removeClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;

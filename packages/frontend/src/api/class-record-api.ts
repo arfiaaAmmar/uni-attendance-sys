@@ -51,14 +51,14 @@ export const getClassRecord = async (_id: string) => {
 /**
  * Updates a class record in the API.
  *
- * @param {string} _id - The ID of the class record to be updated.
+ * @param {string} classId - The ID of the class record to be updated.
  * @param {ClassRecord} data - The updated class record data.
  * @returns {Promise<ClassRecord>} A promise that resolves to the updated class record.
  */
-export const updateClassRecord = async (_id: string, data: ClassRecord) => {
-  return handleAPIRequest<ClassRecord>(
-    `${API_URL}${ENDPOINT.updateClassRecord.replace(":classId", _id)}`,
-    "PUT",
+export const updateClassRecord = async (classId: string, data: Partial<ClassRecord>) => {
+  return handleAPIRequest(
+    `${API_URL}${ENDPOINT.updateClassRecord.replace(":classId", classId)}`,
+    "PATCH",
     data
   );
 };
@@ -121,7 +121,7 @@ export const handleDelete = async (id: string, type: HandleDeleteType) => {
       method: "DELETE",
     });
 
-    if (response.ok) console.log(`${type} with ID ${id} deleted successfully.`)
+    if (response.ok) console.error(`${type} with ID ${id} deleted successfully.`)
     else console.error(`Failed to delete ${type} with ID ${id}.`);
   } catch (error) {
     console.error(
