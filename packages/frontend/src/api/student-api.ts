@@ -3,7 +3,6 @@ import { Student } from "shared-library/dist/types";
 import { API_URL } from "config/config";
 
 export const registerStudent = async (studentForm: Omit<Student, "studentId">) => {
-  console.log(JSON.stringify(studentForm, null, 2))
   try {
     const response = await fetch(`${API_URL}${ENDPOINT.registerStudent}`, {
       method: "POST",

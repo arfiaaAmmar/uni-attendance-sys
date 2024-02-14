@@ -54,6 +54,8 @@ export type ClassRecord = {
   attendance?: Attendance[];
 };
 
+export type ClassDetails = Omit<ClassRecord, "_id, attendance">
+
 export type ScannerRecord = {
   studentName: string;
   attendanceId: number;

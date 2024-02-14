@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import SearchBox from "@components/shared/SearchBox";
-import { studentRegisterExcelUpload } from "@utils/upload-excel";
+import { handleStudentRegisterExcelUpload } from "@utils/upload-excel";
 import { filterSearchQuery } from "@helpers/search-functions";
 import { Student } from "shared-library/dist/types";
 import { getAllStudents, registerStudent } from "@api/student-api";
@@ -44,15 +44,22 @@ const StudentDatabase = () => {
     return () => setFilteredStudents([])
   }, [studentList, searchQuery]);
 
-  const handleUploadButton = () => {
+  const handleUploadBtn = () => {
     if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
       if (selectedFile) {
-        studentRegisterExcelUpload(selectedFile);
+        handleStudentRegisterExcelUpload(selectedFile);
         fetchAllStudents()
+        setSuccess("Uploading excel success")
+        setTimeout(() => {
+          setSuccess("")
+        }, 2000)
       } else {
-        console.log("No file selected,");
+        setError("Error uploading excel")
+        setTimeout(() => {
+          setError("")
+        }, 2000)
       }
     }
   };
@@ -74,7 +81,7 @@ const StudentDatabase = () => {
           />
           <button
             className="text-white px-2 font-semibold hover:cursor-pointer"
-            onClick={handleUploadButton}
+            onClick={handleUploadBtn}
           >
             Upload Excel
           </button>

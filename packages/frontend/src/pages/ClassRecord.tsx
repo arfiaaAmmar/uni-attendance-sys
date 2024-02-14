@@ -7,6 +7,7 @@ import { GeneratePDFContent } from "../utils/handle-pdf";
 import { Avatar, Button } from "@mui/material";
 import { ClassRecord } from "shared-library/dist/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
+import { formatTo12HourTime } from "@utils/constants";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
@@ -125,7 +126,7 @@ export const ClassRecords = () => {
         {filteredRecord?.map((record) => (
           <div key={record._id} className="flex px-4 py-2 justify-evenly">
             <p className="w-3/12">
-              {record.date} {record?.startTime}
+              {new Date(record?.date!).toLocaleDateString('en-GB')} , {formatTo12HourTime(record?.startTime!)}
             </p>
             <p className="w-4/12">{record?.course}</p>
             <p className="w-3/12">{record?.lecturer}</p>

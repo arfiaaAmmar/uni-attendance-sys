@@ -1,6 +1,6 @@
-import { updateClassRecord } from "@api/class-record-api";
+import { postClassRecord, updateClassRecord } from "@api/class-record-api";
 import { registerStudent } from "@api/student-api";
-import { Attendance, ClassRecord, Courses } from "shared-library/dist/types";
+import { Attendance, ClassDetails, ClassRecord, ClassStatus, Classrooms, Courses, Student } from "shared-library/dist/types";
 import * as XLSX from "xlsx";
 
 /**
@@ -9,7 +9,7 @@ import * as XLSX from "xlsx";
  * @param {File} file - The Excel file containing student registration data.
  * @returns {void}
  */
-export function studentRegisterExcelUpload (
+export function handleStudentRegisterExcelUpload(
   file: File | undefined
 ) {
   if (file) {
@@ -17,21 +17,14 @@ export function studentRegisterExcelUpload (
     reader.onload = (e) => {
       const data = e.target?.result as string;
       const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0]; 
+      const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
 
-      const excelData = XLSX.utils.sheet_to_json(worksheet) as Array<{
-        email: string;
-        name: string;
-        phone: string;
-        course: Courses;
-      }>;
+      const excelData = XLSX.utils.sheet_to_json(worksheet) as Omit<Student, "studentId">[]
 
       // Process the excelData to register students
       excelData.forEach((row) => {
         const { email, name, phone, course } = row;
-        // Register student using the API or relevant function
-        // Note: You need to define your registerStudent function appropriately
         registerStudent({ email, name, phone, course })
           .then(() => {
             console.log("Student registered:", row);
@@ -51,98 +44,119 @@ export function studentRegisterExcelUpload (
  * @param {File} file - The Excel file containing attendance data.
  * @returns {void}
  */
-export function classRecordExcelUpload(
-  classId: string | undefined,
-  file: File | undefined
-) {
-  if (!file) return;
+
+export function handleClassRecordExcelUpload(classId: string, file: File, type?: "patch" | "post") {
+  if (!file || !classId) return;
 
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = e => {
     const data = e.target?.result as string;
     const workbook = XLSX.read(data, { type: "binary" });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
+    let classDetails: ClassDetails | null = null
+    let attendanceList: Attendance[] = []
 
     const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
 
-    // Find the index of "Class Details" row
-    const classDetailsRowIndex = excelData.findIndex(row => row.includes("Class Details"));
-    if (classDetailsRowIndex === -1) {
-      console.error("Class Details row not found in the Excel sheet.");
-      return;
+    // Find Class Details table
+    const classDetailsRow = excelData.findIndex(row => row.includes("Class Details"));
+    if (classDetailsRow !== -1) {
+      const classDetailsTable = excelData.slice(classDetailsRow + 1); // Get rows below "Class Details"
+      classDetails = {
+        classId: classDetailsTable[0][1],
+        lecturer: classDetailsTable[1][1],
+        classroom: classDetailsTable[2][1] as Classrooms,
+        course: classDetailsTable[3][1] as Courses,
+        status: classDetailsTable[4][1] as ClassStatus,
+        date: classDetailsTable[5][1],
+        startTime: classDetailsTable[6][1],
+        endTime: classDetailsTable[7][1]
+      };
+      console.log("Class Details:", classDetails);
     }
 
-    // Extract class details from the "Class Details" row
-    const classDetailsRow = excelData[classDetailsRowIndex + 1]; // Next row after "Class Details"
-    const classDetails: Partial<ClassRecord> = {}; // Define classDetails as a partial object to allow missing properties
-
-    // Iterate over the columns and populate classDetails
-    classDetailsRow.forEach((value, index) => {
-      const property = excelData[0][index]; // First row contains property names
-      if (typeof property === 'string' && value !== undefined) {
-        classDetails[property as keyof ClassRecord] = value;
-      }
-    });
-
-    excelData.splice(classDetailsRowIndex, 2);
-
-    // Now excelData contains only student attendance data
-
-    // Process the excelData to register students
-    excelData.forEach((row) => {
-      const attendance: Partial<ClassRecord> = {}; // Define attendance as a partial object to allow missing properties
-      // Assuming the columns in the Excel file correspond to properties of ClassRecord
-      row.forEach((value, index) => {
-        const property = excelData[0][index]; // First row contains property names
-        if (property && value !== undefined) {
-          attendance[property as keyof ClassRecord] = value;
-        }
-      });
-      // Register student using the API or relevant function
-      updateClassRecord(classId!, attendance)
-        .then(() => {
-          console.log("Student registered:", row);
-        })
-        .catch((error) => {
-          console.error("Error registering student:", error);
+    // Find Attendances table
+    const attendanceHeaderRow = excelData.findIndex(row => row.includes("Attendance"));
+    if (attendanceHeaderRow !== -1) {
+      const attendanceTable = excelData.slice(attendanceHeaderRow + 1) // Get rows below "Attendance"
+      attendanceTable.map(row => {
+        const attendanceObj: { [key: string]: string } = {}; // Object to hold attendance data for each student
+        row.forEach((value, index) => {
+          attendanceObj[index] = value; // Assign data as usual
         });
-    });
+        return attendanceObj;
+      });
+      console.log("Attendances:", attendanceList);
+    }
+
+    if (!classDetails || !attendanceList) return
+    const { classId, classroom, lecturer, course, status, date, startTime, endTime } = classDetails
+    const params: ClassRecord = {
+      classId,
+      classroom,
+      lecturer,
+      course,
+      status,
+      date,
+      startTime,
+      endTime,
+      attendance: attendanceList
+    }
+
+    if (!type || type === "post") {
+      postClassRecord(params)
+      .then(() => {
+        console.log("Class Record registered", params);
+      })
+      .catch((error) => {
+        console.error("Error registering class record:", error);
+      });
+    } else {
+      updateClassRecord(classId, params)
+      .then(() => {
+        console.log("Class Record registered", params);
+      })
+      .catch((error) => {
+        console.error("Error registering class record:", error);
+      });
+    }
+    
   };
   reader.readAsBinaryString(file);
 }
-
 
 /**
  * To upload students attendance list for class session
  * @param {string} classId
  * @param {File} file
- * @return {*} 
+ * @return {*}
  */
-export function attendanceListExcelUpload (
-  classId: string,
-  file: File | undefined
-) {
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result as string;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0]; 
-      const worksheet = workbook.Sheets[sheetName];
-      const excelData = XLSX.utils.sheet_to_json(worksheet) as Attendance[];
+// TODO Will separate attendance from classRecordExcelUpload
+// export function attendanceListExcelUpload (
+//   classId: string,
+//   file: File | undefined
+// ) {
+//   if (file) {
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       const data = e.target?.result as string;
+//       const workbook = XLSX.read(data, { type: "binary" });
+//       const sheetName = workbook.SheetNames[0];
+//       const worksheet = workbook.Sheets[sheetName];
+//       const excelData = XLSX.utils.sheet_to_json(worksheet) ;
 
-      excelData.forEach((row) => {
-        const attendance = row
-        updateClassRecord(classId, {attendance: [{...attendance}]}) // TODO not the best solution bcause only sending one student in array
-          .then(() => {
-            console.log("Student registered:", row);
-          })
-          .catch((error) => {
-            console.error("Error registering student:", error);
-          });
-      });
-    };
-    reader.readAsBinaryString(file);
-  }
-};
+//       excelData.forEach((row) => {
+//         const attendance = row
+//         updateClassRecord(classId, {attendance: [{...attendance}]}) // TODO not the best solution bcause only sending one student in array
+//           .then(() => {
+//             console.log("Student registered:", row);
+//           })
+//           .catch((error) => {
+//             console.error("Error registering student:", error);
+//           });
+//       });
+//     };
+//     reader.readAsBinaryString(file);
+//   }
+// };

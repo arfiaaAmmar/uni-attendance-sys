@@ -1,5 +1,5 @@
 import { authoriseUser } from "@api/admin-api"
-import { getAllClassRecords, getClassRecord, getLiveClassRecords } from "@api/class-record-api"
+import { getAllClassRecords, getClassRecord, getLiveClassSessions } from "@api/class-record-api"
 import { getAllStudents, getStudent } from "@api/student-api"
 import { useDataFetching } from "@helpers/shared-helpers"
 import { Admin, ClassRecord, Student } from "shared-library/dist/types"
@@ -26,7 +26,7 @@ export const useAllStudentRecord = () => {
 }
 
 export const useLiveClassSessions = () => {
-    return useDataFetching<ClassRecord[]>(async () => await getLiveClassRecords())
+    return useDataFetching<ClassRecord[]>(async () => await getLiveClassSessions())
 }
 
 

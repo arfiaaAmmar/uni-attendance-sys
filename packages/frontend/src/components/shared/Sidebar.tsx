@@ -19,6 +19,7 @@ export default function Sidebar({ items, sidebar, setSidebar }: Readonly<Sidebar
 
   const handleLogout = () => {
     sessionStorage.removeItem(STORAGE_NAME.userSessionData)
+    sessionStorage.removeItem(STORAGE_NAME.classSessionData)
     sessionStorage.removeItem(STORAGE_NAME.token);
     setIsLoggedIn(false);
     navigate("/login");

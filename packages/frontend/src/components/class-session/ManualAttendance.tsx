@@ -1,13 +1,10 @@
 import { useState, useEffect, FormEvent } from "react";
 import { Button } from "@mui/material";
-import { getAllStudents } from "../../api/student-api";
-import {
-  getLocalClassSessionData,
-  postAttendance,
-} from "../../api/class-record-api";
 import { ModalActivationProps, Student } from "shared-library/dist/types";
 import { FM } from "shared-library/dist/constants";
-import { getClassSessionData } from "@api/admin-api";
+import { getLocalClassSessionData, postAttendance } from "@api/class-record-api";
+import { getAllStudents } from "@api/student-api";
+
 
 const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
   const [suggestions, setSuggestions] = useState<Student[]>([]);
@@ -69,7 +66,7 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
 
       // Update the class record with the manual attendance data to
       // session storage
-      const classId = getClassSessionData()?.classId
+      const classId = getLocalClassSessionData()?.classId
       await postAttendance(classId, {
         studentName: manualAttendanceForm.studentName,
         studentId: manualAttendanceForm.studentId,

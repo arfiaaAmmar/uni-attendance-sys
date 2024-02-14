@@ -67,7 +67,7 @@ export const FM = {
   classRecordDeleteSuccess: "Class record deleted successfully",
   classRecordDeleteFailed: "Error deleting class record",
   liveClassSessionNotFound: "No live class sessions found",
-  recentlyEndedClassSessionsNotFound: "Recently ended classes sessions not found",
+  recentlyEndedClassSessionsNotFound: "Recently ended class sessions not found",
   addingAttendanceFailed: "Error adding attendance",
   addingAttendanceSuccess: "Attendance added successfully",
   mongoDBConnectionFailed: " Failed to connect to MongoDB",

@@ -41,9 +41,9 @@ export const postAttendance = async (
  * @param {string} _id - The ID of the class record.
  * @returns {Promise<ClassRecord>} A promise that resolves to the retrieved class record.
  */
-export const getClassRecord = async (_id: string) => {
+export const getClassRecord = async (classId: string) => {
   return handleAPIRequest<ClassRecord>(
-    `${API_URL}${ENDPOINT.getClassRecord.replace(":classId", _id)}`,
+    `${API_URL}${ENDPOINT.getClassRecord.replace(":classId", classId)}`,
     "GET"
   );
 };
@@ -80,8 +80,8 @@ export const getAllClassRecords = async () => {
  *
  * @returns {Promise<any[]>} A promise that resolves to an array of live class session records.
  */
-export const getLiveClassRecords = async () => {
-  return handleAPIRequest<any[]>(
+export const getLiveClassSessions = async () => {
+  return handleAPIRequest<ClassRecord[]>(
     `${API_URL}${ENDPOINT.getLiveClassSessions}`,
     "GET"
   );
@@ -105,8 +105,17 @@ export const getRecentlyEndedClasses = async () => {
  * @returns {ClassRecord} The retrieved class session data.
  */
 export const getLocalClassSessionData = (): ClassRecord => {
-  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData!)!) as ClassRecord;
+  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData)!);
 };
+
+/**
+ * Saves class session data to the sessionStorage.
+ *
+ * @param {ClassRecord} data 
+ */
+export function setLocalClassSessionData(data: ClassRecord){
+  sessionStorage.setItem(STORAGE_NAME.classSessionData, JSON.stringify(data))
+}
 
 /**
  * Handles the deletion of a resource (class record or attendance) from the API.

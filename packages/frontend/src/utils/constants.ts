@@ -23,22 +23,22 @@ export const formatTime = (date: Date): string => {
  * @param {string} dateObj
  * @return {*}  {string}
  */
-export const formatTo12HourTime = (dateObj: Date): string => {
-  const hours = dateObj.getHours() % 12 || 12;
-  const minutes = dateObj.getMinutes();
-  const ampm = dateObj.getHours() >= 12 ? 'PM' : 'AM';
-
-  return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
+export const formatTo12HourTime = (date: string) => {
+  return new Date(date).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
 };
 
-export const defClassSession: ClassRecord = {
-  classId: generateClassId(),
+export const defaultClassSession: ClassRecord = {
+  classId: "",
   lecturer: getUserSessionData()?.name,
   classroom: 'Classroom 1',
-  course: 'Food & Beverage',
-  date: new Date().toLocaleDateString('en-GB'),
-  status: 'Not started',
-  startTime: 'Not set',
-  endTime: 'Not set',
+  course: 'Information Technology',
+  date: undefined,
+  status: "Not started",
+  startTime: undefined,
+  endTime: undefined,
   attendance: undefined,
 }

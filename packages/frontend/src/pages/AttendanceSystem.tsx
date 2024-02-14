@@ -1,42 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClassRecords, getLiveClassRecords } from "../api/class-record-api";
+import { getAllClassRecords, getLiveClassSessions, getRecentlyEndedClasses } from "../api/class-record-api";
 import { ClassRecord } from "shared-library/dist/types";
 import { PAGES_PATH } from "shared-library/dist/constants";
 
 const AttendanceSystem = () => {
   const [records, setRecord] = useState<ClassRecord[]>();
   const [recent, setRecent] = useState<ClassRecord[]>();
-  const [liveClasses, setLiveClasses] = useState<ClassRecord[]>()
+  const [liveClasses, setLiveClasses] = useState<ClassRecord[]>([])
 
-  const handleDownloadPDF = async (_id?: string) => {
+  async function handleDownloadPDF(_id?: string) {
     const selectedRecord = records?.find((record) => record._id === _id);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchLiveClassesAndRecentClasses() {
       try {
-        const data = await getAllClassRecords();
-
-        if (data && data.length > 0) {
-          const currentTime = new Date();
-
-          const endedClasses = data.filter((record: ClassRecord) => {
-            const endTime = new Date(`${record.date} ${record.endTime}`);
-            return endTime < currentTime;
-          });
-
-          const liveClasses = await getLiveClassRecords()
-
-          setRecent(endedClasses);
-          setLiveClasses(liveClasses)
-        }
+        const liveClasses = await getLiveClassSessions()
+        const recentClasses = await getRecentlyEndedClasses()
+        setLiveClasses(liveClasses)
+        setRecent(recentClasses)
       } catch (error) {
         console.error("Error fetching class records:", error);
       }
     };
 
-    fetchData();
+    fetchLiveClassesAndRecentClasses();
   }, []);
 
   return (

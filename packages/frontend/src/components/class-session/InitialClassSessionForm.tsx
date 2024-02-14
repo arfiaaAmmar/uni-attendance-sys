@@ -1,50 +1,37 @@
 import { getUserSessionData } from "@api/admin-api";
-import { postClassRecord } from "@api/class-record-api";
+import { getLocalClassSessionData, postClassRecord, setLocalClassSessionData } from "@api/class-record-api";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button } from "@mui/material";
 import {
   STUDENT_COURSES,
   CLASSROOM_LIST,
   FM,
-  PAGES_PATH,
-  STORAGE_NAME,
+  PAGES_PATH
 } from "shared-library/dist/constants";
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { ClassRecord, ModalActivationProps } from "shared-library/dist/types";
 import { isEmpty } from "radash";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { defClassSession } from "@utils/constants";
+import { defaultClassSession } from "@utils/constants";
+import { generateClassId } from "shared-library";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
 
-type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement>;
+type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 
-const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps) => {
-  const [form, setForm] = useState<ClassRecord>(defClassSession);
-  const [duration, setDuration] = useState(1);
+function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps) {
+  const [form, setForm] = useState<ClassRecord>(defaultClassSession);
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
+  const [startTime, setStartTime] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
+  const [endTime, setEndTime] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e: HandleChangeType) => {
     const { name, value } = e.target;
-
-    if (name === "startTime") {
-      const startTime = new Date(value);
-      const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
-
-      setForm((prevData) => ({
-        ...prevData,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-      }));
-    } else {
-      setForm((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleDurationChange = (selectedDuration: number) => {
-    setDuration(selectedDuration);
+    setForm((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const submitForm = async (event: FormEvent) => {
@@ -56,15 +43,21 @@ const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps
     }
     try {
       const userSessionData = getUserSessionData();
-      await postClassRecord({
-        ...form,
-        lecturer: userSessionData.name,
-        attendance: form.attendance,
-      });
-      sessionStorage.setItem(
-        STORAGE_NAME.classSessionData,
-        JSON.stringify(form)
-      );
+      const params: ClassRecord = {
+        classId: generateClassId(),
+        lecturer: userSessionData?.name,
+        date: selectedDate?.toISOString(),
+        classroom: form.classroom,
+        course: form.course,
+        status: form.status,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        attendance: form.attendance
+      }
+      console.log('params', params)
+      await postClassRecord(params);
+      setLocalClassSessionData(params)
+      console.log('localSessionData', getLocalClassSessionData())
       setSuccess(FM.classStartSuccess);
       setTimeout(() => {
         setSuccess("");
@@ -76,10 +69,6 @@ const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps
       console.error("Error registering new user:", error);
       setError(error);
     }
-  };
-
-  const returnToHome = () => {
-    navigate(PAGES_PATH.studentDB);
   };
 
   return (
@@ -104,8 +93,8 @@ const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps
             <option value="" disabled>
               Select a course
             </option>
-            {Object.values(STUDENT_COURSES).map((course, index) => (
-              <option key={index} value={course}>
+            {Object.values(STUDENT_COURSES).map((course) => (
+              <option key={course} value={course}>
                 {course}
               </option>
             ))}
@@ -120,34 +109,35 @@ const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps
             <option value="" disabled>
               Select classroom
             </option>
-            {CLASSROOM_LIST.map((classroom, index) => (
-              <option key={index} value={classroom}>
+            {CLASSROOM_LIST.map((classroom) => (
+              <option key={classroom} value={classroom}>
                 {classroom}
               </option>
             ))}
           </select>
-          <div className="mt-4">
-            <p>Select Class Duration:</p>
-            <div>
-              {[1, 2, 3].map((hours) => (
-                <label key={hours} className="mr-4">
-                  <input
-                    type="radio"
-                    name="duration"
-                    value={hours}
-                    checked={duration === hours}
-                    onChange={() => handleDurationChange(hours)}
-                  />
-                  {`${hours} hour${hours !== 1 ? "s" : ""}`}
-                </label>
-              ))}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+              <DatePicker
+                label="Select Date"
+                value={selectedDate}
+                onChange={(e:any) => setSelectedDate(e.target.value)}
+              />
+              <TimePicker
+                label="Start Time"
+                value={startTime}
+                onChange={(e:any) => setStartTime(e.target.value)}
+              />
+              <TimePicker
+                label="End Time"
+                value={endTime}
+                onChange={(e:any) => setEndTime(e.target.value)}
+              />
             </div>
-          </div>
+          </LocalizationProvider>
           {success && <p className="text-green-500 font-bold">{success}</p>}
           {error && <p className="text-red-500 font-bold">{error}</p>}
           <div className="flex justify-between mt-4">
             <Button
-              onSubmit={submitForm}
               variant="contained"
               className="bg-green-600 text-white font-bold"
               type="submit"
@@ -155,7 +145,7 @@ const InitialClassSessionForm = ({ isActive, setIsActive }: ModalActivationProps
               Submit
             </Button>
             <Button
-              onClick={returnToHome}
+              onClick={() => navigate(PAGES_PATH.studentDB)}
               variant="outlined"
               className="text-gray-600"
             >

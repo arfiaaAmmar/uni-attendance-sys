@@ -83,6 +83,3 @@ export const getUserSessionData = (): Admin => {
   return JSON.parse(sessionStorage.getItem(STORAGE_NAME.userSessionData!)!);
 };
 
-export const getClassSessionData = (): ClassRecord => {
-  return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData!)!);
-}

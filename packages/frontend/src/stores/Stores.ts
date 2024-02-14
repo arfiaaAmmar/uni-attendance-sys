@@ -1,7 +1,7 @@
 import { getUserSessionData } from "@api/admin-api";
 import { STORAGE_NAME } from "shared-library/dist/constants";
 import { ClassRecord } from "shared-library/dist/types";
-import { defClassSession } from "utils/constants";
+import { defaultClassSession } from "utils/constants";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -18,7 +18,7 @@ const createOpenCloseModalSlice = () => create<OpenCloseModalState>(set => ({
 const initialClassSessionFormSlice = createOpenCloseModalSlice()
 const manualAttendanceSlice = createOpenCloseModalSlice()
 
-export const useClassSessionStore = create(persist<ClassRecord>((set) => (defClassSession),
+export const useClassSessionStore = create(persist<ClassRecord>((set) => (defaultClassSession),
     {
         name: STORAGE_NAME.classSessionData,
         storage: createJSONStorage(() => sessionStorage)
