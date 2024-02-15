@@ -44,7 +44,7 @@ app.delete(ENDPOINT.deleteStudent, deleteStudent); // done
 app.get(ENDPOINT.getRecentlyEndedClasses, getRecentlyEndedSessions);
 app.get(ENDPOINT.getLiveClassSessions, getLiveSessions); // 
 app.post(ENDPOINT.postClassRecord, postClassRecord); // Done
-app.post(ENDPOINT.postAttendance, postAttendance); // TODO Currently attendance is posted in updateClass()
+app.patch(ENDPOINT.postAttendance, postAttendance); // TODO Currently attendance is posted in updateClass()
 app.get(ENDPOINT.getClassRecord, getClassRecord); // Done
 app.get(ENDPOINT.getAllClassRecords, getAllClassRecords); // Done
 app.patch(ENDPOINT.updateClassRecord, updateClassRecord); // Done

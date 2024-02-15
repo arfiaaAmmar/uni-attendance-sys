@@ -1,25 +1,31 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { Button } from "@mui/material";
-import { ModalActivationProps, Student } from "shared-library/dist/types";
-import { FM } from "shared-library/dist/constants";
-import { getLocalClassSessionData, postAttendance } from "@api/class-record-api";
+import { Attendance, ModalActivationProps, Student } from "shared-library/dist/types";
+import { FM, STORAGE_NAME } from "shared-library/dist/constants";
+import { getLocalClassSessionData, updateClassRecord } from "@api/class-record-api";
 import { getAllStudents } from "@api/student-api";
+import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 
 
 const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
   const [suggestions, setSuggestions] = useState<Student[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [manualAttendanceForm, setManualAttendanceForm] = useState({
+  const [form, setForm] = useState<Attendance>({
     studentId: "",
     studentName: "",
+    attendanceTime: new Date().toISOString()
   });
+  const [success, setSuccess ] = useState('')
   const [error, setError] = useState("");
 
   useEffect(() => {
     const initialStudentListFetch = async () => {
       try {
         const data = await getAllStudents();
-        setSuggestions(data);
+        sessionStorage.setItem(STORAGE_NAME.suggestions, JSON.stringify(data))
+        const localSuggestionData = sessionStorage.getItem(STORAGE_NAME.suggestions)
+        const suggestionObj = JSON.parse(localSuggestionData!)
+        setSuggestions(suggestionObj);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -27,62 +33,65 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
     initialStudentListFetch();
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setManualAttendanceForm((prevForm) => ({ ...prevForm, [name]: value }));
-
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+  
     const filteredSuggestions = suggestions.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.studentId.toLowerCase().includes(value.toLowerCase())
     );
-
+  
     setSuggestions(filteredSuggestions);
-    setShowSuggestions(!!value);
+    setShowSuggestions(!!value || filteredSuggestions.length > 0);
   };
 
   const handleSuggestionClick = (suggestion: Student) => {
-    setManualAttendanceForm({
+    setForm({
       studentId: suggestion.studentId,
       studentName: suggestion.name,
     });
     setShowSuggestions(false);
   };
 
-  const closeModal = () => setIsActive(false);
-
-  const handleManualAttendanceSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
       // Check if student already exist in current class session
       const currentAttendance = getLocalClassSessionData().attendance;
+      console.log('drjiodjy', currentAttendance)
       const studentExists = currentAttendance?.some(
-        (attendance) => attendance.studentId === manualAttendanceForm.studentId
+        (attendance) => attendance.studentId === form.studentId
       );
       if (studentExists) {
-        setError("Student already exists");
+        setError(FM.studentExist);
         return;
       }
 
-      // Update the class record with the manual attendance data to
-      // session storage
+      // Update the class record with the manual attendance data to session storage
       const classId = getLocalClassSessionData()?.classId
-      await postAttendance(classId, {
-        studentName: manualAttendanceForm.studentName,
-        studentId: manualAttendanceForm.studentId,
+      const param: Attendance[] = [{
+        studentName: form.studentName,
+        studentId: form.studentId,
         attendanceTime: new Date().toISOString(),
-      });
+      }]
+      await updateClassRecord(classId, { attendance: param });
 
-      setManualAttendanceForm({
+      setForm({
         studentId: "",
         studentName: "",
+        attendanceTime: "",
       });
 
       setIsActive(false);
       setSuggestions([]);
       setShowSuggestions(false);
+      setSuccess(FM.addingAttendanceSuccess)
+      setTimeout(() => {setSuccess('')}, 2000)
     } catch (error) {
       console.error(FM.errorUpdatingClassRecord, error);
+      setError(FM.addingAttendanceFailed)
     }
   };
 
@@ -91,12 +100,12 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
       <div className="bg-white rounded-md p-8">
         <p className="text-lg mb-4">Manual Attendance</p>
         <p className="text-red-600 font-bold">{error}</p>
-        <form onSubmit={handleManualAttendanceSubmit}>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             name="studentId"
             placeholder="Enter Student ID"
-            value={manualAttendanceForm.studentId}
+            value={form.studentId}
             onChange={handleChange}
             className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
           />
@@ -104,7 +113,7 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
             type="text"
             name="studentName"
             placeholder="Enter Student Name"
-            value={manualAttendanceForm.studentName}
+            value={form.studentName}
             onChange={handleChange}
             className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
           />
@@ -123,6 +132,7 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
               </ul>
             )}
           </div>
+          <FeedbackMessage {...{success, error}} />
           <div className="flex justify-between mt-4">
             <Button
               type="submit"
@@ -132,7 +142,7 @@ const ManualAttendance = ({ isActive, setIsActive }: ModalActivationProps) => {
               Add Student
             </Button>
             <Button
-              onClick={closeModal}
+              onClick={() => setIsActive(false)}
               variant="outlined"
               className="text-gray-600"
             >

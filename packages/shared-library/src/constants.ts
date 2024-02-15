@@ -4,6 +4,7 @@ export const STORAGE_NAME = {
   token: "token",
   userSessionData: "userData",
   classSessionData: "classSession",
+  suggestions: 'suggestions'
 } as const;
 
 export const ENDPOINT = {
@@ -41,6 +42,7 @@ export const FM = {
   default: "An error occured",
   classSessionEndedSuccessfully: "Class session ended successfully",
   pleaseEnterUsernameAndPassword: "Please enter username and password",
+  studentExist: "Student already exist",
   pleaseFillInAllUserData: "Please fill in all user data",
   invalidCredentials: "Authorization token not provided",
   passwordDidNotMatch: "Password did not match",

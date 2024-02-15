@@ -38,7 +38,7 @@ export type Student = {
 export type Attendance = {
   studentName: string;
   studentId: string;
-  attendanceTime: string;
+  attendanceTime?: string;
 };
 
 export type ClassRecord = {

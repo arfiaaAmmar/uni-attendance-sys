@@ -106,22 +106,22 @@ export function handleClassRecordExcelUpload(classId: string, file: File, type?:
 
     if (!type || type === "post") {
       postClassRecord(params)
-      .then(() => {
-        console.log("Class Record registered", params);
-      })
-      .catch((error) => {
-        console.error("Error registering class record:", error);
-      });
+        .then(() => {
+          console.log("Class Record registered", params);
+        })
+        .catch((error) => {
+          console.error("Error registering class record:", error);
+        });
     } else {
       updateClassRecord(classId, params)
-      .then(() => {
-        console.log("Class Record registered", params);
-      })
-      .catch((error) => {
-        console.error("Error registering class record:", error);
-      });
+        .then(() => {
+          console.log("Class Record registered", params);
+        })
+        .catch((error) => {
+          console.error("Error registering class record:", error);
+        });
     }
-    
+
   };
   reader.readAsBinaryString(file);
 }
@@ -160,3 +160,34 @@ export function handleClassRecordExcelUpload(classId: string, file: File, type?:
 //     reader.readAsBinaryString(file);
 //   }
 // };
+
+
+export function handleClassRecordAttendanceExcelUpload(
+  classId: string,
+  file: File | undefined
+) {
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result as string;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const newAttendance: Attendance[] = []
+      const excelData = XLSX.utils.sheet_to_json(worksheet) as Attendance[]
+
+      // Process the excelData to register students
+      excelData.forEach((row) => {
+        newAttendance.push(row)
+        updateClassRecord(classId, { attendance: newAttendance })
+          .then(() => {
+            console.log("Attendance(s) added:", row);
+          })
+          .catch((error) => {
+            console.error("Error adding attendance(s):", error);
+          });
+      });
+    };
+    reader.readAsBinaryString(file);
+  }
+};

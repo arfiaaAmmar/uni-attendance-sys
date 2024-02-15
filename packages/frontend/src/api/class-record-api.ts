@@ -25,11 +25,11 @@ export const postClassRecord = async (classData: ClassRecord) => {
  * @returns {Promise<void>} A promise that resolves when the attendance is posted successfully.
  */
 export const postAttendance = async (
-  _id: string,
+  classId: string,
   attendanceData: Attendance
 ) => {
   return handleAPIRequest<void>(
-    `${API_URL}${ENDPOINT.postAttendance.replace(":classId", _id)}`,
+    `${API_URL}${ENDPOINT.postAttendance.replace(":classId", classId)}`,
     "POST",
     attendanceData
   );

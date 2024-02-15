@@ -20,7 +20,7 @@ export const postAttendance = async (req: Request, res: Response) => {
   const attendanceBody: Pick<ClassRecord, "attendance"> = req.body;
 
   try {
-    const classRecord = await ClassRecordModel.findById(classId);
+    const classRecord = await ClassRecordModel.findOne({ classId });
     if (!classRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
 
@@ -37,7 +37,7 @@ export const getClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
-    const classRecord = await ClassRecordModel.find({ classId });
+    const classRecord = await ClassRecordModel.findOne({ classId });
     if (!classRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
     res.json(classRecord);

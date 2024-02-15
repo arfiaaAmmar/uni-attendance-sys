@@ -6,6 +6,8 @@ import {
   StyleSheet
 } from "@react-pdf/renderer";
 import { ClassRecord } from "shared-library/dist/types";
+import moment from "moment";
+import { formatTo12HourTime } from "./constants";
 
 //make this for Attendance Report first then afterwards make it generic
 const styles = StyleSheet.create({
@@ -100,11 +102,14 @@ export const GeneratePDFContent = ({
             </Text>
             <Text style={styles.classInfoDivider}></Text>
             <Text style={styles.classInfoItem}>
-              Start Time: {selectedRecord?.startTime}
+              Date: {new Date(selectedRecord?.date!).toLocaleDateString('en-GB')}
+            </Text>
+            <Text style={styles.classInfoItem}>
+              Start Time: {formatTo12HourTime(selectedRecord?.startTime!)}
             </Text>
             <Text style={styles.classInfoDivider}></Text>
             <Text style={styles.classInfoItem}>
-              End Time: {selectedRecord?.endTime}
+              End Time: {formatTo12HourTime(selectedRecord?.endTime!)}
             </Text>
           </View>
 
@@ -127,7 +132,7 @@ export const GeneratePDFContent = ({
                 <Text style={styles.cell}>{index + 1}</Text>
                 <Text style={styles.cell}>{attendance.studentName}</Text>
                 <Text style={styles.cell}>{attendance.studentId}</Text>
-                <Text style={styles.cell}>{attendance.attendanceTime}</Text>
+                <Text style={styles.cell}>{formatTo12HourTime(attendance?.attendanceTime!)}</Text>
               </View>
             ))}
           </View>

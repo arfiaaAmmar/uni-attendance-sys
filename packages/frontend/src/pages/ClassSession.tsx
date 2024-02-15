@@ -13,52 +13,34 @@ import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
 import { Attendance } from "shared-library/dist/types";
-import { getUserSessionData } from "@api/admin-api";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
-import { useClassSessionStore } from "stores/Stores";
 import { isEmpty } from "radash";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
-import { defaultClassSession, formatTo12HourTime } from "@utils/constants";
-import { handleClassRecordExcelUpload } from "@utils/upload-excel";
+import { formatTo12HourTime } from "@utils/constants";
+import { handleClassRecordAttendanceExcelUpload } from "@utils/upload-excel";
+import moment from "moment";
 
 const ClassSession = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
-  const [searchResults, setSearchResults] = useState<Attendance[]>([]);
+  const [filteredAttendance, setFilteredAttendance] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [session, setSession] = useState(getLocalClassSessionData());
-  const localSession = getLocalClassSessionData()
-  const sessionDetails = [
-    { label: "Class", value: localSession?.classroom },
-    { label: "Course", value: localSession?.course },
-    { label: "Lecturer", value: localSession?.lecturer },
-    { label: "Date", value: new Date(localSession?.date!).toLocaleDateString('en-GB') },
-    { label: "Start Time", value: formatTo12HourTime(localSession?.startTime!) },
-    { label: "End Time", value: formatTo12HourTime(localSession?.endTime!) },
-    { label: "Status", value: localSession?.status }
-  ];
   const navigate = useNavigate();
   const [initialFormModal, setInitialFormModal] = useState(false);
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const fetchSessionFromLocal = async () => {
+  async function checkExistingSession() {
     try {
       if (isEmpty(session)) setInitialFormModal(true);
       else {
         setInitialFormModal(false);
-        const data = await getClassRecord(localSession?._id!);
+        const data = await getClassRecord(session?.classId);
         setAttendance(data?.attendance!);
-
-        const filteredMainListData = filterSearchQuery<Attendance>(
-          searchQuery,
-          attendance,
-          ["studentName", "studentId"]
-        );
-        setSearchResults(filteredMainListData);
-        setSession({ ...data, status: "Ended" })
+        setSession({ ...data, status: "Ongoing" })
       }
     } catch (error) {
       console.error("Error fetching user list:", error);
@@ -68,19 +50,36 @@ const ClassSession = () => {
   async function fetchAttendanceList(classId: string) {
     try {
       const data = await getClassRecord(classId)
-      setSession(data)
+      setAttendance(data?.attendance!)
+      console.log('skegnskeg', data?.attendance!)
     } catch (error) {
       console.error("Error fetching class session:", error)
     }
   }
+
+  useEffect(() => {
+    checkExistingSession();
+    fetchAttendanceList(session.classId)
+  }, []);
+
+  useEffect(() => {
+    const filteredList = filterSearchQuery<Attendance>(searchQuery, attendance, [
+      "studentName",
+      "studentId",
+      "attendanceTime"
+    ]);
+    setFilteredAttendance(filteredList);
+
+    return () => setFilteredAttendance([])
+  }, [attendance, searchQuery])
 
   const handleUploadExcel = () => {
     if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
       if (selectedFile) {
-        handleClassRecordExcelUpload(localSession.classId, selectedFile);
-        fetchAttendanceList(localSession.classId)
+        handleClassRecordAttendanceExcelUpload(session.classId, selectedFile);
+        fetchAttendanceList(session.classId)
         setSuccess("Uploading excel success")
         setTimeout(() => {
           setSuccess("")
@@ -94,16 +93,12 @@ const ClassSession = () => {
     }
   };
 
-  useEffect(() => {
-    fetchSessionFromLocal();
-  }, []);
-
   const changeSessionStatus = useCallback(() => {
     const currentTime = new Date().toISOString();
-    if (currentTime > localSession?.endTime!) {
+    if (currentTime > session?.endTime!) {
       setSession({ ...session, status: "Ended" });
     }
-  }, [localSession?.endTime]);
+  }, [session?.endTime]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -116,16 +111,9 @@ const ClassSession = () => {
   const handleEndClass = async () => {
     try {
       // Update class record to DB history before end class
-      const classSessionData = getLocalClassSessionData();
-      updateClassRecord(classSessionData?._id!, classSessionData);
-      const classId = getLocalClassSessionData().classId || localSession?.classId;
-      updateClassRecord(classId, { ...session, status: "Ended" })
-
-      // Reset class session
-      setSession(defaultClassSession);
+      await updateClassRecord(session.classId, { ...session, status: "Ended" })
       sessionStorage.removeItem(STORAGE_NAME.classSessionData)
       setSuccess(FM.classSessionEndedSuccessfully);
-      // Delay 2 seconds to show success message
       setTimeout(() => {
         navigate(PAGES_PATH.classHistory);
       }, 2000);
@@ -134,6 +122,25 @@ const ClassSession = () => {
       console.error(error);
     }
   };
+
+  function isLate(arrivalTime: string) {
+    const startTime = moment(session.startTime)
+    const _arrivalTime = moment(arrivalTime)
+    if (!_arrivalTime.isValid()) return 'MIA'
+    const timeDifference = _arrivalTime.diff(startTime, 'minutes');
+    if (timeDifference > 0) return 'Late';
+    else return 'On Time'
+  }
+
+  const sessionDetails = [
+    { label: "Class", value: session?.classroom },
+    { label: "Course", value: session?.course },
+    { label: "Lecturer", value: session?.lecturer },
+    { label: "Date", value: new Date(session?.date!).toLocaleDateString('en-GB') },
+    { label: "Start Time", value: formatTo12HourTime(session?.startTime!) },
+    { label: "End Time", value: formatTo12HourTime(session?.endTime!) },
+    { label: "Status", value: session?.status }
+  ];
 
   return (
     <div className="m-4">
@@ -148,7 +155,7 @@ const ClassSession = () => {
       <FeedbackMessage {...{ success, error }} />
       <div className="flex justify-between">
         <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
-          {sessionDetails.map((detail, index) => (
+          {sessionDetails.map((detail) => (
             <div key={detail.label} className="flex">
               <p className="font-semibold w-1/3">{detail.label}</p>
               <p className="w-2/3">: {detail.value}</p>
@@ -195,17 +202,19 @@ const ClassSession = () => {
         <p className="font-semibold w-5/12">Full Name</p>
         <p className="font-semibold w-3/12">Student ID</p>
         <p className="font-semibold w-1/6">Status</p>
+        <p className="font-semibold w-1/6">Time Arrived</p>
       </div>
-      <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
-        {searchResults?.map((student, index) => (
+      <div className="bg-neutral-200 h-[60vh] overflow-y-auto">
+        {filteredAttendance?.map((student, index) => (
           <div
-            key={student.studentId}
+            key={index + 1}
             className="flex px-4 py-2 justify-evenly h-14"
           >
-            <p className="w-1/12">{index + 1}</p>
-            <p className="w-5/12">{student.studentName}</p>
+            <p className="w-1/12 text-black">{index + 1}</p>
+            <p className="w-5/12 text-black">{student.studentName}</p>
             <p className="w-3/12">{student.studentId}</p>
-            <p className="w-3/12"> Next time </p>
+            <p className="font-semibold w-1/6">{isLate(student?.attendanceTime!)}</p>
+            <p className="font-semibold w-1/6">{formatTo12HourTime(student?.attendanceTime!)}</p>
           </div>
         ))}
       </div>

@@ -18,7 +18,7 @@ export const formatTime = (date: Date): string => {
 };
 
 /**
- * Format toISOString format to hh:mm AM/PM
+ * Format ISOString format to hh:mm AM/PM
  *
  * @param {string} dateObj
  * @return {*}  {string}

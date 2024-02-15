@@ -19,7 +19,6 @@ export async function handleAPIRequest<T>(
   };
 
   try {
-    console.log('api', JSON.stringify(data, null, 2))
     const response = await fetch(url, {
       method,
       headers,

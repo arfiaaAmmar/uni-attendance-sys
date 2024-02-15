@@ -22,9 +22,10 @@ type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLT
 
 function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps) {
   const [form, setForm] = useState<ClassRecord>(defaultClassSession);
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
-  const [startTime, setStartTime] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
-  const [endTime, setEndTime] = useState<Dayjs>(dayjs('2022-04-17T15:30'));
+  const date = new Date()
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(date.toISOString()));
+  const [startTime, setStartTime] = useState<Dayjs>(dayjs(date.toISOString()));
+  const [endTime, setEndTime] = useState<Dayjs>(dayjs(date.toISOString()));
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -49,12 +50,11 @@ function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps
         date: selectedDate?.toISOString(),
         classroom: form.classroom,
         course: form.course,
-        status: form.status,
+        status: "Ongoing",
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
         attendance: form.attendance
       }
-      console.log('params', params)
       await postClassRecord(params);
       setLocalClassSessionData(params)
       console.log('localSessionData', getLocalClassSessionData())
