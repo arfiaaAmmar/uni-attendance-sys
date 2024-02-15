@@ -127,12 +127,12 @@ export const GeneratePDFContent = ({
               backgroundColor: "#f0f0f0",
             }}
           >
-            {selectedRecord?.attendance?.map((attendance, index) => (
-              <View key={attendance.studentId} style={styles.tableRow}>
+            {selectedRecord?.attendance?.map((attendee, index) => (
+              <View key={attendee.studentId} style={styles.tableRow}>
                 <Text style={styles.cell}>{index + 1}</Text>
-                <Text style={styles.cell}>{attendance.studentName}</Text>
-                <Text style={styles.cell}>{attendance.studentId}</Text>
-                <Text style={styles.cell}>{formatTo12HourTime(attendance?.attendanceTime!)}</Text>
+                <Text style={styles.cell}>{attendee.studentName}</Text>
+                <Text style={styles.cell}>{attendee.studentId}</Text>
+                <Text style={styles.cell}>{formatTo12HourTime(attendee?.attendanceTime!)}</Text>
               </View>
             ))}
           </View>
