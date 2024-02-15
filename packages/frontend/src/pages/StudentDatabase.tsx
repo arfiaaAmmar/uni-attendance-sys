@@ -5,13 +5,16 @@ import { filterSearchQuery } from "@helpers/search-functions";
 import { Student } from "shared-library/dist/types";
 import { getAllStudents } from "@api/student-api";
 import { RegisterNewStudentModal } from "@components/student-database/RegisterNewStudentModal";
-
+import { handleDelete } from "@api/class-record-api";
+import { FM } from "shared-library";
+import { ConfirmationDialog } from "@components/shared/ConfirmationDialog";
 
 const StudentDatabase = () => {
   const [studentList, setStudentList] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [registerModal, setRegisterModal] = useState(false);
+  // const [confirmationOpen, setConfirmationOpen] = useState(false); // TODO Implement confirmation dialog
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -50,17 +53,25 @@ const StudentDatabase = () => {
         handleStudentRegisterExcelUpload(selectedFile);
         fetchAllStudents()
         setSuccess("Uploading excel success")
-        setTimeout(() => {
-          setSuccess("")
-        }, 2000)
+        setTimeout(() => setSuccess(""), 2000)
       } else {
         setError("Error uploading excel")
-        setTimeout(() => {
-          setError("")
-        }, 2000)
+        setTimeout(() => setError(""), 2000)
       }
     }
   };
+
+  async function handleStudentDelete(_id: string | undefined) {
+    try {
+      await handleDelete(_id, "student")
+      await fetchAllStudents()
+      setSuccess(FM.studentDeleteSuccess)
+      setTimeout(() => setSuccess(''), 2000)
+    } catch (error) {
+      setError(FM.studentDeleteFailed)
+      setTimeout(() => setError(''), 2000)
+    }
+  }
 
   return (
     <div className="p-8 h-full">
@@ -98,6 +109,7 @@ const StudentDatabase = () => {
         <p className="font-semibold w-5/12">Full Name</p>
         <p className="font-semibold w-3/12">Student ID</p>
         <p className="font-semibold w-3/12">Course</p>
+        <p className="font-semibold w-1/12">Delete</p>
       </div>
       <div className="bg-neutral-200 h-[60vh] overflow-y-auto">
         {filteredStudents?.map((student, index) => (
@@ -106,8 +118,14 @@ const StudentDatabase = () => {
             <p className="w-5/12">{student?.name}</p>{" "}
             <p className="w-3/12">{student?.studentId}</p>{" "}
             <p className="w-3/12">{student?.course}</p>{" "}
+            <p className="w-1/12 text-red-500 hover:cursor-pointer" onClick={() => handleStudentDelete(student?._id)}>Delete</p>
           </li>
         ))}
+        {/* <ConfirmationDialog
+          isOpen={confirmationOpen}
+          onClose={handleCloseConfirmation}
+          onConfirm={handleConfirmDelete}
+        /> */}
       </div>
 
       {registerModal && (

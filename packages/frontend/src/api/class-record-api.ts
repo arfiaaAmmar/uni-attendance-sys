@@ -92,7 +92,7 @@ export const getLiveClassSessions = async () => {
  *
  * @returns {Promise<any[]>} A promise that resolves to an array of recently ended class session records.
  */
-export const getRecentlyEndedClasses = async () => {
+export const getRecentClasses = async () => {
   return handleAPIRequest<any[]>(
     `${API_URL}${ENDPOINT.getRecentlyEndedClasses}`,
     "GET"
@@ -124,7 +124,7 @@ export function setLocalClassSessionData(data: ClassRecord){
  * @param {HandleDeleteType} type - The type of resource to be deleted.
  * @returns {Promise<void>} A promise that resolves when the resource is deleted successfully.
  */
-export const handleDelete = async (id: string, type: HandleDeleteType) => {
+export const handleDelete = async (id: string | undefined, type: HandleDeleteType) => {
   try {
     const response = await fetch(`${API_URL}/delete-${type}/${id}`, {
       method: "DELETE",

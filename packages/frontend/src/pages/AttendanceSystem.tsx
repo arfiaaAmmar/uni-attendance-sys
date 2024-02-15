@@ -1,31 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClassRecords, getLiveClassSessions, getRecentlyEndedClasses } from "../api/class-record-api";
+import { getAllClassRecords, getLiveClassSessions, getRecentClasses } from "../api/class-record-api";
 import { ClassRecord } from "shared-library/dist/types";
 import { PAGES_PATH } from "shared-library/dist/constants";
 
 const AttendanceSystem = () => {
-  const [records, setRecord] = useState<ClassRecord[]>();
-  const [recent, setRecent] = useState<ClassRecord[]>();
+  // const [records, setRecord] = useState<ClassRecord[]>();
+  const [recentSession, setRecentSession] = useState<ClassRecord[]>();
   const [liveClasses, setLiveClasses] = useState<ClassRecord[]>([])
 
   async function handleDownloadPDF(_id?: string) {
-    const selectedRecord = records?.find((record) => record._id === _id);
+    const selectedRecord = recentSession?.find((record) => record._id === _id);
   };
 
   useEffect(() => {
-    async function fetchLiveClassesAndRecentClasses() {
+    async function fetchInitialData() {
       try {
-        const liveClasses = await getLiveClassSessions()
-        const recentClasses = await getRecentlyEndedClasses()
-        setLiveClasses(liveClasses)
-        setRecent(recentClasses)
+        setLiveClasses(await getLiveClassSessions())
+        setRecentSession(await getRecentClasses())
       } catch (error) {
         console.error("Error fetching class records:", error);
       }
     };
 
-    fetchLiveClassesAndRecentClasses();
+    fetchInitialData();
   }, []);
 
   return (
@@ -36,9 +34,9 @@ const AttendanceSystem = () => {
           <p className="text-2xl font-bold m-2">Class Session</p>
           <p>Shows the current running live class on your User Session</p>
           {liveClasses?.map((liveClass) => (
-            <div key={liveClass._id} className="bg-neutral-400 rounded-md p-2">
-              <p className="text-2xl font-bold">{liveClass.course}</p>
-              <p className="text-lg font-bold">{liveClass.classroom}</p>
+            <div key={liveClass?._id} className="bg-neutral-400 rounded-md p-2">
+              <p className="text-2xl font-bold">{liveClass?.course}</p>
+              <p className="text-lg font-bold">{liveClass?.classroom}</p>
               <div className="flex justify-between mt-8">
                 <p>Attendance: 23/30</p>
                 <button className="bg-red-500 px-2 py-1 text-white font-bold">
@@ -57,17 +55,17 @@ const AttendanceSystem = () => {
         <div className="bg-neutral-300 rounded-md p-4 w-full">
           <p className="text-2xl font-bold m-2">Class History</p>
           <p>Shows the current running live class on your User Session</p>
-          {recent?.map((prevRecord) => (
+          {recentSession?.map((prevRecord) => (
             <div
-              key={prevRecord._id}
+              key={prevRecord?._id}
               className="bg-neutral-400 rounded-md p-2 my-2"
             >
-              <p className="text-2xl font-bold">{prevRecord.course}</p>
-              <p className="text-lg font-bold">{prevRecord.classroom}</p>
+              <p className="text-2xl font-bold">{prevRecord?.course}</p>
+              <p className="text-lg font-bold">{prevRecord?.classroom}</p>
               <div className="flex justify-end mt-8">
                 <button
                   className="bg-orange-300 px-3 py-1"
-                  onClick={() => handleDownloadPDF(prevRecord._id)}
+                  onClick={() => handleDownloadPDF(prevRecord?._id)}
                 >
                   View | Dwnld | Print
                 </button>

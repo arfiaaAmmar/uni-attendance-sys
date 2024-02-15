@@ -27,6 +27,7 @@ export type Admin = {
 };
 
 export type Student = {
+  _id?: string;
   studentId: string;
   name: string;
   email: string;
@@ -36,6 +37,7 @@ export type Student = {
 };
 
 export type Attendance = {
+  _id?: string;
   studentName: string;
   studentId: string;
   attendanceTime?: string;
