@@ -104,6 +104,7 @@ export const GeneratePDFContent = ({
             <Text style={styles.classInfoItem}>
               Date: {new Date(selectedRecord?.date!).toLocaleDateString('en-GB')}
             </Text>
+            <Text style={styles.classInfoDivider}></Text>
             <Text style={styles.classInfoItem}>
               Start Time: {formatTo12HourTime(selectedRecord?.startTime!)}
             </Text>

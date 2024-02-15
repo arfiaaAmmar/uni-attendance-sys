@@ -4,7 +4,9 @@ export const STORAGE_NAME = {
   token: "token",
   userSessionData: "userData",
   classSessionData: "classSession",
-  suggestions: 'suggestions'
+  classRecordData: 'classRecordData',
+  suggestions: 'suggestions',
+  selectedRecord: 'selectedRecord',
 } as const;
 
 export const ENDPOINT = {

@@ -138,7 +138,7 @@ export const removeClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;
 
   try {
-    const deletedRecord = await ClassRecordModel.findOneAndDelete({ classId });
+    const deletedRecord = await ClassRecordModel.findByIdAndDelete(classId);
     if (!deletedRecord)
       return res.status(404).json({ message: FM.classRecordNotFound });
     res.json({ message: FM.classRecordDeleteSuccess });

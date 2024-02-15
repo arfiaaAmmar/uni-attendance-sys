@@ -1,68 +1,50 @@
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClassRecords } from "../api/class-record-api";
+import { getAllClassRecords, handleDelete, updateClassRecord } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
-import { GeneratePDFContent } from "../utils/handle-pdf";
-import { Avatar, Button } from "@mui/material";
 import { ClassRecord } from "shared-library/dist/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
+import { GeneratePDFContent } from "@utils/handle-pdf";
 import { formatTo12HourTime } from "@utils/constants";
+import ManualAttendance from "@components/class-session/ManualAttendance";
+import moment from "moment";
 
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [filteredRecord, setFilteredRecord] = useState<ClassRecord[]>();
   const [selectedRecord, setSelectedRecord] = useState<ClassRecord>();
-  const [updatedRecord, setUpdatedRecord] = useState<ClassRecord>();
-  const [actionModal, setActionModal] = useState({
-    editRecordModal: false,
-    viewRecordModal: false,
-    printRecord: false,
-    manualAttendance: false,
-  });
+  const [updatedRecordData, setUpdateRecordData] = useState<Partial<ClassRecord>>()
+  // Modals
+  const [manualAttendance, setManualAttendance] = useState(false)
+  const [editModal, setEditModal] = useState(false)
+  const [viewRecord, setViewRecord] = useState(false)
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   const handleDownloadPDF = async (_id?: string) => {
-    const selectedRecord = records.find((record) => record._id === _id);
+    const selectedRecord = records.find((record) => record?._id === _id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
-      setActionModal({
-        editRecordModal: false,
-        viewRecordModal: true,
-        printRecord: false,
-        manualAttendance: false,
-      });
+      setEditModal(false)
+      setViewRecord(true)
+      setManualAttendance(false)
     }
   };
 
   const handleEditModel = async (_id?: string) => {
-    setActionModal({ ...actionModal, editRecordModal: true });
-    const selectedRecord = records.find((record) => record._id);
+    setEditModal(true)
+    const selectedRecord = records.find((record) => record?._id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
-      setActionModal({
-        editRecordModal: true,
-        viewRecordModal: false,
-        printRecord: false,
-        manualAttendance: false,
-      });
+      setEditModal(true)
+      setViewRecord(false)
+      setManualAttendance(false)
     }
   };
-
-  const handleUpdateRecord = async (classId: string) => {
-    try {
-      setUpdatedRecord(updatedRecord);
-    } catch (error) {
-      console.error("Error fetching user list:", error);
-    }
-  };
-
-  const handleSubmitManualAttendance = async () => { };
 
   useEffect(() => {
     const fetchAllClassRecords = async () => {
@@ -107,6 +89,32 @@ export const ClassRecords = () => {
     }
   }, [records, searchQuery]);
 
+  function isLate(arrivalTime: string) {
+    const startTime = moment(selectedRecord?.startTime);
+    const endTime = moment(selectedRecord?.endTime);
+    const _arrivalTime = moment(arrivalTime);
+
+    if (!_arrivalTime.isValid()) return 'MIA';
+    if (_arrivalTime.isAfter(endTime)) return 'Manual';
+
+    const timeDifference = _arrivalTime.diff(startTime, 'minutes');
+    if (timeDifference > 0) return 'Late';
+    else return 'On Time';
+  }
+
+  async function handleUpdateRecord() {
+    try {
+      await updateClassRecord(selectedRecord?._id!, {...updatedRecordData})
+    } catch (error) {
+      console.error("Error fetching user list:", error);
+    }
+  }
+
+  async function _handleDelete(_id: string | undefined){
+    await handleDelete(_id, "class-record")
+    setRecords(await getAllClassRecords())
+  }
+
   return (
     <div className="m-4">
       <h3 className="text-3xl font-bold">
@@ -124,7 +132,7 @@ export const ClassRecords = () => {
       </div>
       <div className="bg-neutral-200 h-[70vh] overflow-y-auto">
         {filteredRecord?.map((record) => (
-          <div key={record._id} className="flex px-4 py-2 justify-evenly">
+          <div key={record?._id} className="flex px-4 py-2 justify-evenly">
             <p className="w-3/12">
               {new Date(record?.date!).toLocaleDateString('en-GB')} , {formatTo12HourTime(record?.startTime!)}
             </p>
@@ -133,21 +141,27 @@ export const ClassRecords = () => {
             <div className="w-2/12">
               <button
                 className="bg-orange-300 px-3 py-1"
-                onClick={() => handleDownloadPDF(record._id)}
+                onClick={() => handleDownloadPDF(record?._id)}
               >
                 View | Download
               </button>
               <button
                 className="bg-green-300 px-3 py-1"
-                onClick={() => handleEditModel(record._id)}
+                onClick={() => handleEditModel(record?._id)}
               >
                 Edit
+              </button>
+              <button
+                className="bg-red-300 px-3 py-1"
+                onClick={() => _handleDelete(record?._id)}
+              >
+                Delete
               </button>
             </div>
           </div>
         ))}
       </div>
-      {actionModal.viewRecordModal && (
+      {viewRecord && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-full h-full">
             <PDFViewer width="100%" height="100%">
@@ -155,16 +169,14 @@ export const ClassRecords = () => {
             </PDFViewer>
             <button
               className="bg-red-400 mx-2 my-1 rounded-md"
-              onClick={() =>
-                setActionModal({ ...actionModal, viewRecordModal: false })
-              }
+              onClick={() => setViewRecord(false)}
             >
               Close
             </button>
             <PDFDownloadLink
               className="bg-green-400 mx-2 my-1 rounded-md"
               document={<GeneratePDFContent selectedRecord={selectedRecord} />}
-              fileName="class_record.pdf"
+              fileName="class_record?.pdf"
             >
               {({ loading }) =>
                 loading ? "Loading document..." : "Download now!"
@@ -174,63 +186,8 @@ export const ClassRecords = () => {
         </div>
       )}
 
-      {actionModal.manualAttendance && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-md p-8 flex gap-8">
-            <div className="">
-              <p className="text-lg mb-4">Start Class</p>
-              {error ? (
-                <p className="text-red-500 font-bold">{error}</p>
-              ) : success ? (
-                <p className="text-green-600 font-bold">{success}</p>
-              ) : null}
-              <form>
-                <p>Seach Student Name</p>
-                <SearchBox
-                  placeholder="Seach name / matrik"
-                  query={searchQuery}
-                  onChange={setSearchQuery}
-                />
-                <div className="flex justify-between mt-4">
-                  <Button
-                    onClick={() => handleSubmitManualAttendance}
-                    variant="contained"
-                    className="bg-green-600 text-white font-bold"
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      setActionModal({
-                        ...actionModal,
-                        manualAttendance: false,
-                      })
-                    }
-                    variant="outlined"
-                    className="text-gray-600"
-                  >
-                    Close
-                  </Button>
-                </div>
-              </form>
-            </div>
-            <div>
-              <Avatar
-                style={{ width: "100px", height: "100px" }}
-                className="mx-auto mb-4"
-              />
-              <p className="text-sm text-gr">Student Name</p>
-              <p className="text-xl">Ammar Hazim</p>
-              <p className="text-sm">Student Id </p>
-              <p className="text-xl">193850183579183</p>
-              <p className="text-sm">Course</p>
-              <p className="text-xl">IT</p>
-            </div>
-          </div>
-        </div>
-      )}
-      {actionModal.editRecordModal && (
+      <ManualAttendance classId={selectedRecord?.classId} isActive={manualAttendance} setIsActive={setManualAttendance} />
+      {editModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
             <h1 className="text-2xl font-bold my-2">Edit Record</h1>
@@ -247,24 +204,22 @@ export const ClassRecords = () => {
                 </div>
                 <div className="flex">
                   <p className="font-semibold w-1/3">Date </p>
-                  <p className="w-2/3">: {selectedRecord?.date}</p>
+                  <p className="w-2/3">: {new Date(selectedRecord?.date!).toLocaleDateString('en-GB')}</p>
                 </div>
                 <div className="flex">
                   <p className="font-semibold w-1/3">Start Time</p>
-                  <p className="w-2/3">: {selectedRecord?.startTime}</p>
+                  <p className="w-2/3">: {formatTo12HourTime(selectedRecord?.startTime!)}</p>
                 </div>
                 <div className="flex">
                   <p className="font-semibold w-1/3">End Time</p>
-                  <p className="w-2/3 ">: {selectedRecord?.endTime}</p>
+                  <p className="w-2/3 ">: {formatTo12HourTime(selectedRecord?.endTime!)}</p>
                 </div>
               </div>
               <div className="flex justify-between mt-auto mb-0">
                 <div>
                   <button
                     className="bg-purple-400 rounded-md py-2 px-2 mr-2"
-                    onClick={() =>
-                      setActionModal({ ...actionModal, manualAttendance: true })
-                    }
+                    onClick={() => setManualAttendance(true)}
                   >
                     Manual Attendance
                   </button>
@@ -273,7 +228,7 @@ export const ClassRecords = () => {
                     document={
                       <GeneratePDFContent selectedRecord={selectedRecord} />
                     }
-                    fileName="class_record.pdf"
+                    fileName="class_record?.pdf"
                   >
                     {({ loading }) =>
                       loading ? "Loading document..." : "Download PDF"
@@ -291,28 +246,26 @@ export const ClassRecords = () => {
             <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
               {selectedRecord?.attendance?.map((student, index) => (
                 <div
-                  key={student.studentId}
+                  key={student?.studentId}
                   className="flex px-4 py-1 justify-evenly"
                 >
                   <p className="w-1/12">{index + 1}</p>
-                  <p className="w-5/12">{student.studentName}</p>
-                  <p className="w-3/12">{student.studentId}</p>
-                  <p className="w-1/12"> Next time </p>
+                  <p className="w-5/12">{student?.studentName}</p>
+                  <p className="w-3/12">{student?.studentId}</p>
+                  <p className="w-1/12">{isLate(student?.attendanceTime!)}</p>
                 </div>
               ))}
             </div>
             <div className="absolute bottom-2 right-2 flex gap-2">
               <button
                 className="bg-red-400 px-2 py-1 rounded-md "
-                onClick={() =>
-                  setActionModal({ ...actionModal, editRecordModal: false })
-                }
+                onClick={() => setEditModal(false)}
               >
                 Close
               </button>
               <button
                 className="bg-green-400 px-2 py-1 rounded-md"
-                onClick={() => handleUpdateRecord(selectedRecord?._id!)}
+                onClick={() => handleUpdateRecord()}
               >
                 Update Record
               </button>

@@ -124,12 +124,16 @@ const ClassSession = () => {
   };
 
   function isLate(arrivalTime: string) {
-    const startTime = moment(session.startTime)
-    const _arrivalTime = moment(arrivalTime)
-    if (!_arrivalTime.isValid()) return 'MIA'
+    const startTime = moment(session.startTime);
+    const endTime = moment(session.endTime);
+    const _arrivalTime = moment(arrivalTime);
+    
+    if (!_arrivalTime.isValid()) return 'MIA';
+    if (_arrivalTime.isAfter(endTime)) return 'Manual';
+  
     const timeDifference = _arrivalTime.diff(startTime, 'minutes');
     if (timeDifference > 0) return 'Late';
-    else return 'On Time'
+    else return 'On Time';
   }
 
   const sessionDetails = [
