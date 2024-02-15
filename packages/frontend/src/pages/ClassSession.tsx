@@ -59,7 +59,7 @@ const ClassSession = () => {
 
   useEffect(() => {
     checkExistingSession();
-    fetchAttendanceList(session.classId)
+    fetchAttendanceList(session?.classId)
   }, []);
 
   useEffect(() => {
