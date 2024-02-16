@@ -226,6 +226,10 @@ export const ClassRecords = () => {
                   <p className="font-semibold w-1/3">End Time</p>
                   <p className="w-2/3 ">: {formatTo12HourTime(selectedRecord?.endTime!)}</p>
                 </div>
+                <div className="flex">
+                  <p className="font-semibold w-1/3">Status</p>
+                  <p className="w-2/3 ">: {selectedRecord?.status}</p>
+                </div>
               </div>
               <div className="flex justify-between mt-auto mb-0">
                 <div>

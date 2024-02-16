@@ -42,11 +42,13 @@ export const PAGES_PATH = {
 
 export const FM = {
   default: "An error occured",
+  errorFetchingData: 'Error fetching data',
   classSessionEndedSuccessfully: "Class session ended successfully",
   pleaseEnterUsernameAndPassword: "Please enter username and password",
   studentExist: "Student already exist",
   pleaseFillInAllUserData: "Please fill in all user data",
   invalidCredentials: "Authorization token not provided",
+  excelUploadSuccess: 'Excel upload successful',
   passwordDidNotMatch: "Password did not match",
   loginSuccess: "Login successful",
   loginFailed: "Failed to login",

@@ -3,15 +3,19 @@ import { Student } from "shared-library/dist/types";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { getAllStudents, registerStudent } from "@api/student-api";
-import { isUnfilledObject } from "shared-library";
+import { FM, isUnfilledObject } from "shared-library";
 
 type StudentRegisterModalProps = {
+  studentList: Student[]
   registerModal: boolean;
+  setStudentList: Dispatch<SetStateAction<Student[]>>
   setRegisterModal: Dispatch<SetStateAction<boolean>>
 };
 
 export function RegisterNewStudentModal({
   registerModal,
+  setStudentList,
+  studentList,
   setRegisterModal,
 }: StudentRegisterModalProps) {
   const [success, setSuccess] = useState('')
@@ -31,13 +35,14 @@ export function RegisterNewStudentModal({
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (isUnfilledObject(formData)) {
-      setError("Please fill in all data")
+      setError(FM.pleaseFillInAllUserData)
       setTimeout(() => { setError("") }, 2000)
       return
     }
     try {
       await registerStudent(formData);
-      setSuccess("Successfully added user!");
+      setStudentList(await getAllStudents())
+      setSuccess(FM.studentRegisterSuccess);
       setTimeout(() => { setSuccess("") }, 3000);
       setFormData({
         email: "",

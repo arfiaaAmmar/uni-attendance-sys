@@ -24,6 +24,7 @@ const StudentDatabase = () => {
       const data = await getAllStudents();
       setStudentList(data);
     } catch (error) {
+      setError(FM.errorFetchingData)
       console.error("Error fetching user list:", error);
     }
   };
@@ -129,7 +130,7 @@ const StudentDatabase = () => {
       </div>
 
       {registerModal && (
-        <RegisterNewStudentModal {...{ registerModal, setRegisterModal }} />
+        <RegisterNewStudentModal {...{ registerModal, setRegisterModal }} studentList={studentList} setStudentList={setStudentList} />
       )}
     </div>
   );

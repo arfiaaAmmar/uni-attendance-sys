@@ -44,7 +44,7 @@ export function handleStudentRegisterExcelUpload(
  * @param {File} file - The Excel file containing attendance data.
  * @returns {void}
  */
-
+// TODO Try follow the ~/assets/All Report.xls format
 export function handleClassRecordExcelUpload(classId: string, file: File, type?: "patch" | "post") {
   if (!file || !classId) return;
 
@@ -161,7 +161,7 @@ export function handleClassRecordExcelUpload(classId: string, file: File, type?:
 //   }
 // };
 
-
+// TODO Try follow the ~/assets/All Report.xls format
 export function handleClassRecordAttendanceExcelUpload(
   classId: string,
   file: File | undefined
