@@ -104,7 +104,7 @@ export const getRecentClasses = async () => {
  *
  * @returns {ClassRecord} The retrieved class session data.
  */
-export const getLocalClassSessionData = (): ClassRecord => {
+export const getLocalClassSession = (): ClassRecord => {
   return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData)!);
 };
 
@@ -113,7 +113,7 @@ export const getLocalClassSessionData = (): ClassRecord => {
  *
  * @param {ClassRecord} data 
  */
-export function setLocalClassSessionData(data: ClassRecord){
+export function saveClassSessionToLocal(data: ClassRecord){
   sessionStorage.setItem(STORAGE_NAME.classSessionData, JSON.stringify(data))
 }
 

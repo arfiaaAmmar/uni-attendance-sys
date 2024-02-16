@@ -38,7 +38,4 @@ export const defaultClassSession: ClassRecord = {
   course: 'Information Technology',
   date: undefined,
   status: "Not started",
-  startTime: undefined,
-  endTime: undefined,
-  attendance: undefined,
 }

@@ -65,6 +65,7 @@ export const FM = {
   studentDeleteSuccess: "Student deleted successfully",
   studentDeleteFailed: "Failed to delete student",
   classRecordNotFound: "Class record not found",
+  classRecordUpdateFailed:"Class record update failed",
   classRecordCreationFailed: "Error creating class record",
   errorUpdatingClassRecord: "Error updating class record",
   classRecordRetrievalFailed: "Error retrieving class record",

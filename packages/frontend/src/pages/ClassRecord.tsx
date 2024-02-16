@@ -9,8 +9,10 @@ import { GeneratePDFContent } from "@utils/handle-pdf";
 import { formatTo12HourTime } from "@utils/constants";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import moment from "moment";
+import { FM } from "shared-library";
 
 export const ClassRecords = () => {
+  // Initial load
   const [records, setRecords] = useState<ClassRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRecord, setFilteredRecord] = useState<ClassRecord[]>();
@@ -102,17 +104,27 @@ export const ClassRecords = () => {
     else return 'On Time';
   }
 
-  async function handleUpdateRecord() {
-    try {
-      await updateClassRecord(selectedRecord?._id!, {...updatedRecordData})
-    } catch (error) {
-      console.error("Error fetching user list:", error);
-    }
-  }
+  // async function handleUpdateRecord() {
+  //   try {
+  //     const params: Partial<ClassRecord> = {
+  //       attendance: [
+          
+  //       ]
+  //     }
+  //     await updateClassRecord(selectedRecord?._id!, {...updatedRecordData})
+  //   } catch (error) {
+  //     setError(FM.classRecordUpdateFailed)
+  //     console.error("Error fetching user list:", error);
+  //   }
+  // }
 
   async function _handleDelete(_id: string | undefined){
     await handleDelete(_id, "class-record")
     setRecords(await getAllClassRecords())
+  }
+
+  async function _handletAttendanceDelete(_id: string | undefined){
+    await handleDelete(_id, "student")
   }
 
   return (
@@ -242,6 +254,7 @@ export const ClassRecords = () => {
               <p className="font-semibold w-5/12">Full Name</p>
               <p className="font-semibold w-3/12">Student ID</p>
               <p className="font-semibold w-1/12">Status</p>
+              {/* <p className="font-semibold w-1/12">Delete</p> */}
             </div>
             <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
               {selectedRecord?.attendance?.map((student, index) => (
@@ -253,6 +266,7 @@ export const ClassRecords = () => {
                   <p className="w-5/12">{student?.studentName}</p>
                   <p className="w-3/12">{student?.studentId}</p>
                   <p className="w-1/12">{isLate(student?.attendanceTime!)}</p>
+                  {/* <p className="w-1/12 text-red-500" onClick={() => _handleAttendanceDelete(student?._id)}>Delete</p> */}
                 </div>
               ))}
             </div>
@@ -263,12 +277,12 @@ export const ClassRecords = () => {
               >
                 Close
               </button>
-              <button
+              {/* <button
                 className="bg-green-400 px-2 py-1 rounded-md"
                 onClick={() => handleUpdateRecord()}
               >
                 Update Record
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

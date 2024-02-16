@@ -7,7 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import {
   getClassRecord,
-  getLocalClassSessionData, updateClassRecord
+  getLocalClassSession, updateClassRecord
 } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
@@ -26,40 +26,31 @@ const ClassSession = () => {
   const [filteredAttendance, setFilteredAttendance] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [session, setSession] = useState(getLocalClassSessionData());
+  const [session, setSession] = useState(getLocalClassSession());
   const navigate = useNavigate();
   const [initialFormModal, setInitialFormModal] = useState(false);
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
-  async function checkExistingSession() {
-    try {
-      if (isEmpty(session)) setInitialFormModal(true);
-      else {
-        setInitialFormModal(false);
-        const data = await getClassRecord(session?.classId);
-        setAttendance(data?.attendance!);
-        setSession({ ...data, status: "Ongoing" })
-      }
-    } catch (error) {
-      console.error("Error fetching user list:", error);
-    }
-  };
-
-  async function fetchAttendanceList(classId: string) {
-    try {
-      const data = await getClassRecord(classId)
-      setAttendance(data?.attendance!)
-      console.log('skegnskeg', data?.attendance!)
-    } catch (error) {
-      console.error("Error fetching class session:", error)
-    }
-  }
+  console.log('sekughskeg', session?.status)
 
   useEffect(() => {
-    checkExistingSession();
-    fetchAttendanceList(session?.classId)
+    async function fetchInitialData () {
+      try {
+        if (isEmpty(session)) setInitialFormModal(true);
+        else {
+          setInitialFormModal(false);
+          const data = await getClassRecord(session?.classId);
+          setAttendance(data?.attendance!);
+          setSession({ ...data, status: "Ongoing" })
+          console.log('siueghsie', session?.status)
+        }
+      } catch (error) {
+        console.error("Error fetching user list:", error);
+      }
+    }
+
+    fetchInitialData()
   }, []);
 
   useEffect(() => {
@@ -73,17 +64,19 @@ const ClassSession = () => {
     return () => setFilteredAttendance([])
   }, [attendance, searchQuery])
 
-  const handleUploadExcel = () => {
+  const handleUploadExcel = async () => {
     if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
       if (selectedFile) {
-        handleClassRecordAttendanceExcelUpload(session.classId, selectedFile);
-        fetchAttendanceList(session.classId)
+        handleClassRecordAttendanceExcelUpload(session?.classId, selectedFile);
+        setAttendance((await getClassRecord(session?.classId))?.attendance!)
+
         setSuccess("Uploading excel success")
         setTimeout(() => {
           setSuccess("")
-        }, 2000)
+        }, 1000)
+        navigate(PAGES_PATH.classSession)
       } else {
         setError("Error uploading excel")
         setTimeout(() => {
@@ -94,8 +87,8 @@ const ClassSession = () => {
   };
 
   const changeSessionStatus = useCallback(() => {
-    const currentTime = new Date().toISOString();
-    if (currentTime > session?.endTime!) {
+    const currentTime = new Date().getTime();
+    if (currentTime > new Date(session?.endTime!).getTime()) {
       setSession({ ...session, status: "Ended" });
     }
   }, [session?.endTime]);
@@ -111,7 +104,7 @@ const ClassSession = () => {
   const handleEndClass = async () => {
     try {
       // Update class record to DB history before end class
-      await updateClassRecord(session.classId, { ...session, status: "Ended" })
+      await updateClassRecord(session?.classId, { ...session, status: "Ended" })
       sessionStorage.removeItem(STORAGE_NAME.classSessionData)
       setSuccess(FM.classSessionEndedSuccessfully);
       setTimeout(() => {
@@ -124,13 +117,13 @@ const ClassSession = () => {
   };
 
   function isLate(arrivalTime: string) {
-    const startTime = moment(session.startTime);
-    const endTime = moment(session.endTime);
+    const startTime = moment(session?.startTime);
+    const endTime = moment(session?.endTime);
     const _arrivalTime = moment(arrivalTime);
-    
+
     if (!_arrivalTime.isValid()) return 'MIA';
     if (_arrivalTime.isAfter(endTime)) return 'Manual';
-  
+
     const timeDifference = _arrivalTime.diff(startTime, 'minutes');
     if (timeDifference > 0) return 'Late';
     else return 'On Time';
@@ -140,10 +133,10 @@ const ClassSession = () => {
     { label: "Class", value: session?.classroom },
     { label: "Course", value: session?.course },
     { label: "Lecturer", value: session?.lecturer },
-    { label: "Date", value: new Date(session?.date!).toLocaleDateString('en-GB') },
-    { label: "Start Time", value: formatTo12HourTime(session?.startTime!) },
-    { label: "End Time", value: formatTo12HourTime(session?.endTime!) },
-    { label: "Status", value: session?.status }
+    { label: "Date", value: new Date(session?.date!).toLocaleDateString('en-GB') || 'Not set'},
+    { label: "Start Time", value:formatTo12HourTime(session?.startTime!) || 'Not set'},
+    { label: "End Time", value:formatTo12HourTime(session?.endTime!) || 'Not set'},
+    { label: "Status", value: getLocalClassSession()?.status! || 'Not started' }
   ];
 
   return (
@@ -162,7 +155,7 @@ const ClassSession = () => {
           {sessionDetails.map((detail) => (
             <div key={detail.label} className="flex">
               <p className="font-semibold w-1/3">{detail.label}</p>
-              <p className="w-2/3">: {detail.value}</p>
+              <p className='w-2/3'>: {detail.value}</p>
             </div>
           ))}
         </div>

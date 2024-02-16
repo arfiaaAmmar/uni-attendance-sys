@@ -1,5 +1,5 @@
 import { getUserSessionData } from "@api/admin-api";
-import { getLocalClassSessionData, postClassRecord, setLocalClassSessionData } from "@api/class-record-api";
+import { getLocalClassSession, postClassRecord, saveClassSessionToLocal } from "@api/class-record-api";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button } from "@mui/material";
 import {
@@ -9,7 +9,7 @@ import {
   PAGES_PATH
 } from "shared-library/dist/constants";
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { ClassRecord, ModalActivationProps } from "shared-library/dist/types";
+import { ClassDetails, ClassRecord, ModalActivationProps } from "shared-library/dist/types";
 import { isEmpty } from "radash";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import dayjs, { Dayjs } from "dayjs";
 type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 
 function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps) {
-  const [form, setForm] = useState<ClassRecord>(defaultClassSession);
+  const [form, setForm] = useState<ClassDetails>(defaultClassSession);
   const date = new Date()
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(date.toISOString()));
   const [startTime, setStartTime] = useState<Dayjs>(dayjs(date.toISOString()));
@@ -56,18 +56,14 @@ function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps
         attendance: form.attendance
       }
       await postClassRecord(params);
-      setLocalClassSessionData(params)
-      console.log('localSessionData', getLocalClassSessionData())
+      saveClassSessionToLocal(params)
       setSuccess(FM.classStartSuccess);
-      setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-
-      // Close modal
+      setTimeout(() => setSuccess(""), 3000);
       setIsActive(false);
+      navigate(PAGES_PATH.classSession)
     } catch (error: any) {
       console.error("Error registering new user:", error);
-      setError(error);
+      setError(FM.userRegisterFailed);
     }
   };
 
@@ -120,17 +116,17 @@ function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps
               <DatePicker
                 label="Select Date"
                 value={selectedDate}
-                onChange={(e:any) => setSelectedDate(e.target.value)}
+                onChange={(e: any) => setSelectedDate(e.target.value)}
               />
               <TimePicker
                 label="Start Time"
                 value={startTime}
-                onChange={(e:any) => setStartTime(e.target.value)}
+                onChange={(e: any) => setStartTime(e.target.value)}
               />
               <TimePicker
                 label="End Time"
                 value={endTime}
-                onChange={(e:any) => setEndTime(e.target.value)}
+                onChange={(e: any) => setEndTime(e.target.value)}
               />
             </div>
           </LocalizationProvider>

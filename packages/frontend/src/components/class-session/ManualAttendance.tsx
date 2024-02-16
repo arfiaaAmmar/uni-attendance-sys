@@ -1,17 +1,19 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent, Dispatch, SetStateAction } from "react";
 import { Avatar, Button } from "@mui/material";
-import { Attendance, ModalActivationProps, Student } from "shared-library/dist/types";
+import { Attendance, ClassRecord, ModalActivationProps, Student } from "shared-library/dist/types";
 import { FM, STORAGE_NAME } from "shared-library/dist/constants";
-import { getClassRecord, getLocalClassSessionData, updateClassRecord } from "@api/class-record-api";
+import { getClassRecord, getLocalClassSession, updateClassRecord } from "@api/class-record-api";
 import { getAllStudents } from "@api/student-api";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 
 interface ManualAttendanceProps extends ModalActivationProps {
   classId?: string
+  selectedRecord?: ClassRecord
   onSubmit?: () => void
+  setUpdatedRecordData?: () => void
 }
 
-const ManualAttendance = ({ isActive, setIsActive, classId }: ManualAttendanceProps) => {
+const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setUpdatedRecordData }: ManualAttendanceProps) => {
   const [suggestions, setSuggestions] = useState<Student[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student>()
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -22,6 +24,7 @@ const ManualAttendance = ({ isActive, setIsActive, classId }: ManualAttendancePr
   });
   const [success, setSuccess] = useState('')
   const [error, setError] = useState("");
+  const localSession = getLocalClassSession()
 
   useEffect(() => {
     const initialStudentListFetch = async () => {
@@ -63,16 +66,16 @@ const ManualAttendance = ({ isActive, setIsActive, classId }: ManualAttendancePr
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     try {
-      const currentAttendance = getLocalClassSessionData()?.attendance;
-      const studentExists = currentAttendance?.some(
+      const _attendance = selectedRecord?.attendance || localSession?.attendance;
+      const isStudentExist = _attendance?.some(
         (attendance) => attendance?.studentId === form?.studentId
       );
-      if (studentExists) {
+      if (isStudentExist) {
         setError(FM.studentExist);
         return;
       }
 
-      const _classId = classId || getLocalClassSessionData()?.classId
+      const _classId = classId || localSession?.classId
       const param: Attendance[] = [{
         studentName: form?.studentName,
         studentId: form?.studentId,

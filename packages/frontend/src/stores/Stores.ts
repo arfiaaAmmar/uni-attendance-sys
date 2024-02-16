@@ -5,7 +5,7 @@ import { defaultClassSession } from "utils/constants";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-interface OpenCloseModalState {
+type OpenCloseModalState = {
     isActive: boolean;
     setIsActive: () => void;
 }
@@ -18,9 +18,26 @@ const createOpenCloseModalSlice = () => create<OpenCloseModalState>(set => ({
 const initialClassSessionFormSlice = createOpenCloseModalSlice()
 const manualAttendanceSlice = createOpenCloseModalSlice()
 
-export const useClassSessionStore = create(persist<ClassRecord>((set) => (defaultClassSession),
-    {
-        name: STORAGE_NAME.classSessionData,
-        storage: createJSONStorage(() => sessionStorage)
-    }
-));
+// export const useClassSessionStore = create(persist<ClassRecord>((set) => (defaultClassSession),
+//     {
+//         name: STORAGE_NAME.classSessionData,
+//         storage: createJSONStorage(() => sessionStorage)
+//     }
+// ));
+
+type ClassRecordState = {
+    selectedRecord: ClassRecord
+    updatedData: Partial<ClassRecord>
+}
+
+// const createClassRecordSlice = () => create<ClassRecordState>((state) => ({
+//     selectedRecord: {
+//         classId: "",
+//         classroom: "Classroom 1",
+//         course: "Information Technology",
+//         lecturer: "",
+//         status: "Ended",
+
+//     },
+//     updatedData
+// }))
