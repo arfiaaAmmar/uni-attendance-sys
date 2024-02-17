@@ -13,15 +13,15 @@ import { ClassDetails, ClassRecord, ModalActivationProps } from "shared-library/
 import { isEmpty } from "radash";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { defaultClassSession } from "@utils/constants";
 import { generateClassId } from "shared-library";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+import { defClassSessionState } from "@utils/constants";
 
 type HandleChangeType = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 
 function InitialClassSessionForm({ isActive, setIsActive }: ModalActivationProps) {
-  const [form, setForm] = useState<ClassDetails>(defaultClassSession);
+  const [form, setForm] = useState<ClassDetails>(defClassSessionState);
   const date = new Date()
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(date.toISOString()));
   const [startTime, setStartTime] = useState<Dayjs>(dayjs(date.toISOString()));

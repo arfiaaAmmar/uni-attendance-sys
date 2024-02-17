@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useState, useCallback, useEffect } from "react";
 
 /**
@@ -40,3 +41,16 @@ export const useDataFetching = <T>(fetchFunction: () => Promise<T | null>) => {
 
   return { data, isLoading, error, refetch };
 };
+
+export function checkAttendanceStatus(startTime: string, endTime: string, arrivalTime: string) {
+  const _startTime = moment(startTime);
+  const _endTime = moment(endTime);
+  const _arrivalTime = moment(arrivalTime);
+
+  if (!_arrivalTime.isValid()) return 'MIA';
+  if (_arrivalTime.isAfter(_endTime)) return 'Manual';
+
+  const timeDifference = _arrivalTime.diff(_startTime, 'minutes');
+  if (timeDifference > 0) return 'Late';
+  else return 'On Time';
+}

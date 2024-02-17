@@ -50,7 +50,7 @@ export async function getStudent (studentId: string){
   }
 }
 
-export async function getAllStudents (){
+export async function getAllStudents(){
   try {
     const response = await fetch(`${API_URL}${ENDPOINT.getAllStudents}`, {
       headers: {
@@ -64,7 +64,7 @@ export async function getAllStudents (){
       throw new Error(error);
     }
 
-    return data;
+    return data as Student[]
   } catch (error) {
     throw (error as Error).message
   }

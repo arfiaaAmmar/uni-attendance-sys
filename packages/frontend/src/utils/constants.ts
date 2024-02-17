@@ -1,6 +1,6 @@
 import { getUserSessionData } from "@api/admin-api";
 import { generateClassId } from "shared-library/dist/shared-helpers";
-import { ClassRecord } from "shared-library/dist/types";
+import { Attendance, ClassRecord, Student } from "shared-library/dist/types";
 
 export const dateTimeFormatForClassRecord = () => {
   const now = new Date();
@@ -31,11 +31,37 @@ export const formatTo12HourTime = (date: string) => {
   })
 };
 
-export const defaultClassSession: ClassRecord = {
+// For initialising state hooks value
+
+export const defFeedbackState = {
+  success: '',
+  error: ''
+}
+
+export const defClassSessionState: ClassRecord = {
   classId: "",
   lecturer: getUserSessionData()?.name,
   classroom: 'Classroom 1',
   course: 'Information Technology',
   date: undefined,
   status: "Not started",
+}
+
+export const defStudentState: Student = {
+  email: '',
+  name: '',
+  phone: '',
+  studentId: '',
+}
+
+export const defAttendanceState: Attendance = {
+  studentId: "",
+  studentName: "",
+  attendanceTime: "",
+}
+
+export const defAttendanceFormState: Attendance = {
+  studentId: "",
+  studentName: "",
+  attendanceTime: new Date().toISOString()
 }

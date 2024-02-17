@@ -1,38 +1,38 @@
-import { useState, useEffect, FormEvent, ChangeEvent, Dispatch, SetStateAction } from "react";
-import { Avatar, Button } from "@mui/material";
-import { Attendance, ClassRecord, ModalActivationProps, Student } from "shared-library/dist/types";
+import { useState, useEffect, ChangeEvent, FormEvent, Dispatch } from "react";
+import { Button } from "@mui/material";
+import { Attendance, ModalActivationProps, Student } from "shared-library/dist/types";
 import { FM, STORAGE_NAME } from "shared-library/dist/constants";
-import { getClassRecord, getLocalClassSession, updateClassRecord } from "@api/class-record-api";
+import { saveSuggestionsToLocal } from "@api/class-record-api";
 import { getAllStudents } from "@api/student-api";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
+import { defStudentState } from "@utils/constants";
+import { StudentInfo } from "@components/shared/StudentInfo";
+import { SetStateAction } from "jotai";
 
 interface ManualAttendanceProps extends ModalActivationProps {
-  classId?: string
-  selectedRecord?: ClassRecord
-  onSubmit?: () => void
-  setUpdatedRecordData?: () => void
+  form: Attendance
+  handleSubmit: (event: FormEvent) => Promise<void>
+  setForm: Dispatch<SetStateAction<Attendance>>
 }
 
-const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setUpdatedRecordData }: ManualAttendanceProps) => {
+const ManualAttendance = ({ isActive, setIsActive, handleSubmit, form, setForm }: ManualAttendanceProps) => {
   const [suggestions, setSuggestions] = useState<Student[]>([]);
-  const [selectedStudent, setSelectedStudent] = useState<Student>()
+  const [student, setStudent] = useState<Student>(defStudentState)
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [form, setForm] = useState<Attendance>({
-    studentId: "",
-    studentName: "",
-    attendanceTime: new Date().toISOString()
-  });
   const [success, setSuccess] = useState('')
   const [error, setError] = useState("");
-  const localSession = getLocalClassSession()
 
   useEffect(() => {
     const initialStudentListFetch = async () => {
       try {
         const data = await getAllStudents();
-        sessionStorage.setItem(STORAGE_NAME.suggestions, JSON.stringify(data))
+        saveSuggestionsToLocal(data)
+        setSuccess(FM.successFetchingData)
+        setTimeout(() => setSuccess(''), 2000)
       } catch (error) {
-        console.error("Error fetching data:", error);
+        setError(FM.errorFetchingData)
+        setTimeout(() => setError(''), 2000)
+        console.error(FM.errorFetchingData, error);
       }
     };
     initialStudentListFetch();
@@ -54,57 +54,29 @@ const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setU
       setShowSuggestions(!!value || filteredSuggestions.length > 0);
     }
   };
+
   function handleSuggestionClick(suggestion: Student) {
     setForm({
       studentId: suggestion.studentId,
       studentName: suggestion.name,
     });
-    setSelectedStudent(suggestion)
+    setStudent(suggestion)
     setShowSuggestions(false);
-  };
+  }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    try {
-      const _attendance = selectedRecord?.attendance || localSession?.attendance;
-      const isStudentExist = _attendance?.some(
-        (attendance) => attendance?.studentId === form?.studentId
-      );
-      if (isStudentExist) {
-        setError(FM.studentExist);
-        return;
-      }
-
-      const _classId = classId || localSession?.classId
-      const param: Attendance[] = [{
-        studentName: form?.studentName,
-        studentId: form?.studentId,
-        attendanceTime: new Date().toISOString(),
-      }]
-      await updateClassRecord(_classId, { attendance: param });
-      setForm({
-        studentId: "",
-        studentName: "",
-        attendanceTime: "",
-      });
-
-      setIsActive(false);
-      setSuggestions([]);
-      setShowSuggestions(false);
-      setSuccess(FM.addingAttendanceSuccess)
-      setTimeout(() => { setSuccess('') }, 2000)
-    } catch (error) {
-      console.error(FM.errorUpdatingClassRecord, error);
-      setError(FM.addingAttendanceFailed)
-    }
-  };
+  const styles = {
+    formTitle: "text-lg mb-4",
+    formBackground: "bg-white rounded-md p-8 flex gap-5",
+    formInput: "border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600",
+    suggestionsBg: "absolute z-10 bg-white border border-gray-300 rounded w-full"
+  }
 
   if (!isActive) return null
   return (
     <div className={`fixed z-30 inset-0 flex items-center justify-center bg-black bg-opacity-50`}>
-      <div className="bg-white rounded-md p-8 flex gap-5">
+      <div className={styles.formBackground}>
         <div className="w-1/2">
-          <p className="text-lg mb-4">Manual Attendance</p>
+          <p className={styles.formTitle}>Manual Attendance</p>
           <p className="text-red-600 font-bold">{error}</p>
           <form onSubmit={handleSubmit}>
             <input
@@ -113,7 +85,7 @@ const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setU
               placeholder="Enter Student ID"
               value={form?.studentId}
               onChange={handleChange}
-              className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+              className={styles.formInput}
             />
             <input
               type="text"
@@ -121,11 +93,11 @@ const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setU
               placeholder="Enter Student Name"
               value={form?.studentName}
               onChange={handleChange}
-              className="border-2 border-neutral-400 rounded-md w-full mt-4 text-neutral-600"
+              className={styles.formInput}
             />
             <div className="relative mt-4">
               {showSuggestions && suggestions.length > 0 && (
-                <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full">
+                <ul className={styles.suggestionsBg}>
                   {suggestions.map((suggestion) => (
                     <button
                       key={suggestion.studentId}
@@ -157,18 +129,7 @@ const ManualAttendance = ({ isActive, setIsActive, selectedRecord, classId, setU
             </div>
           </form>
         </div>
-        <div className="border-l-2 pl-4">
-          <Avatar
-            style={{ width: "100px", height: "100px" }}
-            className="mx-auto mb-4"
-          />
-          <p className="text-neutral-500">Student Name</p>
-          <p className="text-xl">{selectedStudent?.name}</p>
-          <p className="text-neutral-500">Student Id</p>
-          <p className="text-xl">{selectedStudent?.studentId}</p>
-          <p className="text-neutral-500">Course</p>
-          <p className="text-xl">{selectedStudent?.course}</p>
-        </div>
+        <StudentInfo student={student} />
       </div>
     </div>
   );

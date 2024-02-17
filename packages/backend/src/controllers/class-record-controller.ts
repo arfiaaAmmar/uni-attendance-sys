@@ -59,7 +59,6 @@ export const getAllClassRecords = async (req: Request, res: Response) => {
 
 export const getLiveSessions = async (req: Request, res: Response) => {
   try {
-    const currentDate = new Date();
     const liveClassRecords = await ClassRecordModel.find({ status: "Not stated" }).exec();
     if (liveClassRecords.length === 0)
       return res.status(404).json({ message: FM.liveClassSessionNotFound });

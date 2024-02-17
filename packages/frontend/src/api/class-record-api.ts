@@ -1,6 +1,6 @@
 import { handleAPIRequest } from "@helpers/handlers";
 import { ENDPOINT, STORAGE_NAME } from "shared-library/dist/constants";
-import { ClassRecord, HandleDeleteType, Attendance } from "shared-library/dist/types";
+import { ClassRecord, HandleDeleteType, Attendance, Student } from "shared-library/dist/types";
 import { API_URL } from "config/config";
 
 /**
@@ -107,6 +107,15 @@ export const getRecentClasses = async () => {
 export const getLocalClassSession = (): ClassRecord => {
   return JSON.parse(sessionStorage.getItem(STORAGE_NAME.classSessionData)!);
 };
+
+/**
+ * Saves student name suggestions data to the sessionStorage.
+ *
+ * @param {Student[]}
+ */
+export function saveSuggestionsToLocal(data: Student[]) {
+  sessionStorage.setItem(STORAGE_NAME.suggestions, JSON.stringify(data))
+}
 
 /**
  * Saves class session data to the sessionStorage.
