@@ -1,40 +1,50 @@
 import {
-  FormEvent,
-  useCallback,
-  useEffect,
+  FormEvent, useEffect,
   useRef,
   useState
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   getClassRecord,
-  getLocalClassSession, updateClassRecord
+  getLocalClassSession, postClassRecord, saveClassSessionToLocal, updateClassRecord
 } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
-import { Attendance } from "shared-library/dist/types";
+import { Attendance, ClassDetails, ClassRecord } from "shared-library/dist/types";
 import ManualAttendance from "@components/class-session/ManualAttendance";
 import InitialClassSessionForm from "@components/class-session/InitialClassSessionForm";
 import { isEmpty } from "radash";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
-import { defAttendanceFormState, formatTo12HourTime } from "@utils/constants";
+import { defAttendanceFormState, defClassSessionState, defFeedbackState, formatTo12HourTime } from "@utils/constants";
 import { handleClassRecordAttendanceExcelUpload } from "@utils/upload-excel";
-import moment from "moment";
 import { checkAttendanceStatus } from "@helpers/shared-helpers";
+import { getUserSessionData } from "@api/admin-api";
+import { generateClassId } from "shared-library";
+import dayjs, { Dayjs } from "dayjs";
 
 const ClassSession = () => {
+  const localClassSession = getLocalClassSession()
+  const [session, setSession] = useState(localClassSession);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [filteredAttendance, setFilteredAttendance] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [session, setSession] = useState(getLocalClassSession());
-  const navigate = useNavigate();
+  // InitialFormModal
+  const date = new Date()
+  const [initialForm, setInitialForm] = useState<ClassDetails>(defClassSessionState)
   const [initialFormModal, setInitialFormModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(date.toISOString()));
+  const [startTime, setStartTime] = useState<Dayjs>(dayjs(date.toISOString()));
+  const [endTime, setEndTime] = useState<Dayjs>(dayjs(date.toISOString()));
+  // ManualAttendanceModal
   const [manualAttendanceModal, setManualAttendanceModal] = useState(false);
   const [manualAttendanceForm, setManualAttendanceForm] = useState<Attendance>(defAttendanceFormState)
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [initialFormFeedback, setInitialFormFeedback] = useState(defFeedbackState)
+  // Shared state
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -84,22 +94,27 @@ const ClassSession = () => {
     }
   };
 
-  const changeSessionStatus = useCallback(() => {
-    const currentTime = new Date().getTime();
-    if (currentTime > new Date(session?.endTime!).getTime()) {
-      setSession({ ...session, status: "Ended" });
-    }
-  }, [session?.endTime]);
-
+  // Check if class ends or not
   useEffect(() => {
-    const interval = setInterval(() => changeSessionStatus(), 1000);
+    function changeSessionStatus() {
+      const currentTime = new Date().getTime()
+      if (currentTime > new Date(session?.endTime!).getTime()) {
+        handleEndClass()
+      }
+    }
+    changeSessionStatus()
 
-    return () => clearInterval(interval);
-  }, [changeSessionStatus]);
+    const timeRemaining = new Date(session?.endTime!).getTime() - new Date().getTime()
+    if (timeRemaining > 0) {
+      const timeout = setTimeout(() => changeSessionStatus(), timeRemaining)
+      return () => clearTimeout(timeout)
+    }
+  }, [session?.endTime, handleEndClass]);
 
-  const handleEndClass = async () => {
+  async function handleEndClass() {
     try {
       // Update class record to DB history before end class
+      console.log('ttttt', endTime)
       await updateClassRecord(session?.classId, { ...session, status: "Ended" })
       sessionStorage.removeItem(STORAGE_NAME.classSessionData)
       setSuccess(FM.classSessionEndedSuccessfully);
@@ -149,6 +164,40 @@ const ClassSession = () => {
     } catch (error) {
       console.error(FM.errorUpdatingClassRecord, error);
       setError(FM.addingAttendanceFailed)
+    }
+  };
+
+  async function handleSubmitInitialForm(event: FormEvent) {
+    event.preventDefault();
+    console.log('zzzz', endTime.toISOString())
+
+    if (isEmpty(initialForm)) {
+      setError(FM.pleaseFillInAllClassInfo);
+      return;
+    }
+    try {
+      const userSessionData = getUserSessionData();
+      const params: ClassRecord = {
+        classId: generateClassId(),
+        lecturer: userSessionData?.name,
+        date: selectedDate?.toISOString(),
+        classroom: initialForm?.classroom!,
+        course: initialForm?.course!,
+        status: "Ongoing",
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        attendance: []
+      }
+      await postClassRecord(params);
+      setSession(params)
+      saveClassSessionToLocal(params)
+      setSuccess(FM.classStartSuccess);
+      setTimeout(() => setSuccess(""), 3000);
+      setInitialFormModal(false);
+      navigate(PAGES_PATH.classSession)
+    } catch (error: any) {
+      console.error(FM.userRegisterFailed, error);
+      setInitialFormFeedback({ ...initialFormFeedback, error: FM.userRegisterFailed });
     }
   };
 
@@ -238,6 +287,17 @@ const ClassSession = () => {
       <InitialClassSessionForm
         isActive={initialFormModal}
         setIsActive={setInitialFormModal}
+        submitForm={handleSubmitInitialForm}
+        form={initialForm!}
+        setForm={setInitialForm}
+        setStartTime={setStartTime}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        startTime={startTime}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        feedback={initialFormFeedback}
+        setFeedback={setInitialFormFeedback}
       />
     </div>
   );

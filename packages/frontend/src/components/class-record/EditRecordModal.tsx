@@ -12,7 +12,7 @@ import ManualAttendance from '@components/class-session/ManualAttendance';
 import { filterSearchQuery } from '@helpers/search-functions';
 
 interface EditRecordModalProps extends ModalActivationProps {
-  record?: ClassRecord
+  record: ClassRecord | undefined
 }
 
 const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps) => {
@@ -24,7 +24,7 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
   const [error, setError] = useState('');
   console.log('tyjitkj', record?.attendance!)
   const handleUpdateRecord = () => {
-    
+
   }
 
   useEffect(() => {
@@ -129,11 +129,11 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
         </div>
         <div className="bg-neutral-200 h-[30vh] overflow-y-auto">
           {filteredAttendees?.map((student, index) => (
-            <div key={student?.studentId} className="flex px-4 py-1 justify-evenly">
+            <div key={`${student?.studentId}-${index + 1}`} className="flex px-4 py-1 justify-evenly">
               <p className="w-1/12">{index + 1}</p>
               <p className="w-5/12">{student?.studentName}</p>
               <p className="w-3/12">{student?.studentId}</p>
-              <p className="w-1/12">{handleAttendanceStatus(student?.attendanceTime!)}</p>
+              <p className="w-1/12">{student?.attendanceTime ? handleAttendanceStatus(student?.attendanceTime!) : 'N/A'}</p>
             </div>
           ))}
         </div>
