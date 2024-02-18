@@ -6,8 +6,8 @@ import {
   StyleSheet
 } from "@react-pdf/renderer";
 import { ClassRecord } from "shared-library/dist/types";
-import moment from "moment";
 import { formatTo12HourTime } from "./constants";
+import { checkAttendanceStatus } from "@helpers/shared-helpers";
 
 //make this for Attendance Report first then afterwards make it generic
 const styles = StyleSheet.create({
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 20
-  }, 
+  },
   heading: {
     fontSize: 14,
     fontWeight: "bold",
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
   },
   columnHeader: {
     fontWeight: "bold",
-    flex: 1,
     fontSize: 14,
     textAlign: "center",
+    flex: 1,
   },
   tableRow: {
     flexDirection: "row",
@@ -56,9 +56,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   cell: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 12
+    textAlign: "left",
+    fontSize: 12,
   },
   classInfo: {
     flexDirection: "column",
@@ -75,7 +74,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#dddddd",
     height: 1,
     marginVertical: 5,
-  }
+  },
+  noCell: {
+    flex: 0.5,
+  },
+  nameCell: {
+    flex: 2,
+  },
+  matrikCell: {
+    flex: 2,
+  },
+  timeCell: {
+    flex: 1,
+  },
+  statusCell: {
+    flex: 0.5,
+  },
 });
 
 type GeneratePDFContentProps = {
@@ -85,10 +99,16 @@ type GeneratePDFContentProps = {
 export const GeneratePDFContent = ({
   selectedRecord,
 }: GeneratePDFContentProps) => {
+  function handleAttendanceStatus(arrivalTime: string) {
+    if (!(selectedRecord)) return
+    const { startTime, endTime } = selectedRecord
+    return checkAttendanceStatus(startTime!, endTime!, arrivalTime)
+  }
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-      <View style={styles.container}>
+        <View style={styles.container}>
           {/* Class Information Section */}
           <Text style={styles.documentTitle}>Class Information</Text>
           <Text style={styles.heading}>Class Information</Text>
@@ -117,10 +137,11 @@ export const GeneratePDFContent = ({
           {/* Attendance Table */}
           <Text style={styles.heading}>Class Record</Text>
           <View style={styles.tableHeader}>
-            <Text style={[styles.cell, styles.columnHeader]}>No.</Text>
-            <Text style={[styles.cell, styles.columnHeader]}>Full Name</Text>
-            <Text style={[styles.cell, styles.columnHeader]}>Student ID</Text>
-            <Text style={[styles.cell, styles.columnHeader]}>Status</Text>
+            <Text style={[styles.cell, styles.noCell]}>No.</Text>
+            <Text style={[styles.cell, styles.nameCell]}>Student Name</Text>
+            <Text style={[styles.cell, styles.matrikCell]}>Matrik</Text>
+            <Text style={[styles.cell, styles.timeCell]}>Time Arrived</Text>
+            <Text style={[styles.cell, styles.statusCell]}>Status</Text>
           </View>
           <View
             style={{
@@ -130,10 +151,11 @@ export const GeneratePDFContent = ({
           >
             {selectedRecord?.attendance?.map((attendee, index) => (
               <View key={attendee.studentId} style={styles.tableRow}>
-                <Text style={styles.cell}>{index + 1}</Text>
-                <Text style={styles.cell}>{attendee.studentName}</Text>
-                <Text style={styles.cell}>{attendee.studentId}</Text>
-                <Text style={styles.cell}>{formatTo12HourTime(attendee?.attendanceTime!)}</Text>
+                <Text style={[styles.cell, styles.noCell]}>{index + 1}</Text>
+                <Text style={[styles.cell, styles.nameCell]}>{attendee.studentName}</Text>
+                <Text style={[styles.cell, styles.matrikCell]}>{attendee.studentId}</Text>
+                <Text style={[styles.cell, styles.timeCell]}>{formatTo12HourTime(attendee?.attendanceTime!)}</Text>
+                <Text style={[styles.cell, styles.statusCell]}>{handleAttendanceStatus(attendee?.attendanceTime!)}</Text>
               </View>
             ))}
           </View>
