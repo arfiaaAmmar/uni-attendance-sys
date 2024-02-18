@@ -1,13 +1,6 @@
-import {
-  FormEvent, useEffect,
-  useRef,
-  useState
-} from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  getClassRecord,
-  getLocalClassSession, postClassRecord, saveClassSessionToLocal, updateClassRecord
-} from "@api/class-record-api";
+import { getClassRecord, getLocalClassSession, postClassRecord, saveClassSessionToLocal, updateClassRecord } from "@api/class-record-api";
 import SearchBox from "@components/shared/SearchBox";
 import { FM, PAGES_PATH, STORAGE_NAME } from "shared-library/dist/constants";
 import { filterSearchQuery } from "@helpers/search-functions";
@@ -80,6 +73,7 @@ const ClassSession = () => {
     if (fileInputRef?.current?.files) {
       const selectedFile = fileInputRef.current.files[0];
 
+      // TODO Remove nested if & add tryCatch block
       if (selectedFile) {
         handleClassRecordAttendanceExcelUpload(session?.classId, selectedFile);
         setAttendances((await getClassRecord(session?.classId))?.attendance!)
@@ -94,7 +88,8 @@ const ClassSession = () => {
     }
   };
 
-  // Check if class ends or not
+  // Check if class ends or not 
+  // TODO On class end, it will show up as notification
   useEffect(() => {
     function changeSessionStatus() {
       const currentTime = new Date().getTime()
@@ -114,7 +109,6 @@ const ClassSession = () => {
   async function handleEndClass() {
     try {
       // Update class record to DB history before end class
-      console.log('ttttt', endTime)
       await updateClassRecord(session?.classId, { ...session, status: "Ended" })
       sessionStorage.removeItem(STORAGE_NAME.classSessionData)
       setSuccess(FM.classSessionEndedSuccessfully);
@@ -137,7 +131,7 @@ const ClassSession = () => {
     { label: "Status", value: getLocalClassSession()?.status! || 'Not started' }
   ];
 
-  async function submitManualAttendance(event: FormEvent) {
+  async function handleSubmitManualAttendance(event: FormEvent) {
     event.preventDefault();
     try {
       const isStudentExist = session?.attendance?.some(
@@ -149,12 +143,17 @@ const ClassSession = () => {
       }
 
       const _classId = session?.classId
-      const param: Attendance[] = [{
+      const newAttendance: Attendance = {
         studentName: manualAttendanceForm?.studentName,
         studentId: manualAttendanceForm?.studentId,
         attendanceTime: new Date().toISOString(),
-      }]
-      await updateClassRecord(_classId, { attendance: param });
+      }
+      await updateClassRecord(_classId, { attendance: [newAttendance] });
+      setAttendances(prevAttendance => [...prevAttendance, newAttendance])
+      setSession(prevRecord => ({
+        ...prevRecord!,
+        attendance: [...(prevRecord?.attendance || []), newAttendance]
+      }));
 
       // Reset all
       setManualAttendanceForm(defAttendanceFormState);
@@ -282,7 +281,7 @@ const ClassSession = () => {
         form={manualAttendanceForm}
         setForm={setManualAttendanceForm}
         setIsActive={setManualAttendanceModal}
-        handleSubmit={submitManualAttendance}
+        handleSubmit={handleSubmitManualAttendance}
       />
       <InitialClassSessionForm
         isActive={initialFormModal}
