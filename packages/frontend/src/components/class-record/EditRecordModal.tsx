@@ -1,10 +1,10 @@
-import { useState, useEffect, FormEvent } from 'react';
-import { handleDelete, updateClassRecord } from '@api/class-record-api';
+import { useState, useEffect, FormEvent, SetStateAction, Dispatch } from 'react';
+import { getClassRecord, handleDelete, updateClassRecord } from '@api/class-record-api';
 import SearchBox from '@components/shared/SearchBox';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { GeneratePDFContent } from '@utils/handle-pdf';
 import { defAttendanceFormState, formatTo12HourTime } from '@utils/constants';
-import { FM } from 'shared-library';
+import { FM } from 'shared-library/dist/constants'
 import { Attendance, ClassRecord, ModalActivationProps } from 'shared-library';
 import { FeedbackMessage } from '@components/shared/FeedbackMessage';
 import { checkAttendanceStatus } from '@helpers/shared-helpers';
@@ -13,19 +13,20 @@ import { filterSearchQuery } from '@helpers/search-functions';
 
 interface EditRecordModalProps extends ModalActivationProps {
   record: ClassRecord | undefined
+  setRecord: Dispatch<SetStateAction<ClassRecord | undefined>>
 }
 
-const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps) => {
+const EditRecordModal = ({ isActive, setIsActive, record, setRecord }: EditRecordModalProps) => {
   const [filteredAttendees, setFilteredAttendees] = useState<Attendance[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [manualAttendance, setManualAttendance] = useState(false)
+  const [manualAttendanceModal, setManualAttendanceModal] = useState(false)
   const [manualAttendanceForm, setManualAttendanceForm] = useState<Attendance>(defAttendanceFormState)
+  // Data to update
+  const [attendanceUpdate, setAttendanceUpdate] = useState<Attendance[]>([])
+  const [isUpdated, setIsUpdated] = useState(false)
+  // Feedback messages
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
-  console.log('tyjitkj', record?.attendance!)
-  const handleUpdateRecord = () => {
-
-  }
 
   useEffect(() => {
     const filteredAttendees = filterSearchQuery<Attendance>(searchQuery, record?.attendance!, [
@@ -33,10 +34,10 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
       "studentId",
     ])
     setFilteredAttendees(filteredAttendees)
-
     return () => setFilteredAttendees([])
   }, [record?.attendance, searchQuery])
 
+  // TODO Will add in near future
   async function _handletAttendanceDelete(_id: string | undefined) {
     await handleDelete(_id, "student")
   }
@@ -49,21 +50,27 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
       );
       if (isStudentExist) {
         setError(FM.studentExist);
+        setTimeout(() => setError(''), 2000)
         return;
       }
 
-      const param: Attendance[] = [{
+      const newAttendance: Attendance = {
         studentName: manualAttendanceForm?.studentName!,
         studentId: manualAttendanceForm?.studentId!,
         attendanceTime: new Date().toISOString(),
-      }]
-      await updateClassRecord(record?._id!, { attendance: param });
+      }
+      setAttendanceUpdate(prevAttendance => [...prevAttendance, newAttendance])
+      setRecord(prevRecord => ({
+        ...prevRecord!,
+        attendance: [...(prevRecord?.attendance || []), newAttendance]
+      }));
+      setIsUpdated(true) // Enables update button
 
       // Reset all
       setManualAttendanceForm(defAttendanceFormState);
-      setManualAttendance(false);
-      setSuccess(FM.addingAttendanceSuccess)
-      setTimeout(() => { setSuccess('') }, 2000)
+      setManualAttendanceModal(false);
+      setSuccess('Please click update button to update record')
+      setTimeout(() => setSuccess(''), 2000)
     } catch (error) {
       console.error(FM.errorUpdatingClassRecord, error);
       setError(FM.addingAttendanceFailed)
@@ -71,10 +78,32 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
     }
   }
 
-  const handleAttendanceStatus = (arrivalTime: string) => {
+  function handleAttendanceStatus(arrivalTime: string) {
     if (!(record)) return
     const { startTime, endTime } = record
     return checkAttendanceStatus(startTime!, endTime!, arrivalTime)
+  }
+
+  // This is only for attendance update for now ..
+  // TODO Will add edit for all feature in future
+  async function handleSubmitUpdateRecord() {
+    try {
+      const updatedRecord: Partial<ClassRecord> = { attendance: attendanceUpdate }
+      await updateClassRecord(record?.classId!, updatedRecord)
+      setSuccess(FM.classRecordUpdateSuccess)
+      setRecord(await getClassRecord(record?.classId!))
+      setTimeout(() => setSuccess(''), 2000)
+      setIsUpdated(false) // Disable 'Update' btn after submit record
+    } catch (error: any) {
+      setError(error)
+      setTimeout(() => setError(''), 2000)
+      console.error(error)
+    }
+  }
+
+  function handleCloseBtn() {
+    setIsActive(false)
+    setIsUpdated(false)
   }
 
   if (!(isActive)) return null;
@@ -83,7 +112,7 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
       <div className="bg-white rounded-md p-8 w-5/6 h-5/6 relative">
         <h1 className="text-2xl font-bold my-2">Edit Record</h1>
         <SearchBox query={searchQuery} onChange={setSearchQuery} />
-        <FeedbackMessage {...{ success, error }} />
+        <FeedbackMessage success={success} error={error} />
         <div className="flex justify-between">
           <div className="bg-neutral-400 rounded-md p-4 mt-4 mb-0 w-80">
             {[
@@ -102,14 +131,14 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
           </div>
           <div className="flex justify-between mt-auto mb-0">
             <div>
-              <button className="bg-purple-400 rounded-md py-2 px-2 mr-2" onClick={() => setManualAttendance(true)}>
+              <button className="bg-purple-400 rounded-md py-2 px-2 mr-2" onClick={() => setManualAttendanceModal(true)}>
                 Manual Attendance
               </button>
               <ManualAttendance
-                isActive={manualAttendance}
+                isActive={manualAttendanceModal}
                 form={manualAttendanceForm}
                 setForm={setManualAttendanceForm}
-                setIsActive={setManualAttendance}
+                setIsActive={setManualAttendanceModal}
                 handleSubmit={handleManualAttendanceSubmit}
               />
               <PDFDownloadLink
@@ -138,10 +167,10 @@ const EditRecordModal = ({ isActive, setIsActive, record }: EditRecordModalProps
           ))}
         </div>
         <div className="absolute bottom-2 right-2 flex gap-2">
-          <button className="bg-red-400 px-2 py-1 rounded-md " onClick={() => setIsActive(false)}>
+          <button className="bg-red-400 px-2 py-1 rounded-md " onClick={handleCloseBtn}>
             Close
           </button>
-          <button className="bg-green-400 px-2 py-1 rounded-md" onClick={() => handleUpdateRecord()}>
+          <button className={`${isUpdated ? 'bg-green-400' : 'bg-neutral-200 text-neutral-400'} px-2 py-1 rounded-md`} onClick={handleSubmitUpdateRecord} disabled={isUpdated ? false : true}>
             Update Record
           </button>
         </div>

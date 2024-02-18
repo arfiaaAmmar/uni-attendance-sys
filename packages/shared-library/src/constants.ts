@@ -44,6 +44,7 @@ export const FM = {
   default: "An error occured",
   successFetchingData: 'Success fetching data',
   pleaseFillInAllClassInfo: 'Please fill in all class info',
+  classRecordUpdateSuccess: 'Class record update success', 
   errorFetchingData: 'Error fetching data',
   classSessionEndedSuccessfully: "Class session ended successfully",
   pleaseEnterUsernameAndPassword: "Please enter username and password",

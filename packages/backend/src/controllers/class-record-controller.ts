@@ -59,8 +59,8 @@ export const getAllClassRecords = async (req: Request, res: Response) => {
 
 export const getLiveSessions = async (req: Request, res: Response) => {
   try {
-    const liveClassRecords = await ClassRecordModel.find({ status: "Not stated" }).exec();
-    if (liveClassRecords.length === 0)
+    const liveClassRecords = await ClassRecordModel.find({ status: "Ongoing" }).exec();
+    if (!liveClassRecords || liveClassRecords.length === 0)
       return res.status(404).json({ message: FM.liveClassSessionNotFound });
     res.json(liveClassRecords);
   } catch (error) {
@@ -68,27 +68,24 @@ export const getLiveSessions = async (req: Request, res: Response) => {
   }
 };
 
+// FIXME Not working yet
 export const getRecentlyEndedSessions = async (req: Request, res: Response) => {
   try {
-    const currentDate = new Date();
-
-    // Get the timestamp of 5 minutes ago
-    const fiveMinutesAgo = new Date(currentDate.getTime() - 5 * 60 * 1000);
-
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
     const recentlyEndedClassRecords = await ClassRecordModel.find({
-      date: { $eq: currentDate.toISOString().split("T")[0] },
-      endTime: { $gte: fiveMinutesAgo.toISOString().split("T")[1], $lt: currentDate.toISOString().split("T")[1] },
+      endTime: { $gte: thirtyMinutesAgo, $lt: new Date() },
     }).exec();
 
-    if (recentlyEndedClassRecords.length === 0) {
+    console.log('utiyjuf', recentlyEndedClassRecords)
+    if (!recentlyEndedClassRecords || recentlyEndedClassRecords.length === 0) 
       return res.status(404).json({ message: FM.recentlyEndedClassSessionsNotFound });
-    }
 
     res.json(recentlyEndedClassRecords);
   } catch (error) {
     handleCatchError(res, error, FM.recentlyEndedClassSessionsNotFound);
   }
 };
+
 
 export const updateClassRecord = async (req: Request, res: Response) => {
   const { classId } = req.params;

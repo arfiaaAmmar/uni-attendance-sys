@@ -38,7 +38,7 @@ const AttendanceSystem = () => {
               <p className="text-2xl font-bold">{liveClass?.course}</p>
               <p className="text-lg font-bold">{liveClass?.classroom}</p>
               <div className="flex justify-between mt-8">
-                <p>Attendance: 23/30</p>
+                <p>Attendance: {liveClass?.attendance?.length} student(s)</p>
                 <button className="bg-red-500 px-2 py-1 text-white font-bold">
                   End Class
                 </button>

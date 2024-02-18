@@ -14,8 +14,10 @@ import { filterSearchQuery } from "@helpers/search-functions";
 export const ClassRecords = () => {
   const [records, setRecords] = useState<ClassRecord[]>([]);
   const [filteredRecords, setFilteredRecords] = useState<ClassRecord[]>([]);
+  // TODO Optimise: Remove duplicate 'selectedRecord' n convert to selectedRecordId
   const [selectedRecord, setSelectedRecord] = useState<ClassRecord>();
   const [searchQuery, setSearchQuery] = useState("");
+  // Modals
   const [editModal, setEditModal] = useState(false)
   const [viewRecord, setViewRecord] = useState(false)
   const [success, setSuccess] = useState("");
@@ -52,8 +54,8 @@ export const ClassRecords = () => {
     return () => setFilteredRecords([])
   }, [records, searchQuery]);
 
-  const handleDownloadPDF = async (_id?: string) => {
-    const selectedRecord = records.find((record) => record?._id! === _id);
+  async function handleDownloadPDF(_id: string | undefined) {
+    const selectedRecord = records.find((record) => (record?._id!) === _id);
 
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
@@ -62,7 +64,7 @@ export const ClassRecords = () => {
     }
   };
 
-  const handleEditModel = async (_id: string | undefined) => {
+  async function handleEditModel(_id: string | undefined){
     setEditModal(true)
     const selectedRecord = records.find((record) => (record?._id!) === _id);
     
@@ -104,7 +106,7 @@ export const ClassRecords = () => {
             <div className="w-2/12">
               <button
                 className="bg-orange-300 px-3 py-1"
-                onClick={() => handleDownloadPDF(record?._id!)}
+                onClick={() => handleDownloadPDF(record?._id)}
               >
                 View | Download
               </button>
@@ -116,7 +118,7 @@ export const ClassRecords = () => {
               </button>
               <button
                 className="bg-red-300 px-3 py-1"
-                onClick={() => _handleDeleteRecord(record?._id!)}
+                onClick={() => _handleDeleteRecord(record?._id)}
               >
                 Delete
               </button>
@@ -153,6 +155,7 @@ export const ClassRecords = () => {
         isActive={editModal}
         setIsActive={setEditModal}
         record={selectedRecord}
+        setRecord={setSelectedRecord}
       />
     </div>
   );
