@@ -1,41 +1,35 @@
 import { postClassRecord, updateClassRecord } from "@api/class-record-api";
-import { registerStudent } from "@api/student-api";
 import { Attendance, ClassDetails, ClassRecord, ClassStatus, Classrooms, Courses, Student } from "shared-library/dist/types";
 import * as XLSX from "xlsx";
 
 /**
- * Handles the upload of an Excel file for student registration.
+ * Parses the excel file for student registration.
  *
  * @param {File} file - The Excel file containing student registration data.
  * @returns {void}
  */
-export async function handleStudentRegisterFileUpload(
-  file: File | undefined
-) {
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result as string;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
+export async function parseStudentRegisterFile(file: File | undefined): Promise<Omit<Student, "studentId">[] | null> {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve(null);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result as string;
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
 
-      const excelData = XLSX.utils.sheet_to_json(worksheet) as Omit<Student, "studentId">[]
-
-      // Process the excelData to register students
-      excelData.forEach((row) => {
-        const { email, name, phone, course } = row;
-        registerStudent({ email, name, phone, course })
-          .then(() => {
-            console.log("Student registered:", row);
-          })
-          .catch((error) => {
-            console.error("Error registering student:", error);
-          });
-      });
-    };
-    reader.readAsBinaryString(file);
-  }
+          const excelData = XLSX.utils.sheet_to_json(worksheet) as Omit<Student, "studentId">[];
+          resolve(excelData);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.readAsBinaryString(file);
+    }
+  });
 };
 
 /**
