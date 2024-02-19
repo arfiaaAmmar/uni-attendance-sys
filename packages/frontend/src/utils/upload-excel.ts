@@ -1,6 +1,6 @@
 import { postClassRecord, updateClassRecord } from "@api/class-record-api";
 import { Attendance, ClassDetails, ClassRecord, ClassStatus, Classrooms, Courses, Student } from "shared-library/dist/types";
-import * as XLSX from "xlsx";
+import { read, utils } from "xlsx";
 
 /**
  * Parses the excel file for student registration.
@@ -10,18 +10,17 @@ import * as XLSX from "xlsx";
  */
 export async function parseStudentRegisterFile(file: File | undefined): Promise<Omit<Student, "studentId">[] | null> {
   return new Promise((resolve, reject) => {
-    if (!file) {
-      resolve(null);
-    } else {
+    if (!file) resolve(null);
+    else {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const data = e.target?.result as string;
-          const workbook = XLSX.read(data, { type: "binary" });
+          const workbook = read(data, { type: "binary" });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
 
-          const excelData = XLSX.utils.sheet_to_json(worksheet) as Omit<Student, "studentId">[];
+          const excelData = utils.sheet_to_json(worksheet) as Omit<Student, "studentId">[];
           resolve(excelData);
         } catch (error) {
           reject(error);
@@ -38,150 +37,92 @@ export async function parseStudentRegisterFile(file: File | undefined): Promise<
  * @param {File} file - The Excel file containing attendance data.
  * @returns {void}
  */
-// TODO Try follow the ~/assets/All Report.xls format
-export function handleClassRecordFileUpload(classId: string, file: File, type?: "patch" | "post") {
-  if (!file || !classId) return;
+export function parseClassRecordFile(classId: string, file: File): Promise<ClassRecord | null> {
+  return new Promise((resolve, reject) => {
+    if (!file || !classId) resolve(null);
+    else {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = e.target?.result as string;
+          const workbook = read(data, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          let classDetails: ClassDetails | null = null;
+          let attendanceList: Attendance[] = [];
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = e.target?.result as string;
-    const workbook = XLSX.read(data, { type: "binary" });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    let classDetails: ClassDetails | null = null
-    let attendanceList: Attendance[] = []
+          const excelData = utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
 
-    const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
+          // Find Class Details table
+          const classDetailsRow = excelData.findIndex(row => row.includes("Class Details"));
+          if (classDetailsRow !== -1) {
+            const classDetailsTable = excelData.slice(classDetailsRow + 1); // Get rows below "Class Details"
+            classDetails = {
+              classId: classDetailsTable[0][1],
+              lecturer: classDetailsTable[1][1],
+              classroom: classDetailsTable[2][1] as Classrooms,
+              course: classDetailsTable[3][1] as Courses,
+              status: classDetailsTable[4][1] as ClassStatus,
+              date: classDetailsTable[5][1],
+              startTime: classDetailsTable[6][1],
+              endTime: classDetailsTable[7][1]
+            };
+          }
 
-    // Find Class Details table
-    const classDetailsRow = excelData.findIndex(row => row.includes("Class Details"));
-    if (classDetailsRow !== -1) {
-      const classDetailsTable = excelData.slice(classDetailsRow + 1); // Get rows below "Class Details"
-      classDetails = {
-        classId: classDetailsTable[0][1],
-        lecturer: classDetailsTable[1][1],
-        classroom: classDetailsTable[2][1] as Classrooms,
-        course: classDetailsTable[3][1] as Courses,
-        status: classDetailsTable[4][1] as ClassStatus,
-        date: classDetailsTable[5][1],
-        startTime: classDetailsTable[6][1],
-        endTime: classDetailsTable[7][1]
+          // Find Attendances table
+          const attendanceHeaderRow = excelData.findIndex(row => row.includes("Attendance"));
+          if (attendanceHeaderRow !== -1) {
+            const attendanceTable = excelData.slice(attendanceHeaderRow + 1); // Get rows below "Attendance"
+            attendanceTable.forEach(row => {
+              const attendanceObj: Attendance = {
+                studentName: row[0],
+                studentId: row[1],
+                attendanceTime: row[1]
+              };
+              attendanceList.push(attendanceObj);
+            });
+          }
+
+          if (!classDetails || attendanceList.length === 0) {
+            resolve(null);
+          } else {
+            const excelData: ClassRecord = { ...classDetails, attendance: attendanceList};
+            resolve(excelData);
+          }
+        } catch (error) {
+          reject(error);
+        }
       };
-      console.log("Class Details:", classDetails);
+      reader.readAsBinaryString(file);
     }
-
-    // Find Attendances table
-    const attendanceHeaderRow = excelData.findIndex(row => row.includes("Attendance"));
-    if (attendanceHeaderRow !== -1) {
-      const attendanceTable = excelData.slice(attendanceHeaderRow + 1) // Get rows below "Attendance"
-      attendanceTable.map(row => {
-        const attendanceObj: { [key: string]: string } = {}; // Object to hold attendance data for each student
-        row.forEach((value, index) => {
-          attendanceObj[index] = value; // Assign data as usual
-        });
-        return attendanceObj;
-      });
-      console.log("Attendances:", attendanceList);
-    }
-
-    if (!classDetails || !attendanceList) return
-    const { classId, classroom, lecturer, course, status, date, startTime, endTime } = classDetails
-    const params: ClassRecord = {
-      classId,
-      classroom,
-      lecturer,
-      course,
-      status,
-      date,
-      startTime,
-      endTime,
-      attendance: attendanceList
-    }
-
-    if (!type || type === "post") {
-      postClassRecord(params)
-        .then(() => {
-          console.log("Class Record registered", params);
-        })
-        .catch((error) => {
-          console.error("Error registering class record:", error);
-        });
-    } else {
-      updateClassRecord(classId, params)
-        .then(() => {
-          console.log("Class Record registered", params);
-        })
-        .catch((error) => {
-          console.error("Error registering class record:", error);
-        });
-    }
-
-  };
-  reader.readAsBinaryString(file);
+  });
 }
 
 /**
- * To upload students attendance list for class session
- * @param {string} classId
- * @param {File} file
- * @return {*}
+ * Parses student attendance file during class session / class record
+ *
+ * @param {(File | undefined)} file
+ * @return {*}  {(Promise<Attendance[] | null>)}
  */
-// TODO Will separate attendance from classRecordExcelUpload
-// export function attendanceListExcelUpload (
-//   classId: string,
-//   file: File | undefined
-// ) {
-//   if (file) {
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = e.target?.result as string;
-//       const workbook = XLSX.read(data, { type: "binary" });
-//       const sheetName = workbook.SheetNames[0];
-//       const worksheet = workbook.Sheets[sheetName];
-//       const excelData = XLSX.utils.sheet_to_json(worksheet) ;
+export function parseStudentAttendanceFile(file: File | undefined): Promise<Attendance[] | null> {
+  return new Promise((resolve, reject) => {
+    if (!file) resolve(null)
+    else {
+      const reader = new FileReader()
+      reader.onload = e => {
+        try {
+          const data = e.target?.result as string
+          const workbook = read(data, { type: 'binary' })
+          const sheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[sheetName]
 
-//       excelData.forEach((row) => {
-//         const attendance = row
-//         updateClassRecord(classId, {attendance: [{...attendance}]}) // TODO not the best solution bcause only sending one student in array
-//           .then(() => {
-//             console.log("Student registered:", row);
-//           })
-//           .catch((error) => {
-//             console.error("Error registering student:", error);
-//           });
-//       });
-//     };
-//     reader.readAsBinaryString(file);
-//   }
-// };
-
-// TODO Try follow the ~/assets/All Report.xls format
-export function handleClassRecordAttendanceFileUpload(
-  classId: string,
-  file: File | undefined
-) {
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result as string;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const newAttendance: Attendance[] = []
-      const excelData = XLSX.utils.sheet_to_json(worksheet) as Attendance[]
-
-      // Process the excelData to register students
-      excelData.forEach((row) => {
-        newAttendance.push(row)
-        updateClassRecord(classId, { attendance: newAttendance })
-          .then(() => {
-            console.log("Attendance(s) added:", row);
-          })
-          .catch((error) => {
-            console.error("Error adding attendance(s):", error);
-          });
-      });
-    };
-    reader.readAsBinaryString(file);
-  }
-};
+          const excelData = utils.sheet_to_json(worksheet) as Attendance[]
+          resolve(excelData);
+        } catch (error) {
+          reject(error)
+        }
+      }
+      reader.readAsBinaryString(file)
+    }
+  })
+}

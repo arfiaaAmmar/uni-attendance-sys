@@ -10,7 +10,7 @@ import InitialClassSessionForm from "@components/class-session/InitialClassSessi
 import { isEmpty } from "radash";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 import { defAttendanceFormState, defClassSessionState, defFeedbackState, formatTo12HourTime } from "@utils/constants";
-import { handleClassRecordAttendanceFileUpload } from "@utils/upload-excel";
+import { parseStudentAttendanceFile } from "@utils/upload-excel";
 import { checkAttendanceStatus } from "@helpers/shared-helpers";
 import { getUserSessionData } from "@api/admin-api";
 import { generateClassId } from "shared-library";
@@ -70,21 +70,23 @@ const ClassSession = () => {
   }, [attendances, searchQuery])
 
   async function handleUploadExcel() {
-    if (fileInputRef?.current?.files) {
-      const selectedFile = fileInputRef.current.files[0];
+    if (!(fileInputRef?.current?.files)) return
+    const selectedFile = fileInputRef.current.files[0];
 
-      // TODO Remove nested if & add tryCatch block
-      if (selectedFile) {
-        handleClassRecordAttendanceFileUpload(session?.classId, selectedFile);
-        setAttendances((await getClassRecord(session?.classId))?.attendance!)
+    try {
+      if (!selectedFile) return
+      const excelData = await parseStudentAttendanceFile(selectedFile)
+      let newAttendance: Attendance[] = []
+      excelData?.forEach(row => newAttendance.push(row))
+      await updateClassRecord(session?.classId, { attendance: newAttendance })
+      setAttendances((await getClassRecord(session?.classId))?.attendance!)
 
-        setSuccess(FM.excelUploadSuccess)
-        setTimeout(() => setSuccess(""), 1000)
-        navigate(PAGES_PATH.classSession)
-      } else {
-        setError("Error uploading excel")
-        setTimeout(() => setError(""), 2000)
-      }
+      setSuccess(FM.excelUploadSuccess)
+      setTimeout(() => setSuccess(""), 1000)
+      navigate(PAGES_PATH.classSession)
+    } catch (error) {
+      console.error(error)
+      setTimeout(() => setError(""), 2000)
     }
   };
 
