@@ -4,9 +4,11 @@
   "description": "Web server with Express, Typescript and MongoDB",
   "main": "dist/server.js",
   "scripts": {
+    "start": "cross-env NODE_ENV='dev' node dist/server.js",
     "start:dev": "cross-env NODE_ENV='dev' node dist/server.js",
     "start:prod": "cross-env NODE_ENV='prod' node dist/server.js",
     "build": "tsc --build && tsc-alias",
+    "dev": "cross-env NODE_ENV='dev' ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "dev:local": "cross-env NODE_ENV='dev' ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "dev:remote": "cross-env NODE_ENV='prod' ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
