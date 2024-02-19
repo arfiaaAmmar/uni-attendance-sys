@@ -46,6 +46,7 @@ export const FM = {
   pleaseFillInAllClassInfo: 'Please fill in all class info',
   classRecordUpdateSuccess: 'Class record update success', 
   errorFetchingData: 'Error fetching data',
+  excelUploadFailed: 'Error uploading excel',
   classSessionEndedSuccessfully: "Class session ended successfully",
   pleaseEnterUsernameAndPassword: "Please enter username and password",
   studentExist: "Student already exist",

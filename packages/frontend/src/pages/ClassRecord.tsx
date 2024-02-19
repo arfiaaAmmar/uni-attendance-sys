@@ -64,10 +64,10 @@ export const ClassRecords = () => {
     }
   };
 
-  async function handleEditModel(_id: string | undefined){
+  async function handleEditModel(_id: string | undefined) {
     setEditModal(true)
     const selectedRecord = records.find((record) => (record?._id!) === _id);
-    
+
     if (selectedRecord) {
       setSelectedRecord(selectedRecord);
       setEditModal(true)
@@ -75,7 +75,7 @@ export const ClassRecords = () => {
     }
   };
 
-  async function _handleDeleteRecord(_id: string | undefined) {
+  async function handleDeleteRecord(_id: string | undefined) {
     await handleDelete(_id!, "class-record")
     setRecords(await getAllClassRecords())
   }
@@ -118,7 +118,7 @@ export const ClassRecords = () => {
               </button>
               <button
                 className="bg-red-300 px-3 py-1"
-                onClick={() => _handleDeleteRecord(record?._id)}
+                onClick={() => handleDeleteRecord(record?._id)}
               >
                 Delete
               </button>
@@ -143,9 +143,7 @@ export const ClassRecords = () => {
               document={<GeneratePDFContent selectedRecord={selectedRecord} />}
               fileName="class_record?.pdf"
             >
-              {({ loading }) =>
-                loading ? "Loading document..." : "Download now!"
-              }
+              {({ loading }) => loading ? "Loading document..." : "Download now!" }
             </PDFDownloadLink>
           </div>
         </div>

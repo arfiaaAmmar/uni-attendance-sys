@@ -73,7 +73,7 @@ const ManualAttendance = ({ isActive, setIsActive, handleSubmit, form, setForm }
 
   if (!isActive) return null
   return (
-    <div className={`fixed z-30 inset-0 flex items-center justify-center bg-black bg-opacity-50`}>
+    <div className="fixed z-30 inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className={styles.formBackground}>
         <div className="w-1/2">
           <p className={styles.formTitle}>Manual Attendance</p>

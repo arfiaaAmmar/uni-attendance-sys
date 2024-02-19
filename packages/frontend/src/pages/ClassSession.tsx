@@ -10,7 +10,7 @@ import InitialClassSessionForm from "@components/class-session/InitialClassSessi
 import { isEmpty } from "radash";
 import { FeedbackMessage } from "@components/shared/FeedbackMessage";
 import { defAttendanceFormState, defClassSessionState, defFeedbackState, formatTo12HourTime } from "@utils/constants";
-import { handleClassRecordAttendanceExcelUpload } from "@utils/upload-excel";
+import { handleClassRecordAttendanceFileUpload } from "@utils/upload-excel";
 import { checkAttendanceStatus } from "@helpers/shared-helpers";
 import { getUserSessionData } from "@api/admin-api";
 import { generateClassId } from "shared-library";
@@ -75,7 +75,7 @@ const ClassSession = () => {
 
       // TODO Remove nested if & add tryCatch block
       if (selectedFile) {
-        handleClassRecordAttendanceExcelUpload(session?.classId, selectedFile);
+        handleClassRecordAttendanceFileUpload(session?.classId, selectedFile);
         setAttendances((await getClassRecord(session?.classId))?.attendance!)
 
         setSuccess(FM.excelUploadSuccess)
@@ -108,8 +108,12 @@ const ClassSession = () => {
 
   async function handleEndClass() {
     try {
-      // Update class record to DB history before end class
-      await updateClassRecord(session?.classId, { ...session, status: "Ended" })
+      const toUpdateRecordParams: ClassRecord = {
+        ...session,
+        status: 'Ended',
+        endTime: new Date().toISOString()
+      }
+      await updateClassRecord(session?.classId, toUpdateRecordParams)
       sessionStorage.removeItem(STORAGE_NAME.classSessionData)
       setSuccess(FM.classSessionEndedSuccessfully);
       setTimeout(() => {

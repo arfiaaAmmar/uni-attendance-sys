@@ -9,7 +9,7 @@ import * as XLSX from "xlsx";
  * @param {File} file - The Excel file containing student registration data.
  * @returns {void}
  */
-export function handleStudentRegisterExcelUpload(
+export async function handleStudentRegisterFileUpload(
   file: File | undefined
 ) {
   if (file) {
@@ -45,7 +45,7 @@ export function handleStudentRegisterExcelUpload(
  * @returns {void}
  */
 // TODO Try follow the ~/assets/All Report.xls format
-export function handleClassRecordExcelUpload(classId: string, file: File, type?: "patch" | "post") {
+export function handleClassRecordFileUpload(classId: string, file: File, type?: "patch" | "post") {
   if (!file || !classId) return;
 
   const reader = new FileReader();
@@ -162,7 +162,7 @@ export function handleClassRecordExcelUpload(classId: string, file: File, type?:
 // };
 
 // TODO Try follow the ~/assets/All Report.xls format
-export function handleClassRecordAttendanceExcelUpload(
+export function handleClassRecordAttendanceFileUpload(
   classId: string,
   file: File | undefined
 ) {

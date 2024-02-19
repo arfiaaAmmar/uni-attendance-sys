@@ -76,7 +76,6 @@ export const getRecentlyEndedSessions = async (req: Request, res: Response) => {
       endTime: { $gte: thirtyMinutesAgo, $lt: new Date() },
     }).exec();
 
-    console.log('utiyjuf', recentlyEndedClassRecords)
     if (!recentlyEndedClassRecords || recentlyEndedClassRecords.length === 0) 
       return res.status(404).json({ message: FM.recentlyEndedClassSessionsNotFound });
 
